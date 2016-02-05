@@ -3,6 +3,7 @@ xymon (4.3.25~rc2-1) UNRELEASED; urgency=medium
   * New upstream release candidate.
     + Drop cherry-picked 81_confreport-segfault.patch.
     + Refresh patches where necessary.
+  * Enable all hardening flags.
 
  -- Axel Beckert <abe@debian.org>  Fri, 05 Feb 2016 17:37:58 +0100
 
