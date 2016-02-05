@@ -5,8 +5,8 @@ Last-Update: 2015-09-10
 
 Index: xymon/xymond/webfiles/acknowledge_header
 ===================================================================
---- xymon.orig/xymond/webfiles/acknowledge_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/acknowledge_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/acknowledge_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/acknowledge_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -17,8 +17,8 @@ Index: xymon/xymond/webfiles/acknowledge_header
  
 Index: xymon/xymond/webfiles/columndoc_header
 ===================================================================
---- xymon.orig/xymond/webfiles/columndoc_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/columndoc_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/columndoc_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/columndoc_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -29,8 +29,8 @@ Index: xymon/xymond/webfiles/columndoc_header
  <!-- Styles for the Xymon body  -->
 Index: xymon/xymond/webfiles/confreport_header
 ===================================================================
---- xymon.orig/xymond/webfiles/confreport_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/confreport_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/confreport_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/confreport_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,9 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
  <html>
@@ -44,8 +44,8 @@ Index: xymon/xymond/webfiles/confreport_header
  
 Index: xymon/xymond/webfiles/event_header
 ===================================================================
---- xymon.orig/xymond/webfiles/event_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/event_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/event_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/event_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -56,8 +56,8 @@ Index: xymon/xymond/webfiles/event_header
  
 Index: xymon/xymond/webfiles/findhost_header
 ===================================================================
---- xymon.orig/xymond/webfiles/findhost_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/findhost_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/findhost_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/findhost_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -68,8 +68,8 @@ Index: xymon/xymond/webfiles/findhost_header
  
 Index: xymon/xymond/webfiles/ghosts_header
 ===================================================================
---- xymon.orig/xymond/webfiles/ghosts_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/ghosts_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/ghosts_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/ghosts_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -80,8 +80,8 @@ Index: xymon/xymond/webfiles/ghosts_header
  
 Index: xymon/xymond/webfiles/graphs_header
 ===================================================================
---- xymon.orig/xymond/webfiles/graphs_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/graphs_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/graphs_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/graphs_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -92,8 +92,8 @@ Index: xymon/xymond/webfiles/graphs_header
  <!-- Styles for the Xymon body  -->
 Index: xymon/xymond/webfiles/hist_header
 ===================================================================
---- xymon.orig/xymond/webfiles/hist_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/hist_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/hist_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/hist_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -104,8 +104,8 @@ Index: xymon/xymond/webfiles/hist_header
  <TITLE>&XYMWEBBACKGROUND : Xymon - History @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/histlog_header
 ===================================================================
---- xymon.orig/xymond/webfiles/histlog_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/histlog_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/histlog_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/histlog_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -116,8 +116,8 @@ Index: xymon/xymond/webfiles/histlog_header
  <TITLE>Xymon Historical Status: &XYMWEBHOST - &XYMWEBSVC @ &LOGTIME</TITLE>
 Index: xymon/xymond/webfiles/hostgraphs_header
 ===================================================================
---- xymon.orig/xymond/webfiles/hostgraphs_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/hostgraphs_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/hostgraphs_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/hostgraphs_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -128,8 +128,8 @@ Index: xymon/xymond/webfiles/hostgraphs_header
  
 Index: xymon/xymond/webfiles/hostlist_header
 ===================================================================
---- xymon.orig/xymond/webfiles/hostlist_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/hostlist_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/hostlist_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/hostlist_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -140,8 +140,8 @@ Index: xymon/xymond/webfiles/hostlist_header
  
 Index: xymon/xymond/webfiles/hostsvc_header
 ===================================================================
---- xymon.orig/xymond/webfiles/hostsvc_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/hostsvc_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/hostsvc_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/hostsvc_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -152,8 +152,8 @@ Index: xymon/xymond/webfiles/hostsvc_header
  <META HTTP-EQUIV="Set-Cookie" CONTENT="pagepath=; path=/">
 Index: xymon/xymond/webfiles/info_header
 ===================================================================
---- xymon.orig/xymond/webfiles/info_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/info_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/info_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/info_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -161,11 +161,11 @@ Index: xymon/xymond/webfiles/info_header
 +<META HTTP-EQUIV="Content-Type" CONTENT="&HTMLCONTENTTYPE">
  <META HTTP-EQUIV="Set-Cookie" CONTENT="pagepath=; path=/">
  <META HTTP-EQUIV="Set-Cookie" CONTENT="host=&XYMWEBHIKEY; path=/">
- <TITLE>Xymon - Host Information</TITLE>
+ <TITLE>Xymon - &XYMWEBHOST Host Information</TITLE>
 Index: xymon/xymond/webfiles/maint_header
 ===================================================================
---- xymon.orig/xymond/webfiles/maint_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/maint_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/maint_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/maint_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -176,8 +176,8 @@ Index: xymon/xymond/webfiles/maint_header
  
 Index: xymon/xymond/webfiles/maintact_header
 ===================================================================
---- xymon.orig/xymond/webfiles/maintact_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/maintact_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/maintact_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/maintact_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -188,8 +188,8 @@ Index: xymon/xymond/webfiles/maintact_header
  
 Index: xymon/xymond/webfiles/notify_header
 ===================================================================
---- xymon.orig/xymond/webfiles/notify_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/notify_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/notify_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/notify_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -200,8 +200,8 @@ Index: xymon/xymond/webfiles/notify_header
  
 Index: xymon/xymond/webfiles/perfdata_header
 ===================================================================
---- xymon.orig/xymond/webfiles/perfdata_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/perfdata_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/perfdata_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/perfdata_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -212,8 +212,8 @@ Index: xymon/xymond/webfiles/perfdata_header
  
 Index: xymon/xymond/webfiles/replog_header
 ===================================================================
---- xymon.orig/xymond/webfiles/replog_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/replog_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/replog_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/replog_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -224,8 +224,8 @@ Index: xymon/xymond/webfiles/replog_header
  <!-- Styles for the Xymon body  -->
 Index: xymon/xymond/webfiles/report_header
 ===================================================================
---- xymon.orig/xymond/webfiles/report_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/report_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/report_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/report_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -236,8 +236,8 @@ Index: xymon/xymond/webfiles/report_header
  
 Index: xymon/xymond/webfiles/snapshot_header
 ===================================================================
---- xymon.orig/xymond/webfiles/snapshot_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/snapshot_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/snapshot_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/snapshot_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -248,8 +248,8 @@ Index: xymon/xymond/webfiles/snapshot_header
  
 Index: xymon/xymond/webfiles/topchanges_header
 ===================================================================
---- xymon.orig/xymond/webfiles/topchanges_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/topchanges_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/topchanges_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/topchanges_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -260,8 +260,8 @@ Index: xymon/xymond/webfiles/topchanges_header
  
 Index: xymon/xymond/webfiles/useradm_header
 ===================================================================
---- xymon.orig/xymond/webfiles/useradm_header	2011-09-29 22:59:40.000000000 +0200
-+++ xymon/xymond/webfiles/useradm_header	2011-09-29 23:00:32.000000000 +0200
+--- xymon.orig/xymond/webfiles/useradm_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/useradm_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -272,8 +272,8 @@ Index: xymon/xymond/webfiles/useradm_header
  
 Index: xymon/xymond/webfiles/critedit_header
 ===================================================================
---- xymon.orig/xymond/webfiles/critedit_header	2011-09-29 20:22:33.000000000 +0200
-+++ xymon/xymond/webfiles/critedit_header	2011-09-29 23:04:31.000000000 +0200
+--- xymon.orig/xymond/webfiles/critedit_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/critedit_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -284,8 +284,8 @@ Index: xymon/xymond/webfiles/critedit_header
  
 Index: xymon/xymond/webfiles/critical_header
 ===================================================================
---- xymon.orig/xymond/webfiles/critical_header	2011-09-29 20:22:33.000000000 +0200
-+++ xymon/xymond/webfiles/critical_header	2011-09-29 23:04:48.000000000 +0200
+--- xymon.orig/xymond/webfiles/critical_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/critical_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -296,8 +296,8 @@ Index: xymon/xymond/webfiles/critical_header
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/critmulti_header
 ===================================================================
---- xymon.orig/xymond/webfiles/critmulti_header	2011-09-29 20:22:32.000000000 +0200
-+++ xymon/xymond/webfiles/critmulti_header	2011-09-29 23:04:56.000000000 +0200
+--- xymon.orig/xymond/webfiles/critmulti_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/critmulti_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -308,8 +308,8 @@ Index: xymon/xymond/webfiles/critmulti_header
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/repnormal_header
 ===================================================================
---- xymon.orig/xymond/webfiles/repnormal_header	2011-09-29 20:22:32.000000000 +0200
-+++ xymon/xymond/webfiles/repnormal_header	2011-09-29 23:05:07.000000000 +0200
+--- xymon.orig/xymond/webfiles/repnormal_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/repnormal_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -320,8 +320,8 @@ Index: xymon/xymond/webfiles/repnormal_header
  <TITLE>Xymon Availability Report : &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/snapcritical_header
 ===================================================================
---- xymon.orig/xymond/webfiles/snapcritical_header	2011-09-29 20:22:32.000000000 +0200
-+++ xymon/xymond/webfiles/snapcritical_header	2011-09-29 23:05:13.000000000 +0200
+--- xymon.orig/xymond/webfiles/snapcritical_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/snapcritical_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -332,8 +332,8 @@ Index: xymon/xymond/webfiles/snapcritical_header
  <!-- Styles for the Xymon body  -->
 Index: xymon/xymond/webfiles/snapnongreen_header
 ===================================================================
---- xymon.orig/xymond/webfiles/snapnongreen_header	2011-09-29 20:22:32.000000000 +0200
-+++ xymon/xymond/webfiles/snapnongreen_header	2011-09-29 23:05:19.000000000 +0200
+--- xymon.orig/xymond/webfiles/snapnongreen_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/snapnongreen_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -344,8 +344,8 @@ Index: xymon/xymond/webfiles/snapnongreen_header
  <!-- Styles for the Xymon body  -->
 Index: xymon/xymond/webfiles/snapnormal_header
 ===================================================================
---- xymon.orig/xymond/webfiles/snapnormal_header	2011-09-29 20:22:32.000000000 +0200
-+++ xymon/xymond/webfiles/snapnormal_header	2011-09-29 23:05:24.000000000 +0200
+--- xymon.orig/xymond/webfiles/snapnormal_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/snapnormal_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -356,8 +356,8 @@ Index: xymon/xymond/webfiles/snapnormal_header
  <TITLE>Xymon Snapshot Report : &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/stdcritical_header
 ===================================================================
---- xymon.orig/xymond/webfiles/stdcritical_header	2011-09-29 20:22:33.000000000 +0200
-+++ xymon/xymond/webfiles/stdcritical_header	2011-09-29 23:05:29.000000000 +0200
+--- xymon.orig/xymond/webfiles/stdcritical_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/stdcritical_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -368,8 +368,8 @@ Index: xymon/xymond/webfiles/stdcritical_header
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/stdnongreen_header
 ===================================================================
---- xymon.orig/xymond/webfiles/stdnongreen_header	2011-09-29 20:22:33.000000000 +0200
-+++ xymon/xymond/webfiles/stdnongreen_header	2011-09-29 23:05:36.000000000 +0200
+--- xymon.orig/xymond/webfiles/stdnongreen_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/stdnongreen_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>
@@ -380,8 +380,8 @@ Index: xymon/xymond/webfiles/stdnongreen_header
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/stdnormal_header
 ===================================================================
---- xymon.orig/xymond/webfiles/stdnormal_header	2011-09-29 20:22:33.000000000 +0200
-+++ xymon/xymond/webfiles/stdnormal_header	2011-09-29 23:05:42.000000000 +0200
+--- xymon.orig/xymond/webfiles/stdnormal_header	2016-02-05 17:38:19.000000000 +0100
++++ xymon/xymond/webfiles/stdnormal_header	2016-02-05 17:38:19.000000000 +0100
 @@ -1,6 +1,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
  <HTML>

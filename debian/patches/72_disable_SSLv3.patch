@@ -8,9 +8,9 @@ Forwarded: no
 
 Index: xymon/xymonnet/contest.c
 ===================================================================
---- xymon.orig/xymonnet/contest.c	2015-11-04 00:28:24.656363679 +0100
-+++ xymon/xymonnet/contest.c	2015-11-04 00:32:09.260092407 +0100
-@@ -481,8 +481,6 @@
+--- xymon.orig/xymonnet/contest.c	2016-02-05 17:38:59.000000000 +0100
++++ xymon/xymonnet/contest.c	2016-02-05 17:38:59.000000000 +0100
+@@ -482,8 +482,6 @@
  		  case SSLVERSION_V2:
  			item->sslctx = SSL_CTX_new(SSLv2_client_method()); break;
  #endif

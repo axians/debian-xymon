@@ -4,8 +4,8 @@ Last-Update: 2015-10-30
 
 Index: xymon/xymond/etcfiles/xymonserver.cfg.DIST
 ===================================================================
---- xymon.orig/xymond/etcfiles/xymonserver.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/xymond/etcfiles/xymonserver.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/xymond/etcfiles/xymonserver.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
++++ xymon/xymond/etcfiles/xymonserver.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
 @@ -5,8 +5,8 @@
  XYMONCLIENTHOME="@XYMONTOPDIR@/client"		# XYMONHOME directory for the client
  
@@ -53,8 +53,8 @@ Index: xymon/xymond/etcfiles/xymonserver.cfg.DIST
 +include /var/run/xymon/xymonserver-include.cfg
 Index: xymon/xymond/etcfiles/xymon-apache-open.DIST
 ===================================================================
---- xymon.orig/xymond/etcfiles/xymon-apache-open.DIST	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/xymond/etcfiles/xymon-apache-open.DIST	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/xymond/etcfiles/xymon-apache-open.DIST	2016-02-05 17:38:30.000000000 +0100
++++ xymon/xymond/etcfiles/xymon-apache-open.DIST	2016-02-05 17:38:30.000000000 +0100
 @@ -16,11 +16,11 @@
      Options Indexes FollowSymLinks Includes MultiViews
      <IfModule mod_authz_core.c>
@@ -85,8 +85,8 @@ Index: xymon/xymond/etcfiles/xymon-apache-open.DIST
  
 Index: xymon/xymond/etcfiles/xymon-apache-secure.DIST
 ===================================================================
---- xymon.orig/xymond/etcfiles/xymon-apache-secure.DIST	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/xymond/etcfiles/xymon-apache-secure.DIST	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/xymond/etcfiles/xymon-apache-secure.DIST	2016-02-05 17:38:30.000000000 +0100
++++ xymon/xymond/etcfiles/xymon-apache-secure.DIST	2016-02-05 17:38:30.000000000 +0100
 @@ -16,11 +16,11 @@
      Options Indexes FollowSymLinks Includes MultiViews
      <IfModule mod_authz_core.c>
@@ -131,8 +131,8 @@ Index: xymon/xymond/etcfiles/xymon-apache-secure.DIST
      # Password file where users with access to these scripts are kept.
 Index: xymon/xymond/etcfiles/tasks.cfg.DIST
 ===================================================================
---- xymon.orig/xymond/etcfiles/tasks.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/xymond/etcfiles/tasks.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/xymond/etcfiles/tasks.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
++++ xymon/xymond/etcfiles/tasks.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
 @@ -18,7 +18,7 @@
  # you want to run).
  [xymond]
@@ -172,8 +172,8 @@ Index: xymon/xymond/etcfiles/tasks.cfg.DIST
 +include /var/run/xymon/tasks-include.cfg
 Index: xymon/client/clientlaunch.cfg.DIST
 ===================================================================
---- xymon.orig/client/clientlaunch.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/client/clientlaunch.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/client/clientlaunch.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
++++ xymon/client/clientlaunch.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
 @@ -16,7 +16,7 @@
  [msgcache]
  	DISABLED
@@ -190,8 +190,8 @@ Index: xymon/client/clientlaunch.cfg.DIST
 +include /var/run/xymon/clientlaunch-include.cfg
 Index: xymon/client/xymonclient.cfg.DIST
 ===================================================================
---- xymon.orig/client/xymonclient.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/client/xymonclient.cfg.DIST	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/client/xymonclient.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
++++ xymon/client/xymonclient.cfg.DIST	2016-02-05 17:38:30.000000000 +0100
 @@ -1,18 +1,21 @@
  # Environment settings for the Xymon client.
  
@@ -217,12 +217,12 @@ Index: xymon/client/xymonclient.cfg.DIST
 +
 +include /var/run/xymon/xymonclient-include.cfg
  
- # Options to xymond_client. Used only if this install is running in local client mode.
- XYMONLOCALCLIENTOPTS=""
+ # Options to logfetch, the xymon binary which examines log files for recent changes.
+ LOGFETCHOPTS=""
 Index: xymon/xymond/etcfiles/graphs.cfg
 ===================================================================
---- xymon.orig/xymond/etcfiles/graphs.cfg	2015-10-30 16:19:56.000000000 +0100
-+++ xymon/xymond/etcfiles/graphs.cfg	2015-10-30 16:19:56.000000000 +0100
+--- xymon.orig/xymond/etcfiles/graphs.cfg	2016-02-05 17:38:30.000000000 +0100
++++ xymon/xymond/etcfiles/graphs.cfg	2016-02-05 17:38:30.000000000 +0100
 @@ -2112,3 +2112,4 @@
  
  ########### end of ifmib graphs ###########

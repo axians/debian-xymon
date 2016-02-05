@@ -6,9 +6,9 @@ Last-Update: 2015-10-30
 
 Index: xymon/client/localclient.cfg
 ===================================================================
---- xymon.orig/client/localclient.cfg	2015-11-12 13:16:26.000000000 +0100
-+++ xymon/client/localclient.cfg	2015-11-12 13:16:26.000000000 +0100
-@@ -191,6 +191,8 @@
+--- xymon.orig/client/localclient.cfg	2016-02-05 17:38:40.000000000 +0100
++++ xymon/client/localclient.cfg	2016-02-05 17:38:40.000000000 +0100
+@@ -206,6 +206,8 @@
  #             - "NOEXIST" triggers a warning if the file exists. By default,
  #               a warning is triggered for files that have a FILE entry, but
  #               which do not exist.
@@ -19,8 +19,8 @@ Index: xymon/client/localclient.cfg
  #               specified type.
 Index: xymon/xymond/client_config.c
 ===================================================================
---- xymon.orig/xymond/client_config.c	2015-11-12 13:16:26.000000000 +0100
-+++ xymon/xymond/client_config.c	2015-11-12 13:16:26.000000000 +0100
+--- xymon.orig/xymond/client_config.c	2016-02-05 17:38:40.000000000 +0100
++++ xymon/xymond/client_config.c	2016-02-05 17:38:40.000000000 +0100
 @@ -145,6 +145,7 @@
  #define FCHK_SHA224   (1 << 29)
  #define FCHK_SHA384   (1 << 30)
@@ -58,8 +58,8 @@ Index: xymon/xymond/client_config.c
  				/* Required file does not exist */
 Index: xymon/xymond/etcfiles/analysis.cfg
 ===================================================================
---- xymon.orig/xymond/etcfiles/analysis.cfg	2015-11-12 13:16:26.000000000 +0100
-+++ xymon/xymond/etcfiles/analysis.cfg	2015-11-12 13:16:26.000000000 +0100
+--- xymon.orig/xymond/etcfiles/analysis.cfg	2016-02-05 17:38:40.000000000 +0100
++++ xymon/xymond/etcfiles/analysis.cfg	2016-02-05 17:38:40.000000000 +0100
 @@ -191,6 +191,8 @@
  #             - "NOEXIST" triggers a warning if the file exists. By default,
  #               a warning is triggered for files that have a FILE entry, but
@@ -71,8 +71,8 @@ Index: xymon/xymond/etcfiles/analysis.cfg
  #               specified type.
 Index: xymon/xymond/analysis.cfg.5
 ===================================================================
---- xymon.orig/xymond/analysis.cfg.5	2015-11-12 13:16:26.000000000 +0100
-+++ xymon/xymond/analysis.cfg.5	2015-11-12 13:16:26.000000000 +0100
+--- xymon.orig/xymond/analysis.cfg.5	2016-02-05 17:38:40.000000000 +0100
++++ xymon/xymond/analysis.cfg.5	2016-02-05 17:38:40.000000000 +0100
 @@ -294,6 +294,9 @@
  triggers a warning if the file exists. By default,
  a warning is triggered for files that have a FILE entry, but
