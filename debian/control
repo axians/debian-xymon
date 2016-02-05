@@ -15,8 +15,8 @@ Build-Depends: debhelper (>= 9~),
                po-debconf,
                procps
 Standards-Version: 3.9.6
-Vcs-Git: git://anonscm.debian.org/collab-maint/xymon.git
-Vcs-Browser: http://anonscm.debian.org/cgit/collab-maint/xymon.git
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/xymon.git
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xymon.git
 Homepage: http://xymon.sourceforge.net/
 
 Package: xymon
