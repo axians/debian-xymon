@@ -2,11 +2,9 @@ Description: Fix spelling issues found by Lintian
 Author: Axel Beckert <abe@debian.org>
 Forwarded: no
 
-Index: xymon/client/xymonclient-sunos.sh
-===================================================================
---- xymon.orig/client/xymonclient-sunos.sh	2015-11-25 19:39:11.028787502 +0100
-+++ xymon/client/xymonclient-sunos.sh	2015-11-25 19:39:11.020787481 +0100
-@@ -109,7 +109,7 @@
+--- a/client/xymonclient-sunos.sh
++++ b/client/xymonclient-sunos.sh
+@@ -109,7 +109,7 @@ global|Global)
  esac
  echo "[swap]"
  /usr/sbin/swap -s
@@ -15,31 +13,9 @@ Index: xymon/client/xymonclient-sunos.sh
  # server client module to miscalculate memory
  case $ZTYPE in
  global|Global)
-Index: xymon/web/chpasswd.c
-===================================================================
---- xymon.orig/web/chpasswd.c	2015-11-25 19:39:11.028787502 +0100
-+++ xymon/web/chpasswd.c	2015-11-25 19:39:11.020787481 +0100
-@@ -137,13 +137,13 @@
- 			}
- 
- 			if ( (strlen(adduser_name) == 0)) {
--				infomsg = "<SCRIPT LANGUAGE=\"Javascript\" type=\"text/javascript\"> alert('I dont know who you are!'); </SCRIPT>\n";
-+				infomsg = "<SCRIPT LANGUAGE=\"Javascript\" type=\"text/javascript\"> alert('I don&apos;t know who you are!'); </SCRIPT>\n";
- 			}
- 			else if ( (strlen(adduser_password1) == 0) || (strlen(adduser_password2) == 0)) {
- 				infomsg = "<SCRIPT LANGUAGE=\"Javascript\" type=\"text/javascript\"> alert('New password cannot be blank'); </SCRIPT>\n";
- 			}
- 			else if (strcmp(adduser_password1, adduser_password2) != 0) {
--				infomsg = "<SCRIPT LANGUAGE=\"Javascript\" type=\"text/javascript\"> alert('New passwords dont match'); </SCRIPT>\n";
-+				infomsg = "<SCRIPT LANGUAGE=\"Javascript\" type=\"text/javascript\"> alert('New passwords don&apos;t match'); </SCRIPT>\n";
- 			}
- 			else if (strlen(adduser_name) != strspn(adduser_name,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.,@/=^") ) {
- 				infomsg = "<SCRIPT LANGUAGE=\"Javascript\" type=\"text/javascript\"> alert('Username has invalid characters!'); </SCRIPT>\n";
-Index: xymon/xymond/do_alert.c
-===================================================================
---- xymon.orig/xymond/do_alert.c	2015-11-25 19:39:11.028787502 +0100
-+++ xymon/xymond/do_alert.c	2015-11-25 19:39:11.024787491 +0100
-@@ -413,7 +413,7 @@
+--- a/xymond/do_alert.c
++++ b/xymond/do_alert.c
+@@ -413,7 +413,7 @@ void send_alert(activealerts_t *alert, F
  			if (!rpt) continue;	/* Happens for e.g. M_IGNORE recipients */
  
  			/* 
@@ -48,11 +24,9 @@ Index: xymon/xymond/do_alert.c
  			 * rule when there is actually an alert active - it is just suppressed
  			 * for this run due to the REPEAT setting.
  			 */
-Index: xymon/xymond/xymond.c
-===================================================================
---- xymon.orig/xymond/xymond.c	2015-11-25 19:39:11.028787502 +0100
-+++ xymon/xymond/xymond.c	2015-11-25 19:39:11.024787491 +0100
-@@ -3148,7 +3148,7 @@
+--- a/xymond/xymond.c
++++ b/xymond/xymond.c
+@@ -3175,7 +3175,7 @@ int match_host_filter(void *hinfo, hostf
  			break;
  
  		  case FILTER_TAG:

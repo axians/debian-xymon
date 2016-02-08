@@ -1,12 +1,13 @@
-xymon (4.3.25~rc2-1) UNRELEASED; urgency=medium
+xymon (4.3.25-1) unstable; urgency=medium
 
-  * New upstream release candidate.
+  [ Axel Beckert ]
+  * New upstream version.
     + Drop cherry-picked 81_confreport-segfault.patch.
     + Refresh patches where necessary.
   * Enable all hardening flags.
   * Switch Vcs-* to HTTPS.
 
- -- Axel Beckert <abe@debian.org>  Fri, 05 Feb 2016 17:37:58 +0100
+ -- Christoph Berg <myon@debian.org>  Mon, 08 Feb 2016 19:06:30 +0100
 
 xymon (4.3.24-2) unstable; urgency=medium
 
