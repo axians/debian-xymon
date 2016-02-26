@@ -1,3 +1,10 @@
+xymon (4.3.26-1) unstable; urgency=medium
+
+  * New upstream release
+    + Refresh patches.
+
+ -- Axel Beckert <abe@debian.org>  Fri, 26 Feb 2016 14:22:33 +0100
+
 xymon (4.3.25-1) unstable; urgency=medium
 
   [ Axel Beckert ]

@@ -291,7 +291,7 @@ Index: xymon/xymond/webfiles/critical_header
  <HTML>
  <HEAD>
 +<META HTTP-EQUIV="Content-Type" CONTENT="&HTMLCONTENTTYPE">
- <META HTTP-EQUIV="REFRESH" CONTENT="60">
+ <META HTTP-EQUIV="REFRESH" CONTENT="&XYMWEBREFRESH">
  <META HTTP-EQUIV="EXPIRES" CONTENT="Sat, 01 Jan 2001 00:00:00 GMT">
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/critmulti_header
@@ -303,7 +303,7 @@ Index: xymon/xymond/webfiles/critmulti_header
  <HTML>
  <HEAD>
 +<META HTTP-EQUIV="Content-Type" CONTENT="&HTMLCONTENTTYPE">
- <META HTTP-EQUIV="REFRESH" CONTENT="60">
+ <META HTTP-EQUIV="REFRESH" CONTENT="&XYMWEBREFRESH">
  <META HTTP-EQUIV="EXPIRES" CONTENT="Sat, 01 Jan 2001 00:00:00 GMT">
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/repnormal_header
@@ -363,7 +363,7 @@ Index: xymon/xymond/webfiles/stdcritical_header
  <HTML>
  <HEAD>
 +<META HTTP-EQUIV="Content-Type" CONTENT="&HTMLCONTENTTYPE">
- <META HTTP-EQUIV="REFRESH" CONTENT="60">
+ <META HTTP-EQUIV="REFRESH" CONTENT="&XYMWEBREFRESH">
  <META HTTP-EQUIV="EXPIRES" CONTENT="Sat, 01 Jan 2001 00:00:00 GMT">
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/stdnongreen_header
@@ -375,7 +375,7 @@ Index: xymon/xymond/webfiles/stdnongreen_header
  <HTML>
  <HEAD>
 +<META HTTP-EQUIV="Content-Type" CONTENT="&HTMLCONTENTTYPE">
- <META HTTP-EQUIV="REFRESH" CONTENT="60">
+ <META HTTP-EQUIV="REFRESH" CONTENT="&XYMWEBREFRESH">
  <META HTTP-EQUIV="EXPIRES" CONTENT="Sat, 01 Jan 2001 00:00:00 GMT">
  <TITLE>&XYMWEBBACKGROUND : Xymon - Status @ &XYMWEBDATE</TITLE>
 Index: xymon/xymond/webfiles/stdnormal_header
@@ -387,6 +387,6 @@ Index: xymon/xymond/webfiles/stdnormal_header
  <HTML>
  <HEAD>
 +<META HTTP-EQUIV="Content-Type" CONTENT="&HTMLCONTENTTYPE">
- <META HTTP-EQUIV="REFRESH" CONTENT="60">
+ <META HTTP-EQUIV="REFRESH" CONTENT="&XYMWEBREFRESH">
  <META HTTP-EQUIV="EXPIRES" CONTENT="Sat, 01 Jan 2001 00:00:00 GMT">
  <META HTTP-EQUIV="Set-Cookie" CONTENT="pagepath=&XYMWEBPAGEPATH; path=/">

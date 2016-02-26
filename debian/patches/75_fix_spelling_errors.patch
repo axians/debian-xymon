@@ -2,9 +2,11 @@ Description: Fix spelling issues found by Lintian
 Author: Axel Beckert <abe@debian.org>
 Forwarded: no
 
---- a/client/xymonclient-sunos.sh
-+++ b/client/xymonclient-sunos.sh
-@@ -109,7 +109,7 @@ global|Global)
+Index: xymon/client/xymonclient-sunos.sh
+===================================================================
+--- xymon.orig/client/xymonclient-sunos.sh	2016-02-26 14:18:41.000000000 +0100
++++ xymon/client/xymonclient-sunos.sh	2016-02-26 14:18:41.000000000 +0100
+@@ -109,7 +109,7 @@
  esac
  echo "[swap]"
  /usr/sbin/swap -s
@@ -13,9 +15,11 @@ Forwarded: no
  # server client module to miscalculate memory
  case $ZTYPE in
  global|Global)
---- a/xymond/do_alert.c
-+++ b/xymond/do_alert.c
-@@ -413,7 +413,7 @@ void send_alert(activealerts_t *alert, F
+Index: xymon/xymond/do_alert.c
+===================================================================
+--- xymon.orig/xymond/do_alert.c	2016-02-26 14:18:41.000000000 +0100
++++ xymon/xymond/do_alert.c	2016-02-26 14:18:41.000000000 +0100
+@@ -413,7 +413,7 @@
  			if (!rpt) continue;	/* Happens for e.g. M_IGNORE recipients */
  
  			/* 
@@ -24,9 +28,11 @@ Forwarded: no
  			 * rule when there is actually an alert active - it is just suppressed
  			 * for this run due to the REPEAT setting.
  			 */
---- a/xymond/xymond.c
-+++ b/xymond/xymond.c
-@@ -3175,7 +3175,7 @@ int match_host_filter(void *hinfo, hostf
+Index: xymon/xymond/xymond.c
+===================================================================
+--- xymon.orig/xymond/xymond.c	2016-02-26 14:18:41.000000000 +0100
++++ xymon/xymond/xymond.c	2016-02-26 14:18:41.000000000 +0100
+@@ -3187,7 +3187,7 @@
  			break;
  
  		  case FILTER_TAG:
