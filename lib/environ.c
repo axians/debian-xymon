@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: environ.c 7713M 2016-02-05 20:50:18Z (local) $";
+static char rcsid[] = "$Id: environ.c 7900 2016-02-12 01:00:37Z jccleaver $";
 
 #include <ctype.h>
 #include <string.h>
@@ -96,6 +96,7 @@ const static struct {
 	{ "ALERTCOLORS", "red,yellow,purple" },
 	{ "OKCOLORS", "green,blue,clear" },
 	{ "ALERTREPEAT", "30" },
+	{ "XYMWEBREFRESH", "60" },
 	{ "CONNTEST", "TRUE" },
 	{ "IPTEST_2_CLEAR_ON_FAILED_CONN", "TRUE" },
 	{ "NONETPAGE", "" },

@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: ghostlist.c 7687 2015-10-09 18:11:03Z jccleaver $";
+static char rcsid[] = "$Id: ghostlist.c 7902 2016-02-18 19:47:55Z jccleaver $";
 
 #include <stdio.h>
 #include <string.h>
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 			  case O_HTML:
 				fprintf(stdout, "<tr><td align=left>%s</td><td align=left>%s</td>",
 					ghosttable[idx].sender, 
-					ghosttable[idx].name);
+					htmlquoted(ghosttable[idx].name));
 
 				if (ghosttable[idx].candidate) {
 					fprintf(stdout, "<td align=left><a href=\"%s\">%s</a></td>",

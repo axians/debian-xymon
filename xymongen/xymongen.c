@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymongen.c 7709 2015-11-01 15:48:11Z jccleaver $";
+static char rcsid[] = "$Id: xymongen.c 7902 2016-02-18 19:47:55Z jccleaver $";
 
 #include <stdio.h>
 #include <unistd.h>
@@ -746,7 +746,7 @@ int main(int argc, char *argv[])
 
 		if (errbuf) {
 			addtostatus("\n\nError output:\n");
-			addtostatus(errbuf);
+			addtostatus(prehtmlquoted(errbuf));
 		}
 
 		show_timestamps(&timestamps);
