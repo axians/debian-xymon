@@ -3,6 +3,9 @@ xymon (4.3.26-1) unstable; urgency=medium
   * New upstream release
     + Refresh patches.
   * Declare compliance with Debian Policy 3.9.7. (No changes needed.)
+  * Convert debian/copyright to the machine-readable DEP-5 format
+    + Add lintian overrides where upstream didn't specify a GPL version.
+  * Update copyright years and some paths in debian/copyright.
 
  -- Axel Beckert <abe@debian.org>  Fri, 26 Feb 2016 14:22:33 +0100
 
