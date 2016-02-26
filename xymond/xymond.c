@@ -25,7 +25,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymond.c 7860M 2016-02-05 20:50:18Z (local) $";
+static char rcsid[] = "$Id: xymond.c 7905 2016-02-19 19:44:50Z jccleaver $";
 
 #include <limits.h>
 #include <sys/time.h>
@@ -494,7 +494,7 @@ char *generate_stats(void)
 
 		/* Skip records older than 10 minutes */
 		if (gwalk->tstamp < (nowtimer - 600)) continue;
-		sprintf(msgline, "  %-15s reported host %s\n", gwalk->sender, gwalk->name);
+		sprintf(msgline, "  %-15s reported host %s\n", gwalk->sender, htmlquoted(gwalk->name));
 		addtobuffer(statsbuf, msgline);
 	}
 
@@ -511,7 +511,7 @@ char *generate_stats(void)
 
 	if (errbuf) {
 		addtobuffer(statsbuf, "\n\nLatest error messages:\n");
-		addtobuffer(statsbuf, errbuf);
+		addtobuffer(statsbuf, prehtmlquoted(errbuf));
 		addtobuffer(statsbuf, "\n");
 	}
 
@@ -1002,6 +1002,12 @@ char *log_ghost(char *hostname, char *sender, char *msg)
 	ghandle = xtreeFind(rbghosts, hostname);
 	gwalk = (ghandle != xtreeEnd(rbghosts)) ? (ghostlist_t *)xtreeData(rbghosts, ghandle) : NULL;
 
+	/* Disallow weird test names - Note: a future version may restrict these to valid hostname + DNS labels and not preserve case */
+	if (!gwalk && (strlen(hostname) != strspn(hostname, "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ:,._-")) ) {
+		errprintf("Bogus message from %s: Invalid new hostname '%s'\n", sender, hostname);
+		return NULL;
+	}
+
 	if ((gwalk == NULL) || ((gwalk->matchtime + 600) < nowtimer)) {
 		int found = 0;
 
@@ -1243,6 +1249,12 @@ void get_hts(char *msg, char *sender, char *origin,
 
 		testhandle = xtreeFind(rbtests, testname);
 		if (testhandle != xtreeEnd(rbtests)) twalk = xtreeData(rbtests, testhandle);
+
+		/* Disallow new, weird test names - Note: a future version of Xymon may restrict this further and not preserve case */
+		if (!twalk && (strlen(testname) != strspn(testname, "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ:\\/_-")) ) {
+			errprintf("Bogus message from %s: Invalid new testname '%s'\n", sender, testname);
+			return;
+		}
 		if (createlog && (twalk == NULL)) twalk = create_testinfo(testname);
 	}
 	else {
@@ -4546,8 +4558,6 @@ void do_message(conn_t *msg, char *origin)
 					hostcount++;
 				}
 
-				handle_client(msg->buf, sender, hname, collectorid, clientos, clientclass);
-
 				if (hinfo) {
 					if (clientos) xmh_set_item(hinfo, XMH_OS, clientos);
 					if (clientclass) {
@@ -4564,6 +4574,8 @@ void do_message(conn_t *msg, char *origin)
 							clientclass = forcedclass;
 					}
 				}
+
+				handle_client(msg->buf, sender, hname, collectorid, clientos, clientclass);
 			}
 
 			MEMUNDEFINE(hostip);

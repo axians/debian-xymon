@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: misc.c 7720M 2016-02-05 20:50:18Z (local) $";
+static char rcsid[] = "$Id: misc.c 7892 2016-02-08 21:03:53Z jccleaver $";
 
 #include "config.h"
 

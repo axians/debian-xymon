@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymonnet.c 7849 2015-12-19 18:53:22Z jccleaver $";
+static char rcsid[] = "$Id: xymonnet.c 7902 2016-02-18 19:47:55Z jccleaver $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -2583,7 +2583,7 @@ int main(int argc, char *argv[])
 
 		if (errbuf) {
 			addtostatus("\n\nError output:\n");
-			addtostatus(errbuf);
+			addtostatus(prehtmlquoted(errbuf));
 		}
 
 		show_timestamps(&timestamps);
