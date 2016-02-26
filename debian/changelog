@@ -6,6 +6,7 @@ xymon (4.3.26-1) unstable; urgency=medium
   * Convert debian/copyright to the machine-readable DEP-5 format
     + Add lintian overrides where upstream didn't specify a GPL version.
   * Update copyright years and some paths in debian/copyright.
+  * Add CVE-IDs to previous changelog entry.
 
  -- Axel Beckert <abe@debian.org>  Fri, 26 Feb 2016 14:22:33 +0100
 
@@ -15,6 +16,8 @@ xymon (4.3.25-1) unstable; urgency=medium
   * New upstream version.
     + Drop cherry-picked 81_confreport-segfault.patch.
     + Refresh patches where necessary.
+    + Fixes the following security issues: CVE-2016-2054, CVE-2016-2055,
+      CVE-2016-2056, CVE-2016-2057,and CVE-2016-2058
   * Enable all hardening flags.
   * Switch Vcs-* to HTTPS.
 
