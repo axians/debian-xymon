@@ -1,9 +1,9 @@
-xymon (4.3.26-2) UNRELEASED; urgency=medium
+xymon (4.3.26-2) unstable; urgency=high
 
   * Apply upstream-suggested patch for multiple CGI related regressions in
     4.3.26.
 
- -- Axel Beckert <abe@debian.org>  Fri, 04 Mar 2016 14:57:47 +0100
+ -- Axel Beckert <abe@debian.org>  Fri, 04 Mar 2016 16:01:20 +0100
 
 xymon (4.3.26-1) unstable; urgency=medium
 
