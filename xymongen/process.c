@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: process.c 7085 2012-07-16 11:08:37Z storner $";
+static char rcsid[] = "$Id: process.c 7953 2016-03-17 15:42:05Z jccleaver $";
 
 #include <limits.h>
 #include <string.h>
@@ -208,6 +208,13 @@ void send_summaries(summary_t *sumhead)
 
 			/* Skip hostname part */
 			suburl += 7;			/* Skip "http://" */
+			p = strchr(suburl, '/');	/* Find next '/' */
+			if (p) suburl = p;
+		} else if(strncmp(suburl, "https://", 8) == 0) {
+			char *p;
+
+			/* Skip hostname part */
+			suburl += 8;			/* Skip "https://" */
 			p = strchr(suburl, '/');	/* Find next '/' */
 			if (p) suburl = p;
 		}

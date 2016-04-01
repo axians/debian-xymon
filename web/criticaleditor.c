@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: criticaleditor.c 7892 2016-02-08 21:03:53Z jccleaver $";
+static char rcsid[] = "$Id: criticaleditor.c 7949 2016-03-03 23:44:55Z jccleaver $";
 
 #include <string.h>
 #include <stdlib.h>
@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
 	redirect_cgilog("criticaleditor");
 
         /* We only want to accept posts from certain pages */
-	{
+	if (cgi_ispost()) {
 		char cgisource[1024]; char *p;
 		p = csp_header("criticaleditor"); if (p) fprintf(stdout, "%s", p);
 		snprintf(cgisource, sizeof(cgisource), "%s/%s", xgetenv("SECURECGIBINURL"), "criticaleditor");
