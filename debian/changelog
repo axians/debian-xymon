@@ -1,3 +1,13 @@
+xymon (4.3.27-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+    + Drop 72_disable_SSLv3.patch (a compile-time check for SSLv3 support
+      was added) and 81_cgifix.patch (was cherry-picked from upstream)
+    + Refresh 39_kfreebsd-makefile.patch and
+      78_fix_manpage_syntax_errors.patch
+
+ -- Axel Beckert <abe@debian.org>  Fri, 01 Apr 2016 13:25:06 +0200
+
 xymon (4.3.26-2) unstable; urgency=high
 
   * Apply upstream-suggested patch for multiple CGI related regressions in
