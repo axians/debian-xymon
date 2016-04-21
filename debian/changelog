@@ -5,6 +5,7 @@ xymon (4.3.27-1) UNRELEASED; urgency=medium
       was added) and 81_cgifix.patch (was cherry-picked from upstream)
     + Refresh 39_kfreebsd-makefile.patch and
       78_fix_manpage_syntax_errors.patch
+  * Declare compliance with Debian Policy 3.9.8. (No changes needed.)
 
  -- Axel Beckert <abe@debian.org>  Fri, 01 Apr 2016 13:25:06 +0200
 
