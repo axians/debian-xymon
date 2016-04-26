@@ -48,7 +48,7 @@ case "$1" in
 	fi
 
 	log_daemon_msg "Starting $DESC" "$NAME"
-	start-stop-daemon --exec $DAEMON --chuid xymon --umask 022 --start \
+       start-stop-daemon --pidfile "$PIDFILE" --exec $DAEMON --chuid xymon --umask 022 --start \
 		-- \
 		--config=/etc/xymon/clientlaunch.cfg \
 		--log=/var/log/xymon/clientlaunch.log \
@@ -57,7 +57,7 @@ case "$1" in
 	;;
   stop)
 	log_daemon_msg "Stopping $DESC" "$NAME"
-	start-stop-daemon --exec $DAEMON --pidfile $PIDFILE --stop --retry 5
+       start-stop-daemon --pidfile "$PIDFILE" --exec $DAEMON --pidfile $PIDFILE --stop --retry 5
 	log_end_msg $?
 	;;
   status)
