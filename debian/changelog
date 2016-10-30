@@ -8,6 +8,7 @@ xymon (4.3.27-2) UNRELEASED; urgency=medium
   * Add versioned dependency on lsb-base for using /lib/lsb/init-functions
     in the init script.
   * Replace one case of http:// with https:// in d/u/metadata (via DUCK).
+  * Remove no more needed debian/source/lintian-overrides.
 
  -- Axel Beckert <abe@debian.org>  Tue, 26 Apr 2016 20:02:54 +0200
 
