@@ -1,3 +1,9 @@
+Description: Fix compilation on GNU/Hurd
+ build/Makefile.GNU is a 1:1 copy of Makefile.Linux, the url.h patch is
+ taken from libreoffice 5.2.3~rc1-4's
+ onlineupdate/source/update/common/updatedefines.h
+Author: Axel Beckert <abe@debian.org>
+
 --- a/build/test-pathmax.c
 +++ b/build/test-pathmax.c
 @@ -8,6 +8,9 @@
