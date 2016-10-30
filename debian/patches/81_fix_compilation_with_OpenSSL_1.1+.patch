@@ -3,6 +3,7 @@ Description: Fix compiling against OpenSSL 1.1+
 Author: Axel Beckert <abe@debian.org>
 Bug-Debian: https://bugs.debian.org/828611
 Bug: http://lists.xymon.com/archive/2016-June/043696.html
+Forwarded: http://lists.xymon.com/archive/2016-October/044044.html
 
 --- a/xymonnet/contest.c
 +++ b/xymonnet/contest.c
