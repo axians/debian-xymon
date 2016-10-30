@@ -27,6 +27,7 @@ Provides: hobbit
 Replaces: hobbit (<< 4.2.2)
 Pre-Depends: ${misc:Pre-Depends}
 Depends: xymon-client (>= 4.3.7-1~),
+         lsb-base (>= 3.0-6),
 # The dependency on perl is only for prename in postinst script
          perl,
          ${misc:Depends},
