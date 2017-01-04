@@ -3,6 +3,7 @@ Description: Fix compilation on GNU/Hurd
  taken from libreoffice 5.2.3~rc1-4's
  onlineupdate/source/update/common/updatedefines.h
 Author: Axel Beckert <abe@debian.org>
+Forwarded: http://lists.xymon.com/pipermail/xymon/2017-January/044217.html
 
 --- a/build/test-pathmax.c
 +++ b/build/test-pathmax.c

@@ -8,7 +8,7 @@ Author: Roland Rosenfeld <roland@spinnaker.de>
 Bug-Debian: https://bugs.debian.org/447484
 Acked-By: Christoph Berg <myon@debian.org>
 Last-Update: 2015-09-10
-Forwarded: no
+Forwarded: http://lists.xymon.com/pipermail/xymon/2017-January/044217.html
 
 Index: xymon/xymond/etcfiles/graphs.cfg
 ===================================================================

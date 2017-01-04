@@ -1,6 +1,7 @@
 Description: Fix spelling issues found by Lintian
 Author: Axel Beckert <abe@debian.org>
-Forwarded: no
+Forwarded: http://lists.xymon.com/pipermail/xymon/2017-January/044217.html
+Last-Update: 2017-01-04
 
 Index: xymon/client/xymonclient-sunos.sh
 ===================================================================

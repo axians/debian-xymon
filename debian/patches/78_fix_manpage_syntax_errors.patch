@@ -1,7 +1,7 @@
 Description: Fix miscellaneous syntax errors in man pages
  Fixes lintian tags manpage-has-errors-from-man and manpage-has-bad-whatis-entry.
 Author: Axel Beckert <abe@debian.org>
-Forwarded: no
+Forwarded: http://lists.xymon.com/pipermail/xymon/2017-January/044217.html
 
 Index: xymon/common/xymon.1
 ===================================================================
