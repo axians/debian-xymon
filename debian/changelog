@@ -1,4 +1,4 @@
-xymon (4.3.28~rc1-1) UNRELEASED; urgency=medium
+xymon (4.3.28~rc1-1) experimental; urgency=low
 
   * New upstream release candidate 4.3.28~rc1
     + Remove 81_fix_compilation_with_OpenSSL_1.1+.patch, fixed upstream.
@@ -6,11 +6,16 @@ xymon (4.3.28~rc1-1) UNRELEASED; urgency=medium
       78_fix_manpage_syntax_errors.patch.
     + debian/copyright: Use version agnostic wildcard path to embedded
       (but unused) copy of c-ares.
-  * Add patch to fix compilation on GNU/Hurd.
   * Add a bunch of new typos found by lintian to
     75_fix_spelling_errors.patch.
   * Add lintian overrides for spelling-error-in-binary false positives,
     where the accused typo can't be found in the source code.
+
+ -- Axel Beckert <abe@debian.org>  Wed, 04 Jan 2017 21:50:46 +0100
+
+xymon (4.3.27-3) unstable; urgency=medium
+
+  * Add patch to fix compilation on GNU/Hurd.
 
  -- Axel Beckert <abe@debian.org>  Sun, 30 Oct 2016 17:32:28 +0100
 
