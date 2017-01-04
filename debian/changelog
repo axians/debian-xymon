@@ -7,6 +7,8 @@ xymon (4.3.28~rc1-1) UNRELEASED; urgency=medium
     + debian/copyright: Use version agnostic wildcard path to embedded
       (but unused) copy of c-ares.
   * Add patch to fix compilation on GNU/Hurd.
+  * Add a bunch of new typos found by lintian to
+    75_fix_spelling_errors.patch.
 
  -- Axel Beckert <abe@debian.org>  Sun, 30 Oct 2016 17:32:28 +0100
 

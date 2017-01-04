@@ -41,3 +41,159 @@ Index: xymon/xymond/xymond.c
  			matched = 0;
  			val = xmh_item_walk(hinfo);
  			while (val) {
+Index: xymon/lib/netservices.c
+===================================================================
+--- xymon.orig/lib/netservices.c	2016-02-26 13:39:47.000000000 +0100
++++ xymon/lib/netservices.c	2017-01-04 18:56:30.812251271 +0100
+@@ -280,7 +280,7 @@
+ 
+ 	/* This should not happen */
+ 	if (walk) {
+-		errprintf("Whoa - didnt copy all services! svccount=%d, next service '%s'\n", 
++		errprintf("Whoa - didn't copy all services! svccount=%d, next service '%s'\n", 
+ 			svccount, walk->rec->svcname);
+ 	}
+ 
+Index: xymon/web/chpasswd.c
+===================================================================
+--- xymon.orig/web/chpasswd.c	2016-02-26 13:39:47.000000000 +0100
++++ xymon/web/chpasswd.c	2017-01-04 18:58:07.051250079 +0100
+@@ -161,7 +161,7 @@
+ 				infomsg = "New password cannot be blank";
+ 			}
+ 			else if (strcmp(adduser_password1, adduser_password2) != 0) {
+-				infomsg = "New passwords dont match";
++				infomsg = "New passwords don't match";
+ 			}
+ 			else if (strlen(adduser_name) != strspn(adduser_name,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.,@/=^") ) {
+ 				infomsg = "Username has invalid characters!";
+Index: xymon/xymond/rrd/do_beastat.c
+===================================================================
+--- xymon.orig/xymond/rrd/do_beastat.c	2016-02-26 13:39:47.000000000 +0100
++++ xymon/xymond/rrd/do_beastat.c	2017-01-04 18:57:23.595692329 +0100
+@@ -50,7 +50,7 @@
+ 			 hostname, testname, acttrans, secact);
+ 		dbgprintf("beastat: host %s test %s TRANS: aband %ld comm %ld heur %ld total\n",
+ 			hostname, testname, trab, trcomm, trheur, trtot);
+-		dbgprintf("beastat: host %s test %s RB: app %ld res %ld sys %ld timout %ld total %ld\n",
++		dbgprintf("beastat: host %s test %s RB: app %ld res %ld sys %ld timeout %ld total %ld\n",
+ 			hostname, testname, trrbapp, trrbres, trrbsys, trrbto, trrb);
+ 		snprintf(rrdvalues, sizeof(rrdvalues), "%d:%ld:%ld:%ld:%ld:%ld:%ld:%ld:%ld:%ld:%ld:%ld",
+ 			(int) tstamp, acttrans, secact, trab, trcomm, trheur, trrbapp, 
+Index: xymon/xymond/rrd/do_devmon.c
+===================================================================
+--- xymon.orig/xymond/rrd/do_devmon.c	2016-02-26 13:39:47.000000000 +0100
++++ xymon/xymond/rrd/do_devmon.c	2017-01-04 18:59:20.018536693 +0100
+@@ -63,7 +63,7 @@
+ 
+ 		/* DS:ds0:COUNTER:600:0:U DS:ds1:COUNTER:600:0:U */
+ 		if (!strncmp(curline, "DS:",3)) {
+-			dbgprintf("Looking for DS defintions in %s\n",curline);
++			dbgprintf("Looking for DS definitions in %s\n",curline);
+ 			while ( numds < MAXCOLS) {
+ 				dbgprintf("Seeing if column %d that has %s is a DS\n",numds,columns[numds]);
+ 				if (strncmp(columns[numds],"DS:",3)) break;
+Index: xymon/xymonnet/xymonping.c
+===================================================================
+--- xymon.orig/xymonnet/xymonping.c	2016-02-26 13:39:47.000000000 +0100
++++ xymon/xymonnet/xymonping.c	2017-01-04 19:00:33.661845763 +0100
+@@ -323,7 +323,7 @@
+ 
+ 		  default:
+ 			/* Shouldn't happen */
+-			errprintf("Got a packet that wasnt a reply - type %d\n", icmphdr->icmp_type);
++			errprintf("Got a packet that wasn't a reply - type %d\n", icmphdr->icmp_type);
+ 			break;
+ 		}
+ 	} while (n > 0);
+Index: xymon/common/hosts.cfg.5
+===================================================================
+--- xymon.orig/common/hosts.cfg.5	2017-01-04 18:39:40.000000000 +0100
++++ xymon/common/hosts.cfg.5	2017-01-04 19:49:39.415970699 +0100
+@@ -1171,7 +1171,7 @@
+ form. Data can be posted to the form by specifying them 
+ in the form-data field, and the result can be checked
+ as if it was a normal content check (see above for a description
+-of the cont-tag and the restrictions on how the URL must be writen).
++of the cont-tag and the restrictions on how the URL must be written).
+ 
+ The form-data field must be entered in "application/x\-www\-form\-urlencoded"
+ format, which is the most commonly used format for web
+Index: xymon/docs/known-issues.html
+===================================================================
+--- xymon.orig/docs/known-issues.html	2016-02-26 13:39:47.000000000 +0100
++++ xymon/docs/known-issues.html	2017-01-04 19:47:36.505026718 +0100
+@@ -57,7 +57,7 @@
+ try running xymonnet with the "--no-ares" option to use the
+ standard DNS lookups instead.</p>
+ 
+-<h3><a name="netfail">Network tests fail sporadically, or report long reponsetimes</a></h3>
++<h3><a name="netfail">Network tests fail sporadically, or report long response times</a></h3>
+ <p>The xymonnet network tester runs many tests in parallel; by default
+ it will typically run up to 256 tests concurrently. This may be more
+ than your network test server or network infrastructure can handle; if
+Index: xymon/lib/sendmsg.h
+===================================================================
+--- xymon.orig/lib/sendmsg.h	2016-02-26 13:39:47.000000000 +0100
++++ xymon/lib/sendmsg.h	2017-01-04 19:44:48.190481228 +0100
+@@ -41,7 +41,7 @@
+ extern int dontsendmessages;
+ 
+ extern void setproxy(char *proxy);
+-extern sendresult_t sendmessage(char *msg, char *recipient, int timeout, sendreturn_t *reponse);
++extern sendresult_t sendmessage(char *msg, char *recipient, int timeout, sendreturn_t *response);
+ extern sendreturn_t *newsendreturnbuf(int fullresponse, FILE *respfd);
+ extern void freesendreturnbuf(sendreturn_t *s);
+ extern char *getsendreturnstr(sendreturn_t *s, int takeover);
+Index: xymon/web/findhost.c
+===================================================================
+--- xymon.orig/web/findhost.c	2016-02-26 13:39:47.000000000 +0100
++++ xymon/web/findhost.c	2017-01-04 19:49:52.695856859 +0100
+@@ -13,7 +13,7 @@
+ /* 2004/09/08 - Werner Michels [wm]                                           */
+ /*              Added support regular expression on the host search.          */
+ /*              Minor changes on errormsg() and error messagess.              */
+-/*		The parse_query was rewriten to meet the new needs.           */
++/*		The parse_query was rewritten to meet the new needs.          */
+ /*                                                                            */
+ /*----------------------------------------------------------------------------*/
+ 
+Index: xymon/xymonnet/xymonnet.1
+===================================================================
+--- xymon.orig/xymonnet/xymonnet.1	2017-01-04 18:35:49.216211474 +0100
++++ xymon/xymonnet/xymonnet.1	2017-01-04 19:47:46.648939393 +0100
+@@ -194,7 +194,7 @@
+ .IP \-\-checkresponse[=COLOR]
+ When testing well-known services (e.g. FTP, SSH, SMTP, POP-2, POP-3, 
+ IMAP, NNTP and rsync), xymonnet will look for a valid service-specific
+-"OK" response. If another reponse is seen, this will cause
++"OK" response. If another response is seen, this will cause
+ the test to report a warning (yellow) status. Without this
+ option, the response from the service is ignored.
+ .br
+Index: xymon/xymond/alerts.cfg.5
+===================================================================
+--- xymon.orig/xymond/alerts.cfg.5	2017-01-04 19:59:18.000000000 +0100
++++ xymon/xymond/alerts.cfg.5	2017-01-04 19:59:49.622766756 +0100
+@@ -109,7 +109,7 @@
+ Rule excluding an alert by the time-of-day. This is specified as the DOWNTIME timespecification in the hosts.cfg file.
+ .sp
+ .BR "DURATION>time, DURATION<time"
+-Rule matcing an alert if the event has lasted longer/shorter than the given duration. E.g. DURATION>1h (lasted longer than 1 hour) or DURATION<30 (only sends alerts the first 30 minutes). The duration is specified as a number, optionally followed by 'm' (minutes, default), 'h' (hours) or 'd' (days).
++Rule matching an alert if the event has lasted longer/shorter than the given duration. E.g. DURATION>1h (lasted longer than 1 hour) or DURATION<30 (only sends alerts the first 30 minutes). The duration is specified as a number, optionally followed by 'm' (minutes, default), 'h' (hours) or 'd' (days).
+ .sp
+ .BR RECOVERED
+ Rule matches if the alert has recovered from an alert state.
+Index: xymon/xymond/etcfiles/alerts.cfg.DIST
+===================================================================
+--- xymon.orig/xymond/etcfiles/alerts.cfg.DIST	2017-01-04 19:59:18.000000000 +0100
++++ xymon/xymond/etcfiles/alerts.cfg.DIST	2017-01-04 19:59:53.270734760 +0100
+@@ -74,7 +74,7 @@
+ #    TIME      - rule matching an alert by the time-of-day. This
+ #                is specified as the DOWNTIME timespecification
+ #                in the hosts.cfg file (see hosts.cfg(5)).
+-#    DURATION  - Rule matcing an alert if the event has lasted
++#    DURATION  - Rule matching an alert if the event has lasted
+ #                longer/shorter than the given duration. E.g.
+ #                DURATION>10 (lasted longer than 10 minutes) or
+ #                DURARION<30 (only sends alerts the first 30 minutes).
