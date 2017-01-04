@@ -19,5 +19,4 @@
 69_disk-no-duplicate-root.patch
 75_fix_spelling_errors.patch
 78_fix_manpage_syntax_errors.patch
-81_fix_compilation_with_OpenSSL_1.1+.patch
 84_fix_compilation_on_GNU_Hurd.patch

@@ -1,6 +1,9 @@
 xymon (4.3.28~rc1-1) UNRELEASED; urgency=medium
 
-  * Import upstream version 4.3.28~rc1
+  * New upstream release candidate 4.3.28~rc1
+    + Remove 81_fix_compilation_with_OpenSSL_1.1+.patch, fixed upstream.
+    + Refresh 75_fix_spelling_errors.patch and
+      78_fix_manpage_syntax_errors.patch.
   * Add patch to fix compilation on GNU/Hurd.
 
  -- Axel Beckert <abe@debian.org>  Sun, 30 Oct 2016 17:32:28 +0100

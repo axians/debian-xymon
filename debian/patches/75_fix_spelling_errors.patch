@@ -4,8 +4,8 @@ Forwarded: no
 
 Index: xymon/client/xymonclient-sunos.sh
 ===================================================================
---- xymon.orig/client/xymonclient-sunos.sh	2016-02-26 14:18:41.000000000 +0100
-+++ xymon/client/xymonclient-sunos.sh	2016-02-26 14:18:41.000000000 +0100
+--- xymon.orig/client/xymonclient-sunos.sh	2017-01-04 18:37:47.147672839 +0100
++++ xymon/client/xymonclient-sunos.sh	2017-01-04 18:37:47.139672853 +0100
 @@ -109,7 +109,7 @@
  esac
  echo "[swap]"
@@ -17,9 +17,9 @@ Index: xymon/client/xymonclient-sunos.sh
  global|Global)
 Index: xymon/xymond/do_alert.c
 ===================================================================
---- xymon.orig/xymond/do_alert.c	2016-02-26 14:18:41.000000000 +0100
-+++ xymon/xymond/do_alert.c	2016-02-26 14:18:41.000000000 +0100
-@@ -413,7 +413,7 @@
+--- xymon.orig/xymond/do_alert.c	2017-01-04 18:37:47.147672839 +0100
++++ xymon/xymond/do_alert.c	2017-01-04 18:37:47.143672845 +0100
+@@ -420,7 +420,7 @@
  			if (!rpt) continue;	/* Happens for e.g. M_IGNORE recipients */
  
  			/* 
@@ -30,9 +30,9 @@ Index: xymon/xymond/do_alert.c
  			 */
 Index: xymon/xymond/xymond.c
 ===================================================================
---- xymon.orig/xymond/xymond.c	2016-02-26 14:18:41.000000000 +0100
-+++ xymon/xymond/xymond.c	2016-02-26 14:18:41.000000000 +0100
-@@ -3187,7 +3187,7 @@
+--- xymon.orig/xymond/xymond.c	2017-01-04 18:37:47.147672839 +0100
++++ xymon/xymond/xymond.c	2017-01-04 18:37:47.143672845 +0100
+@@ -3190,7 +3190,7 @@
  			break;
  
  		  case FILTER_TAG:

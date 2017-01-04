@@ -5,8 +5,8 @@ Forwarded: no
 
 Index: xymon/common/xymon.1
 ===================================================================
---- xymon.orig/common/xymon.1	2016-04-01 13:22:09.000000000 +0200
-+++ xymon/common/xymon.1	2016-04-01 13:22:09.000000000 +0200
+--- xymon.orig/common/xymon.1	2017-01-04 18:37:58.407652385 +0100
++++ xymon/common/xymon.1	2017-01-04 18:37:58.403652392 +0100
 @@ -293,16 +293,16 @@
  Advanced Filtering
  .sp
@@ -29,8 +29,8 @@ Index: xymon/common/xymon.1
  
 Index: xymon/web/graphs.cfg.5
 ===================================================================
---- xymon.orig/web/graphs.cfg.5	2016-04-01 13:22:09.000000000 +0200
-+++ xymon/web/graphs.cfg.5	2016-04-01 13:22:09.000000000 +0200
+--- xymon.orig/web/graphs.cfg.5	2017-01-04 18:37:58.407652385 +0100
++++ xymon/web/graphs.cfg.5	2017-01-04 18:37:58.403652392 +0100
 @@ -61,7 +61,7 @@
  .br
          GPRINT:la:MIN: \: %5.1lf (min)
@@ -51,10 +51,10 @@ Index: xymon/web/graphs.cfg.5
  Normally the title of a graph is a static text defined in
 Index: xymon/common/xymon-xmh.5
 ===================================================================
---- xymon.orig/common/xymon-xmh.5	2016-04-01 13:22:09.000000000 +0200
-+++ xymon/common/xymon-xmh.5	2016-04-01 13:22:09.000000000 +0200
+--- xymon.orig/common/xymon-xmh.5	2017-01-04 18:37:58.407652385 +0100
++++ xymon/common/xymon-xmh.5	2017-01-04 18:37:58.403652392 +0100
 @@ -1,6 +1,6 @@
- .TH XYMON-XMH 5 "Version 4.3.27: 24 Mar 2016" "Xymon"
+ .TH XYMON-XMH 5 "Version 4.3.28-rc1: 28 Dec 2016" "Xymon"
  .SH NAME
 -Xymon XMH variables \- Configuration items available online
 +Xymon-XMH-variables \- Configuration items available online
@@ -63,8 +63,8 @@ Index: xymon/common/xymon-xmh.5
  The
 Index: xymon/common/hosts.cfg.5
 ===================================================================
---- xymon.orig/common/hosts.cfg.5	2016-04-01 13:22:09.000000000 +0200
-+++ xymon/common/hosts.cfg.5	2016-04-01 13:22:09.000000000 +0200
+--- xymon.orig/common/hosts.cfg.5	2017-01-04 18:37:58.407652385 +0100
++++ xymon/common/hosts.cfg.5	2017-01-04 18:37:58.403652392 +0100
 @@ -75,7 +75,7 @@
  
  .IP "optional include/directory"
@@ -87,10 +87,10 @@ Index: xymon/common/hosts.cfg.5
  the tests, and the columns are the hosts (normal pages have it
 Index: xymon/xymond/xymonweb.5
 ===================================================================
---- xymon.orig/xymond/xymonweb.5	2016-04-01 13:22:09.000000000 +0200
-+++ xymon/xymond/xymonweb.5	2016-04-01 13:22:09.000000000 +0200
+--- xymon.orig/xymond/xymonweb.5	2017-01-04 18:37:58.407652385 +0100
++++ xymon/xymond/xymonweb.5	2017-01-04 18:37:58.403652392 +0100
 @@ -1,6 +1,6 @@
- .TH XYMONWEB 5 "Version 4.3.27: 24 Mar 2016" "Xymon"
+ .TH XYMONWEB 5 "Version 4.3.28-rc1: 28 Dec 2016" "Xymon"
  .SH NAME
 -Xymon web page headers, footers and forms.
 +Xymon-Web-Templates \- web page headers, footers and forms.
@@ -108,8 +108,8 @@ Index: xymon/xymond/xymonweb.5
  .I criticalview.cgi(1)
 Index: xymon/xymond/xymond.8
 ===================================================================
---- xymon.orig/xymond/xymond.8	2016-04-01 13:22:09.000000000 +0200
-+++ xymon/xymond/xymond.8	2016-04-01 13:22:09.000000000 +0200
+--- xymon.orig/xymond/xymond.8	2017-01-04 18:37:58.407652385 +0100
++++ xymon/xymond/xymond.8	2017-01-04 18:37:58.403652392 +0100
 @@ -84,9 +84,8 @@
  updates from xymond_client and xymonnet.
  
