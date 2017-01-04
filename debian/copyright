@@ -109,7 +109,7 @@ Files: lib/sha2.*
 Copyright: 2005, 2007 Olivier Gay <olivier.gay@a3.epfl.ch>
 License: BSD-3-Clause
 
-Files: xymonnet/c-ares-1.10.0.tar.gz
+Files: xymonnet/c-ares-*.tar.gz
 Copyright: 1998, 2000 by the Massachusetts Institute of Technology.
            2004 by Daniel Stenberg et al
 License: BSD-ish
