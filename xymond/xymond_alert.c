@@ -40,7 +40,7 @@
  *   active alerts for this host.test combination.
  */
 
-static char rcsid[] = "$Id: xymond_alert.c 7888 2016-02-02 20:44:03Z jccleaver $";
+static char rcsid[] = "$Id: xymond_alert.c 7982 2016-11-05 19:02:06Z jccleaver $";
 
 #include <stdio.h>
 #include <string.h>
@@ -277,13 +277,18 @@ int load_checkpoint(char *filename)
 	int xymondresult;
 
 
-	sprintf(statuscmd, "xymondboard color=%s fields=hostname,testname,color", xgetenv("ALERTCOLORS"));
+	sprintf(statuscmd, "xymondboard fields=hostname,testname,color");
 	sres = newsendreturnbuf(1, NULL);
 	xymondresult = sendmessage(statuscmd, NULL, XYMON_TIMEOUT, sres);
 	statusbuf = getsendreturnstr(sres, 1);
 	freesendreturnbuf(sres);
 
 	if ((xymondresult != XYMONSEND_OK) || (statusbuf == NULL) || (*statusbuf == '\0')) {
+		/*
+		 * If no data returned for any hosts, chances are xymond is not fully up.
+		 * To prevent alerts clearing and spuriously re-firing, bail out here. xymonlaunch 
+		 * will restart us soon.
+		 */
 		errprintf("xymond_alert: xymond not available or had empty response; error: %d\n", xymondresult);
 		running = 0;
 		return -1;

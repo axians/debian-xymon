@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: contest.c 7954 2016-03-22 02:26:22Z jccleaver $";
+static char rcsid[] = "$Id: contest.c 7980 2016-10-31 19:09:19Z jccleaver $";
 
 #include "config.h"
 
@@ -477,20 +477,52 @@ static void setup_ssl(tcptest_t *item)
 	}
 
 	if (item->sslctx == NULL) {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+		item->sslctx = SSL_CTX_new(SSLv23_client_method());
+
 		switch (item->ssloptions->sslversion) {
-		  case SSLVERSION_TLS1:
-			item->sslctx = SSL_CTX_new(TLSv1_client_method()); break;
+		  case SSLVERSION_TLS12:
+			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1));
+			break;
+		  case SSLVERSION_TLS11:
+			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_2));
+			break;
+		  case SSLVERSION_TLS10:
+			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1_1|SSL_OP_NO_TLSv1_2));
+			break;
 #ifdef HAVE_SSLV2_SUPPORT
 		  case SSLVERSION_V2:
-			item->sslctx = SSL_CTX_new(SSLv2_client_method()); break;
+			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1|SSL_OP_NO_TLSv1_2));
+			break;
 #endif
 #ifdef HAVE_SSLV3_SUPPORT
 		  case SSLVERSION_V3:
-			item->sslctx = SSL_CTX_new(SSLv3_client_method()); break;
+			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv2|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1|SSL_OP_NO_TLSv1_2));
+			break;
 #endif
 		  default:
-			item->sslctx = SSL_CTX_new(SSLv23_client_method()); break;
+			break;
 		}
+#else
+		item->sslctx = SSL_CTX_new(TLS_client_method());
+
+		switch (item->ssloptions->sslversion) {
+		  case SSLVERSION_TLS12:
+			SSL_CTX_set_min_proto_version(item->sslctx, TLS1_2_VERSION);
+			SSL_CTX_set_max_proto_version(item->sslctx, TLS1_2_VERSION);
+			break;
+		  case SSLVERSION_TLS11:
+			SSL_CTX_set_min_proto_version(item->sslctx, TLS1_1_VERSION);
+			SSL_CTX_set_max_proto_version(item->sslctx, TLS1_1_VERSION);
+			break;
+		  case SSLVERSION_TLS10:
+			SSL_CTX_set_min_proto_version(item->sslctx, TLS1_VERSION);
+			SSL_CTX_set_max_proto_version(item->sslctx, TLS1_VERSION);
+			break;
+		  default:
+			break;
+		}
+#endif
 
 		if (!item->sslctx) {
 			char sslerrmsg[256];
@@ -648,7 +680,11 @@ static void setup_ssl(tcptest_t *item)
 
 	certcn = X509_NAME_oneline(X509_get_subject_name(peercert), NULL, 0);
 	certissuer = X509_NAME_oneline(X509_get_issuer_name(peercert), NULL, 0);
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
 	certsigalg = OBJ_nid2ln(OBJ_obj2nid(peercert->sig_alg->algorithm));
+#else
+	certsigalg = OBJ_nid2ln(X509_get_signature_nid(peercert));
+#endif
 	certstart = strdup(xymon_ASN1_UTCTIME(X509_get_notBefore(peercert)));
 	certend = strdup(xymon_ASN1_UTCTIME(X509_get_notAfter(peercert)));
 	{
