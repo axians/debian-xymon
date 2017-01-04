@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: clientlocal.c 7391 2014-02-07 07:16:57Z storner $";
+static char rcsid[] = "$Id: clientlocal.c 7985 2016-11-30 20:32:47Z jccleaver $";
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -119,9 +119,10 @@ void load_clientconfig(void)
 				pcre *hostptn = NULL, *classptn = NULL, *osptn = NULL;
 				clientconfig_t *newrec;
 
-				p = STRBUF(buf) + strcspn(STRBUF(buf), "]\r\n");
-				if (*p == ']') {
-					*p = '\0'; strbufferrecalc(buf);
+				p = STRBUF(buf) + strcspn(STRBUF(buf), "\r\n");
+				if (p == STRBUF(buf)) errprintf("Garbled block in client-local.cfg\n");
+				else if (*(p-1) == ']') {
+					*(p-1) = '\0'; strbufferrecalc(buf);
 					ptn = STRBUF(buf) + 1;
 					if (strncasecmp(ptn, "host=", 5) == 0) {
 						ptn += 5; if (*ptn == '%') ptn++;

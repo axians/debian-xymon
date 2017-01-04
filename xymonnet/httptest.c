@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: httptest.c 7703 2015-10-19 19:51:29Z jccleaver $";
+static char rcsid[] = "$Id: httptest.c 7978 2016-10-31 18:58:13Z jccleaver $";
 
 #include <sys/types.h>
 #include <limits.h>
@@ -488,7 +488,10 @@ void add_http_test(testitem_t *t)
 	if (httptest->weburl.desturl->schemeopts) {
 		if      (strstr(httptest->weburl.desturl->schemeopts, "3"))      sslopt_version = SSLVERSION_V3;
 		else if (strstr(httptest->weburl.desturl->schemeopts, "2"))      sslopt_version = SSLVERSION_V2;
-		else if (strstr(httptest->weburl.desturl->schemeopts, "t"))      sslopt_version = SSLVERSION_TLS1;
+		else if (strstr(httptest->weburl.desturl->schemeopts, "t"))      sslopt_version = SSLVERSION_TLS10;
+		else if (strstr(httptest->weburl.desturl->schemeopts, "a"))      sslopt_version = SSLVERSION_TLS10;
+		else if (strstr(httptest->weburl.desturl->schemeopts, "b"))      sslopt_version = SSLVERSION_TLS11;
+		else if (strstr(httptest->weburl.desturl->schemeopts, "c"))      sslopt_version = SSLVERSION_TLS12;
 
 		if      (strstr(httptest->weburl.desturl->schemeopts, "h"))      sslopt_ciphers = ciphershigh;
 		else if (strstr(httptest->weburl.desturl->schemeopts, "m"))      sslopt_ciphers = ciphersmedium;
