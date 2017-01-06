@@ -2,7 +2,6 @@
 03_doc-paths.patch
 09_hobbitclient-debian.patch
 12_hobbitvars.patch
-15_hobbitgraph.netstat.patch
 24_hobbitclient-tmpfs.patch
 27_hobbit_files_ifexist.patch
 30_prefer-packaged-temp-plugin-over-unpackaged-devmon.patch
@@ -17,6 +16,4 @@
 63_netstat-ant-vs-ipv6-address-truncating.patch
 66_apache2.4.patch
 69_disk-no-duplicate-root.patch
-75_fix_spelling_errors.patch
-78_fix_manpage_syntax_errors.patch
 84_fix_compilation_on_GNU_Hurd.patch
