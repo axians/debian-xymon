@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymonping.c 7844 2015-12-11 05:59:24Z jccleaver $";
+static char rcsid[] = "$Id: xymonping.c 7999 2017-01-06 02:00:06Z jccleaver $";
 
 #include "config.h"
 
@@ -323,7 +323,7 @@ int get_response(int sock)
 
 		  default:
 			/* Shouldn't happen */
-			errprintf("Got a packet that wasnt a reply - type %d\n", icmphdr->icmp_type);
+			errprintf("Got a packet that wasn't a reply - type %d\n", icmphdr->icmp_type);
 			break;
 		}
 	} while (n > 0);

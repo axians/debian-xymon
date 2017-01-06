@@ -1,4 +1,4 @@
-.TH HOSTS.CFG 5 "Version 4.3.28-rc1: 28 Dec 2016" "Xymon"
+.TH HOSTS.CFG 5 "Version 4.3.28-rc2:  5 Jan 2017" "Xymon"
 .SH NAME
 hosts.cfg \- Main Xymon configuration file
 
@@ -75,7 +75,7 @@ files (devices, sockets, pipes etc).
 
 .IP "optional include/directory"
 Both "include" and "directory" can be prefixed with the tag
-'optional', which will preven an error message being logged if
+"optional", which will preven an error message being logged if
 the file or directory is not present on a system.
 
 
@@ -181,7 +181,9 @@ I implement it in xymongen. The idea to explicitly list
 the parent page in the "subparent" tag was what made
 it easy to implement.
 
-.IP "vpage" "vsubpage" "vsubparent"
+.IP "vpage"
+.IP "vsubpage"
+.IP "vsubparent"
 These are page-definitions similar to the "page", "subpage" and
 "subparent" definitions. However, on these pages the rows are 
 the tests, and the columns are the hosts (normal pages have it
@@ -1009,6 +1011,7 @@ one or more "dialect names" to the URL scheme, i.e. the
 * "3",  e.g. https3://www.sample.com/ : use only SSLv3
 .br
 * "t",  e.g. httpst://www.sample.com/ : use only TLSv1.0
+.br
 * "a",  e.g. httpsa://www.sample.com/ : use only TLSv1.0
 .br
 * "b",  e.g. httpsb://www.sample.com/ : use only TLSv1.1
@@ -1027,6 +1030,7 @@ These can be combined where it makes sense, e.g to force
 TLS1.2 and HTTP 1.0 you would use "httpsc10".
 
 Note that SSLv2 support is disabled in all current OpenSSL releases.
+TLS version-specific scheme testing requires OpenSSL 1.0.1 or higher.
 
 .IP "Testing sites by IP-address"
 xymonnet ignores the "testip" tag normally used to force a 
@@ -1171,7 +1175,7 @@ This tag can be used to test web pages, that use an input
 form. Data can be posted to the form by specifying them 
 in the form-data field, and the result can be checked
 as if it was a normal content check (see above for a description
-of the cont-tag and the restrictions on how the URL must be writen).
+of the cont-tag and the restrictions on how the URL must be written).
 
 The form-data field must be entered in "application/x\-www\-form\-urlencoded"
 format, which is the most commonly used format for web

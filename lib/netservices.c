@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: netservices.c 7678 2015-10-01 14:42:42Z jccleaver $";
+static char rcsid[] = "$Id: netservices.c 7999 2017-01-06 02:00:06Z jccleaver $";
 
 #include <ctype.h>
 #include <string.h>
@@ -280,7 +280,7 @@ char *init_tcp_services(void)
 
 	/* This should not happen */
 	if (walk) {
-		errprintf("Whoa - didnt copy all services! svccount=%d, next service '%s'\n", 
+		errprintf("Whoa - didn't copy all services! svccount=%d, next service '%s'\n", 
 			svccount, walk->rec->svcname);
 	}
 
