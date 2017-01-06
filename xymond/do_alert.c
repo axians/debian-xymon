@@ -13,7 +13,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: do_alert.c 7986 2016-12-10 11:44:07Z jccleaver $";
+static char rcsid[] = "$Id: do_alert.c 7999 2017-01-06 02:00:06Z jccleaver $";
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -420,7 +420,7 @@ void send_alert(activealerts_t *alert, FILE *logfd)
 			if (!rpt) continue;	/* Happens for e.g. M_IGNORE recipients */
 
 			/* 
-			 * Update alertcount here, because we dont want to hit an UNMATCHED
+			 * Update alertcount here, because we don't want to hit an UNMATCHED
 			 * rule when there is actually an alert active - it is just suppressed
 			 * for this run due to the REPEAT setting.
 			 */

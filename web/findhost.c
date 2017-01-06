@@ -13,7 +13,7 @@
 /* 2004/09/08 - Werner Michels [wm]                                           */
 /*              Added support regular expression on the host search.          */
 /*              Minor changes on errormsg() and error messagess.              */
-/*		The parse_query was rewriten to meet the new needs.           */
+/*		The parse_query was rewritten to meet the new needs.          */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
@@ -37,7 +37,7 @@
  *
  */
 
-static char rcsid[] = "$Id: findhost.c 7863 2016-01-21 03:33:16Z jccleaver $";
+static char rcsid[] = "$Id: findhost.c 7999 2017-01-06 02:00:06Z jccleaver $";
 
 #include <stdio.h>
 #include <string.h>

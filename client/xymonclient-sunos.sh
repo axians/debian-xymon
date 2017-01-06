@@ -9,7 +9,7 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 #
-# $Id: xymonclient-sunos.sh 7678 2015-10-01 14:42:42Z jccleaver $
+# $Id: xymonclient-sunos.sh 7999 2017-01-06 02:00:06Z jccleaver $
 
 # Work out what type of environment we are on 
 #
@@ -109,7 +109,7 @@ global|Global)
 esac
 echo "[swap]"
 /usr/sbin/swap -s
-# dont report the swaplist in a non-global zone because it will cause the
+# don't report the swaplist in a non-global zone because it will cause the
 # server client module to miscalculate memory
 case $ZTYPE in
 global|Global)
