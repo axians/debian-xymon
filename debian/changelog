@@ -1,3 +1,9 @@
+xymon (4.3.28~rc2-1) UNRELEASED; urgency=medium
+
+  * New upstream release candidate 4.3.28~rc2
+
+ -- Axel Beckert <abe@debian.org>  Fri, 06 Jan 2017 22:06:24 +0100
+
 xymon (4.3.28~rc1-1) experimental; urgency=low
 
   * New upstream release candidate 4.3.28~rc1
