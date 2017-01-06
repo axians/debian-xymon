@@ -1,0 +1,17 @@
+Description: Fix regression / syntax error introduced in 4.3.28~rc2
+Author: Axel Beckert <abe@debian.org>
+Forwarded: yes
+
+Index: xymon/xymonnet/contest.c
+===================================================================
+--- xymon.orig/xymonnet/contest.c	2017-01-06 22:06:24.432668546 +0100
++++ xymon/xymonnet/contest.c	2017-01-06 22:45:01.476559681 +0100
+@@ -497,7 +497,7 @@
+ 			SSL_CTX_set_min_proto_version(item->sslctx, TLS1_VERSION);
+ 			SSL_CTX_set_max_proto_version(item->sslctx, TLS1_VERSION);
+ 			break;
+-#elseif OPENSSL_VERSION_NUMBER >= 0x10001000L
++#elif OPENSSL_VERSION_NUMBER >= 0x10001000L
+ 		  case SSLVERSION_TLS12:
+ 			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1));
+ 			break;
