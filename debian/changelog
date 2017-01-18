@@ -1,9 +1,13 @@
 xymon (4.3.28-1) UNRELEASED; urgency=medium
 
-  * New upstream release.
+  [ Axel Beckert ]
+  * Import new upstream release.
     + Drop 87_fix_4.3.28rc2_regression.patch, applied upstream.
     + Fixes summary reports (from other Xymon servers back to a central
       one).
+
+  [ Takuma Yamada ]
+  * Update Japanese debconf templates translation. (Closes: #815530)
 
  -- Axel Beckert <abe@debian.org>  Wed, 18 Jan 2017 03:09:06 +0100
 
