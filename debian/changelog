@@ -1,6 +1,7 @@
 xymon (4.3.28-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+    + Drop 87_fix_4.3.28rc2_regression.patch, applied upstream.
     + Fixes summary reports (from other Xymon servers back to a central
       one).
 
