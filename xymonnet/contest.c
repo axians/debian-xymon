@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: contest.c 7989 2017-01-04 22:27:48Z jccleaver $";
+static char rcsid[] = "$Id: contest.c 8004 2017-01-06 22:06:25Z jccleaver $";
 
 #include "config.h"
 
@@ -497,7 +497,7 @@ static void setup_ssl(tcptest_t *item)
 			SSL_CTX_set_min_proto_version(item->sslctx, TLS1_VERSION);
 			SSL_CTX_set_max_proto_version(item->sslctx, TLS1_VERSION);
 			break;
-#elseif OPENSSL_VERSION_NUMBER >= 0x10001000L
+#elif OPENSSL_VERSION_NUMBER >= 0x10001000L
 		  case SSLVERSION_TLS12:
 			SSL_CTX_set_options(item->sslctx, (SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1));
 			break;
