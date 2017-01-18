@@ -1,3 +1,11 @@
+xymon (4.3.28-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    + Fixes summary reports (from other Xymon servers back to a central
+      one).
+
+ -- Axel Beckert <abe@debian.org>  Wed, 18 Jan 2017 03:09:06 +0100
+
 xymon (4.3.28~rc2-1) experimental; urgency=low
 
   * New upstream release candidate 4.3.28~rc2
