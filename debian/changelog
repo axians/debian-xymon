@@ -1,4 +1,4 @@
-xymon (4.3.28-1) UNRELEASED; urgency=medium
+xymon (4.3.28-1) unstable; urgency=medium
 
   [ Axel Beckert ]
   * Import new upstream release.
@@ -10,7 +10,7 @@ xymon (4.3.28-1) UNRELEASED; urgency=medium
   [ Takuma Yamada ]
   * Update Japanese debconf templates translation. (Closes: #815530)
 
- -- Axel Beckert <abe@debian.org>  Wed, 18 Jan 2017 03:09:06 +0100
+ -- Axel Beckert <abe@debian.org>  Fri, 20 Jan 2017 02:14:35 +0100
 
 xymon (4.3.28~rc2-1) experimental; urgency=low
 
