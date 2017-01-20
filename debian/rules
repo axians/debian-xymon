@@ -6,6 +6,8 @@ DEB_BUILD_MAINT_OPTIONS=hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
+MAKEFLAGS=-j1
+
 Makefile: configure
 	dh_testdir
 	# Add here commands to configure the package.
@@ -44,7 +46,7 @@ build-stamp: Makefile
 	dh_testdir
 
 	# Parallel building does not work as of 4.3.0~beta2
-	CFLAGS="$(CFLAGS) $(CPPFLAGS) $(LDFLAGS)" PKGBUILD=1 $(MAKE) MAKEFLAGS=-j1
+	CFLAGS="$(CFLAGS) $(CPPFLAGS) $(LDFLAGS)" PKGBUILD=1 $(MAKE)
 
 	touch build-stamp
 
