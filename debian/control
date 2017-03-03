@@ -62,6 +62,7 @@ Replaces: hobbit-client (<< 4.2.2)
 Pre-Depends: debconf (>= 0.5) | debconf-2.0, ${misc:Pre-Depends}
 Depends: adduser,
          lsb-base,
+         net-tools,
          procps,
          ${misc:Depends},
          ${shlibs:Depends}
