@@ -28,8 +28,8 @@ Replaces: hobbit (<< 4.2.2)
 Pre-Depends: ${misc:Pre-Depends}
 Depends: xymon-client (>= 4.3.7-1~),
          lsb-base (>= 3.0-6),
-# The dependency on perl is only for prename in postinst script
-         perl,
+# The dependency on rename is only for file-rename in postinst script
+         rename,
          ${misc:Depends},
          ${shlibs:Depends}
 Recommends: apache2 | httpd-cgi
