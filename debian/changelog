@@ -2,6 +2,9 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
 
   * Switch from prename/perl to file-rename/rename in
     debian/xymon.postinst and debian/control.
+  * Downgrade rename usage to Suggests as the migration from "hobbit" to
+    "xymon" in path names won't show up in normal setups and is guarded by
+    an existence check.
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 

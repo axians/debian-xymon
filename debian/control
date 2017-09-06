@@ -28,12 +28,12 @@ Replaces: hobbit (<< 4.2.2)
 Pre-Depends: ${misc:Pre-Depends}
 Depends: xymon-client (>= 4.3.7-1~),
          lsb-base (>= 3.0-6),
-# The dependency on rename is only for file-rename in postinst script
-         rename,
          ${misc:Depends},
          ${shlibs:Depends}
 Recommends: apache2 | httpd-cgi
-Suggests: rrdtool
+# The relation with rename is only for file-rename in postinst script
+Suggests: rename,
+          rrdtool
 Description: monitoring system for systems, networks and applications
  Xymon (previously called Hobbit) is a network- and applications-
  monitoring system designed for use in large-scale networks. But it will
