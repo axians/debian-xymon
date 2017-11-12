@@ -5,6 +5,9 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
   * Downgrade rename usage to Suggests as the migration from "hobbit" to
     "xymon" in path names won't show up in normal setups and is guarded by
     an existence check.
+  * Declare compliance with Debian Policy 4.1.1.
+    + Switch debian/copyright DEP5 format URL to HTTPS.
+    + Change Priority to optional.
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 

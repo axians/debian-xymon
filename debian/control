@@ -1,6 +1,6 @@
 Source: xymon
 Section: net
-Priority: extra
+Priority: optional
 Maintainer: Christoph Berg <myon@debian.org>
 Uploaders: Axel Beckert <abe@debian.org>
 Build-Depends: debhelper (>= 9~),
@@ -14,7 +14,7 @@ Build-Depends: debhelper (>= 9~),
                libssl-dev (>= 1.0.2d-2~),
                po-debconf,
                procps
-Standards-Version: 3.9.8
+Standards-Version: 4.1.1
 Vcs-Git: https://anonscm.debian.org/git/collab-maint/xymon.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xymon.git
 Homepage: http://xymon.sourceforge.net/
