@@ -8,6 +8,8 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
   * Declare compliance with Debian Policy 4.1.1.
     + Switch debian/copyright DEP5 format URL to HTTPS.
     + Change Priority to optional.
+  * Drop several spelling-error-in-binary lintian-overrides. (No more
+    emitted.)
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 

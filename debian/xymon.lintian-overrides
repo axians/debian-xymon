@@ -21,6 +21,3 @@ xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> us
 xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/server/bin/cgiwrap
 # No version specified by upstream
 xymon: copyright-refers-to-symlink-license usr/share/common-licenses/GPL
-# False positives (no such string inside the code)
-xymon: spelling-error-in-binary usr/lib/xymon/server/bin/xymond_client ot to
-xymon: spelling-error-in-binary usr/lib/xymon/server/bin/xymonnet Unknow Unknown
