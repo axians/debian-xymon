@@ -10,6 +10,7 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
     + Change Priority to optional.
   * Drop several spelling-error-in-binary lintian-overrides. (No more
     emitted.)
+  * Remove trailing whitespace from debian/rules.
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 

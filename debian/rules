@@ -54,7 +54,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	dh_auto_clean
-	dh_clean 
+	dh_clean
 	debconf-updatepo
 
 S=$(CURDIR)/debian/xymon
