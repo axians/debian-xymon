@@ -12,6 +12,7 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
     emitted.)
   * Remove trailing whitespace from debian/rules.
   * Set "Rules-Requires-Root: no".
+  * Change debian/rules to the minimal "dh $@" style.
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 
