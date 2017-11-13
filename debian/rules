@@ -6,8 +6,6 @@ DEB_BUILD_MAINT_OPTIONS=hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
-MAKEFLAGS=-j1
-
 S=$(CURDIR)/debian/xymon
 C=$(CURDIR)/debian/xymon-client
 

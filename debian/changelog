@@ -13,6 +13,10 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
   * Remove trailing whitespace from debian/rules.
   * Set "Rules-Requires-Root: no".
   * Change debian/rules to the minimal "dh $@" style.
+  * Bump debhelper compatibility level to 10.
+    + Update versioned debhelper build-dependency accordingly.
+    + Drop MAKEFLAGS=-j1 from debian/rules, parallel building seems to
+      work now.
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 
