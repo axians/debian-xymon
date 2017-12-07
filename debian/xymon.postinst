@@ -51,7 +51,7 @@ case "$1" in
 	cd /var/lib/xymon/www; chown xymon:xymon html notes wml rep snap; chgrp www-data rep snap; chmod g+w rep snap
 	cd /etc/xymon; chgrp www-data critical.cfg critical.cfg.bak; chmod g+w critical.cfg critical.cfg.bak
 
-	if [ "$MIGRATE" ] && [ -x /usr/bin/file-rename ]; then
+	if [ "$MIGRATE" ] && which file-rename > /dev/null; then
 	    find /var/lib/xymon '(' -name '*bbgen*' -o \
 				    -name '*bbtest*'  -o \
 				    -name '*bbproxy*' -o \
@@ -99,7 +99,7 @@ EOF
 	test -e /etc/xymon/xymongroups   || touch /etc/xymon/xymongroups
 
 	if [ "$2" ] && dpkg --compare-versions "$2" lt 4.3.0~beta2.dfsg-8~ ; then
-		if [ -x /usr/bin/rrdtool ] ; then
+		if which rrdtool > /dev/null; then
 			echo "Fixing RRD parameters in clock.rrd files found ..."
 			for i in `find /var/lib/hobbit/rrd/ /var/lib/xymon/rrd/ -name clock.rrd` ; do
 				rrdtool tune $i -i la:U

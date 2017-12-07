@@ -17,6 +17,8 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
     + Update versioned debhelper build-dependency accordingly.
     + Drop MAKEFLAGS=-j1 from debian/rules, parallel building seems to
       work now.
+  * Fix lintian warning command-with-path-in-maintainer-script by using
+    "if which …" instead of "if [ -x /usr/bin/…".
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 
