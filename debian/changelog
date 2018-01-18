@@ -19,7 +19,8 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
       work now.
   * Fix lintian warning command-with-path-in-maintainer-script by using
     "if which …" instead of "if [ -x /usr/bin/…".
-  * Fix FTBFS with glibc 2.26 by adding "#include <stdint.h>" to logfetch.c.
+  * Fix FTBFS with glibc 2.26 by adding "#include <stdint.h>" to
+    client/logfetch.c. (Closes: #887633)
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 
