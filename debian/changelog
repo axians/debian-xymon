@@ -21,6 +21,9 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
     "if which …" instead of "if [ -x /usr/bin/…".
   * Fix FTBFS with glibc 2.26 by adding "#include <stdint.h>" to
     client/logfetch.c. (Closes: #887633)
+  * Update lintian overrides of apache2-deprecated-auth-config for
+    additional parameter. Merge them into one override with wildcard for
+    the Apache directive.
 
  -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
 
