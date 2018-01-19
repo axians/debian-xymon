@@ -1,4 +1,4 @@
-xymon (4.3.28-3) UNRELEASED; urgency=medium
+xymon (4.3.28-3) unstable; urgency=medium
 
   * Switch from prename/perl to file-rename/rename in
     debian/xymon.postinst and debian/control.
@@ -25,7 +25,7 @@ xymon (4.3.28-3) UNRELEASED; urgency=medium
     additional parameter. Merge them into one override with wildcard for
     the Apache directive.
 
- -- Axel Beckert <abe@debian.org>  Wed, 06 Sep 2017 09:46:51 +0200
+ -- Axel Beckert <abe@debian.org>  Fri, 19 Jan 2018 02:45:18 +0100
 
 xymon (4.3.28-2) unstable; urgency=low
 
