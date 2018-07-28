@@ -3,3 +3,5 @@ xymon-client: package-contains-empty-directory usr/lib/xymon/client/ext/
 xymon-client: init.d-script-depends-on-all-virtual-facility etc/init.d/xymon-client should-start
 # No version specified by upstream
 xymon-client: copyright-refers-to-symlink-license usr/share/common-licenses/GPL
+# ridiculous, see #904852
+xymon-client: package-contains-documentation-outside-usr-share-doc usr/lib/xymon/client/local/README
