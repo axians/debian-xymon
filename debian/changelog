@@ -8,6 +8,10 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
     building again, but restrict it to override_dh_auto_build.
   * Fix URL pointing upstream mailing list posting in
     debian/xymon.lintian-overrides. It was pointing to the wrong mail.
+  * Make lintian overrides for package-contains-hardlink more generic:
+    + Catches future CGI script hardlinks.
+    + Independent of which file is regarded as file others are linked to.
+    + Reduces amount of lines needed in debian/xymon.lintian-overrides.
 
  -- Axel Beckert <abe@debian.org>  Sun, 29 Jul 2018 01:21:56 +0200
 

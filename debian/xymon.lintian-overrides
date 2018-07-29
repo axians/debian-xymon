@@ -12,12 +12,8 @@ xymon: apache2-deprecated-auth-config etc/apache2/conf-available/xymon.conf *
 # system. (Upstream introduced these hardlinks in 4.3.20, see
 # http://lists.xymon.com/archive/2015-May/041717.html for the
 # discussion.)
-xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/ackinfo.sh
-xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/acknowledge.sh
-xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/criticaleditor.sh
-xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/enadis.sh
-xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/useradm.sh
-xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/server/bin/cgiwrap
+xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/*.sh -> usr/lib/xymon/cgi-secure/*.sh
+xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/*.sh -> usr/lib/xymon/server/bin/cgiwrap
 # No version specified by upstream
 xymon: copyright-refers-to-symlink-license usr/share/common-licenses/GPL
 # ridiculous, see #904852
