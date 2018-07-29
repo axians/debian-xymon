@@ -6,6 +6,8 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
   * Declare compliance with Debian Policy 4.1.5. (No changes needed.)
   * Reintroduce MAKEFLAGS=-j1 again as I ran into issues with parallel
     building again, but restrict it to override_dh_auto_build.
+  * Fix URL pointing upstream mailing list posting in
+    debian/xymon.lintian-overrides. It was pointing to the wrong mail.
 
  -- Axel Beckert <abe@debian.org>  Sun, 29 Jul 2018 01:21:56 +0200
 

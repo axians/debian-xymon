@@ -10,7 +10,7 @@ xymon: apache2-deprecated-auth-config etc/apache2/conf-available/xymon.conf *
 # Xymon server is not suitable for installation on a network file
 # system and cgi-bin and cgi-secure are likely always on the same file
 # system. (Upstream introduced these hardlinks in 4.3.20, see
-# http://lists.xymon.com/archive/2015-May/041718.html for the
+# http://lists.xymon.com/archive/2015-May/041717.html for the
 # discussion.)
 xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/ackinfo.sh
 xymon: package-contains-hardlink usr/lib/xymon/cgi-bin/acknowledgements.sh -> usr/lib/xymon/cgi-secure/acknowledge.sh
