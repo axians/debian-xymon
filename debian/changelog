@@ -2,7 +2,7 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
 
   * Update Vcs-* headers for move to Salsa.
   * Override package-contains-documentation-outside-usr-share-doc lintian
-    warning for /usr/lib/xymon/client/local/README. It's just wrong.
+    warning for multiple cases of documentation about a directory.
   * Declare compliance with Debian Policy 4.1.5. (No changes needed.)
   * Reintroduce MAKEFLAGS=-j1 again as I ran into issues with parallel
     building again, but restrict it to override_dh_auto_build.
