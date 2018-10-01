@@ -1,5 +1,6 @@
 xymon (4.3.28-4) UNRELEASED; urgency=medium
 
+  [ Axel Beckert ]
   * Update Vcs-* headers for move to Salsa.
   * Override package-contains-documentation-outside-usr-share-doc lintian
     warning for multiple cases of documentation about a directory.
@@ -12,6 +13,9 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
     + Catches future CGI script hardlinks.
     + Independent of which file is regarded as file others are linked to.
     + Reduces amount of lines needed in debian/xymon.lintian-overrides.
+
+  [ Ondřej Nový ]
+  * d/watch: Use https protocol
 
  -- Axel Beckert <abe@debian.org>  Sun, 29 Jul 2018 01:21:56 +0200
 
