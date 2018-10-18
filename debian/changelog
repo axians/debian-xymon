@@ -13,6 +13,7 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
     + Catches future CGI script hardlinks.
     + Independent of which file is regarded as file others are linked to.
     + Reduces amount of lines needed in debian/xymon.lintian-overrides.
+  * Ignore squashfs mounts when checking for disk usage. (LP: #1798557)
 
   [ Ondřej Nový ]
   * d/watch: Use https protocol
