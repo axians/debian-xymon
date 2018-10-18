@@ -1,7 +1,8 @@
 Subject: Multiple kfreebsd patches, additional ignored file systems
 Forwarded: http://lists.xymon.com/pipermail/xymon/2015-September/042224.html
            http://lists.xymon.com/pipermail/xymon/2017-January/044217.html
-Last-Update: 2015-09-10
+Last-Update: 2018-10-18
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/xymon/+bug/1798557
 Reviewed-By: Axel Beckert <abe@debian.org>
 
 xymon (4.3.0~beta2.dfsg-6) unstable; urgency=low
