@@ -16,7 +16,7 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
   * Ignore squashfs mounts when checking for disk usage. (LP: #1798557)
 
   [ Ondřej Nový ]
-  * d/watch: Use https protocol
+  * debian/watch: Use HTTPS.
 
  -- Axel Beckert <abe@debian.org>  Sun, 29 Jul 2018 01:21:56 +0200
 
