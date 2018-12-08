@@ -14,3 +14,4 @@
 51_hardening-buildflags.patch
 69_disk-no-duplicate-root.patch
 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
+90_reproducible-build.patch
