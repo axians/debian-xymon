@@ -18,6 +18,11 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
   * Add patch to fix old spelling errors found by new lintian.
   * Add patch to switch example in analysis.cfg(5) from FSSTND to FHS.
     Fixes lintian warning FSSTND-dir-in-manual-page.
+  * Fix existence of debian/docs together with debian/xymon.docs and
+    debian/xymon-client.docs by adequately merging the former into the two
+    latter files. Reintroduces some upstream documentation which was
+    missing for a few years.
+    + Install docs/TODO only into the server package "xymon".
 
   [ Ondřej Nový ]
   * debian/watch: Use HTTPS.
