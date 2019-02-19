@@ -6,7 +6,8 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
     warning for multiple cases of documentation about a directory.
   * Declare compliance with Debian Policy 4.1.5. (No changes needed.)
   * Reintroduce MAKEFLAGS=-j1 again as I ran into issues with parallel
-    building again, but restrict it to override_dh_auto_build.
+    building again, but restrict it to override_dh_auto_build and the
+    server's install target in override_dh_auto_install.
   * Fix URL pointing upstream mailing list posting in
     debian/xymon.lintian-overrides. It was pointing to the wrong mail.
   * Make lintian overrides for package-contains-hardlink more generic:
