@@ -1,4 +1,4 @@
-xymon (4.3.28-4) UNRELEASED; urgency=medium
+xymon (4.3.28-4) unstable; urgency=medium
 
   [ Axel Beckert ]
   * Update Vcs-* headers for move to Salsa.
@@ -28,7 +28,7 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
   [ Ondřej Nový ]
   * debian/watch: Use HTTPS.
 
- -- Axel Beckert <abe@debian.org>  Sun, 29 Jul 2018 01:21:56 +0200
+ -- Axel Beckert <abe@debian.org>  Tue, 19 Feb 2019 18:50:07 +0100
 
 xymon (4.3.28-3) unstable; urgency=medium
 
