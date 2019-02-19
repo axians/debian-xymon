@@ -99,6 +99,11 @@ endif
 		done
 	rmdir $S/usr/share/man/man7
 
+override_dh_installdocs:
+	dh_installdocs
+	mv -v $S/usr/share/doc/xymon/RELEASENOTES $S/usr/share/doc/xymon/NEWS
+	mv -v $C/usr/share/doc/xymon-client/RELEASENOTES $C/usr/share/doc/xymon-client/NEWS
+
 override_dh_installinit:
 	dh_installinit -a -- defaults 98 02
 
