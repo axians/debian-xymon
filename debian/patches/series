@@ -18,3 +18,4 @@
 69_disk-no-duplicate-root.patch
 84_fix_compilation_on_GNU_Hurd.patch
 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
+90_fix-spelling-errors.patch

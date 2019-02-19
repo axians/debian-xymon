@@ -1,0 +1,59 @@
+Description: Fix spelling errors, e.g. those found by lintian
+Author: Axel Beckert <abe@debian.org>
+Forwarded: no
+
+--- a/Changes
++++ b/Changes
+@@ -2146,7 +2146,7 @@
+   groups, to permanently enable or disable a status to
+   appear on their monitoring console when a system goes
+   into or is taken out of production, and also provides
+-  direct acces to special instructions for the monitoring
++  direct access to special instructions for the monitoring
+   staff.
+   To accomodate all of these new configuration items, a
+   separate "Critical Systems Configuration" file is
+--- a/common/logfetch.1
++++ b/common/logfetch.1
+@@ -42,7 +42,7 @@
+ configure monitoring of files or directories through the "file:"
+ and "dir:" entries in 
+ .I client\-local.cfg(5)
+-then logfetch will require at least read-acces to the directory
++then logfetch will require at least read-access to the directory
+ where the file is located. If you request checksum calculation
+ for a file, then it must be readable by the Xymon client user.
+ 
+--- a/docs/manpages/man1/logfetch.1.html
++++ b/docs/manpages/man1/logfetch.1.html
+@@ -62,7 +62,7 @@
+ and &quot;dir:&quot; entries in 
+ <I><A HREF="../man5/client-local.cfg.5.html">client-local.cfg</A>(5)</I>
+ 
+-then logfetch will require at least read-acces to the directory
++then logfetch will require at least read-access to the directory
+ where the file is located. If you request checksum calculation
+ for a file, then it must be readable by the Xymon client user.
+ <P>
+--- a/web/showgraph.c
++++ b/web/showgraph.c
+@@ -137,7 +137,7 @@
+ 
+ 	dir = opendir(xgetenv("XYMONTMP"));
+ 	if (!dir) {
+-		errprintf("Cannot acces $XYMONTMP directory: %s\n", strerror(errno));
++		errprintf("Cannot access $XYMONTMP directory: %s\n", strerror(errno));
+ 		return;
+ 	}
+ 
+--- a/xymonnet/xymonping.c
++++ b/xymonnet/xymonping.c
+@@ -53,7 +53,7 @@
+ 
+ hostdata_t *hosthead = NULL;
+ int hostcount = 0;
+-hostdata_t **hosts = NULL;	/* Array of pointers to the hostdata records, for fast acces via ID */
++hostdata_t **hosts = NULL;	/* Array of pointers to the hostdata records, for fast access via ID */
+ int myicmpid;
+ int senddelay = (1000000 / 50);	/* Delay between sending packets, in microseconds */
+ 
