@@ -2,6 +2,7 @@
 03_doc-paths.patch
 09_hobbitclient-debian.patch
 12_hobbitvars.patch
+21_FHS-instead-FSSTND-in-example-in-man-page.patch
 24_hobbitclient-tmpfs.patch
 27_hobbit_files_ifexist.patch
 30_prefer-packaged-temp-plugin-over-unpackaged-devmon.patch

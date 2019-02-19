@@ -15,6 +15,8 @@ xymon (4.3.28-4) UNRELEASED; urgency=medium
     + Reduces amount of lines needed in debian/xymon.lintian-overrides.
   * Ignore squashfs mounts when checking for disk usage. (LP: #1798557)
   * Add patch to fix old spelling errors found by new lintian.
+  * Add patch to switch example in analysis.cfg(5) from FSSTND to FHS.
+    Fixes lintian warning FSSTND-dir-in-manual-page.
 
   [ Ondřej Nový ]
   * debian/watch: Use HTTPS.
