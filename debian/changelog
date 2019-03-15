@@ -1,3 +1,10 @@
+xymon (4.3.28-5) UNRELEASED; urgency=medium
+
+  * xymon.postinst: Check for file existence before calling chgrp/chmod on
+    critical.cfg and critical.cfg.bak. (Closes: #924665, LP: #1819378)
+
+ -- Axel Beckert <abe@debian.org>  Fri, 15 Mar 2019 17:09:12 +0100
+
 xymon (4.3.28-4) unstable; urgency=medium
 
   [ Axel Beckert ]
