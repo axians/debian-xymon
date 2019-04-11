@@ -1,6 +1,6 @@
 Description: tell the build script how to link to libpng
 Origin: vendor
-Forwarded: no
+Forwarded: not-needed
 Author: gregor herrmann <gregoa@debian.org>
 Last-Update: 2011-12-26
 

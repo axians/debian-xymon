@@ -2,7 +2,7 @@ Description: Fix FTBFS due to multiarch
 Bug-Debian: https://bugs.debian.org/639080
 Author: Axel Beckert <abe@debian.org>
 Last-Update: 2015-09-10
-Forwarded: no
+Forwarded: not-needed
 
 Index: xymon/build/pcre.sh
 ===================================================================
