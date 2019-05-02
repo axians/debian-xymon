@@ -12,6 +12,7 @@ Build-Depends: debhelper (>= 11~),
                libpcre3-dev (>= 8.12-4~),
                librrd-dev,
                libssl-dev (>= 1.0.2d-2~),
+               libtirpc-dev,
                po-debconf,
                procps
 Standards-Version: 4.3.0
