@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymonnet.c 7967 2016-09-10 03:13:43Z jccleaver $";
+static char rcsid[] = "$Id: xymonnet.c 8060 2019-05-01 23:59:23Z jccleaver $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -107,6 +107,8 @@ int		bigfailure = 0;
 char		*defaultsourceip = NULL;
 int		loadhostsfromxymond = 0;
 int		sslminkeysize = 0;
+char		*warnbuf = NULL;
+static unsigned int warnbufsize = 0;
 
 void dump_hostlist(void)
 {
@@ -876,9 +878,23 @@ char *ip_to_test(testedhost_t *h)
 			/* Already have the IP setup */
 		}
 		else {
+			char msg[512];
 			/* Cannot resolve hostname */
 			h->dnserror = 1;
+/* Make this a warning rather than an error
 			errprintf("xymonnet: Cannot resolve IP for host %s\n", h->hostname);
+ */
+			sprintf(msg, "xymonnet: Cannot resolve IP for host %s\n", h->hostname);
+			if (warnbuf == NULL) {
+				warnbufsize = 8192;
+				warnbuf = (char *) malloc(warnbufsize);
+				*warnbuf = '\0';
+			}
+				else if ((strlen(warnbuf) + strlen(msg)) > warnbufsize) {
+				warnbufsize += 8192;
+				warnbuf = (char *) realloc(warnbuf, warnbufsize);
+			}
+			strcat(warnbuf, msg);
 		}
 	}
 
@@ -1066,7 +1082,8 @@ void run_ntp_service(service_t *service)
 	strcpy(cmdpath, (use_sntp ? xgetenv("SNTP") : xgetenv("NTPDATE")) );
 
 	for (t=service->items; (t); t = t->next) {
-		if (!t->host->dnserror) {
+		/* Do not run NTP test if host does not resolve in DNS or is down */
+		if (!t->host->dnserror && !t->host->pingerror) {
 			if (use_sntp) {
 				sprintf(cmd, "%s %s -d %d %s 2>&1", cmdpath, xgetenv("SNTPOPTS"), extcmdtimeout-1, ip_to_test(t->host));
 			}
@@ -1090,7 +1107,8 @@ void run_rpcinfo_service(service_t *service)
 	p = xgetenv("RPCINFO");
 	strcpy(cmdpath, (p ? p : "rpcinfo"));
 	for (t=service->items; (t); t = t->next) {
-		if (!t->host->dnserror && (t->host->downcount == 0)) {
+		/* Do not run RPCINFO test if host does not resolve in DNS or is down */
+		if (!t->host->dnserror && (t->host->downcount == 0) && !t->host->pingerror) {
 			sprintf(cmd, "%s -p %s 2>&1", cmdpath, ip_to_test(t->host));
 			t->open = (run_command(cmd, NULL, t->banner, 1, extcmdtimeout) == 0);
 		}
@@ -1467,6 +1485,9 @@ int decide_color(service_t *service, char *svcname, testitem_t *test, int failgo
 			color = COL_YELLOW; 
 		}
 
+		/* Set pingerror for later use by NTP and RPCINFO tests */
+		test->host->pingerror = (color == COL_RED ? 1 : 0);
+
 		/* Handle "badconn" */
 		if ((color == COL_RED) && (test->host->downcount < test->host->badconn[2])) {
 			if      (test->host->downcount >= test->host->badconn[1]) color = COL_YELLOW;
@@ -1620,7 +1641,7 @@ int decide_color(service_t *service, char *svcname, testitem_t *test, int failgo
 		/* Check if this service is a NOPAGENET service. */
 		nopagename = (char *) malloc(strlen(svcname)+3);
 		sprintf(nopagename, ",%s,", svcname);
-		if (strstr(nonetpage, svcname) != NULL) color = COL_YELLOW;
+		if (strstr(nonetpage, nopagename) != NULL) color = COL_YELLOW;
 		xfree(nopagename);
 	}
 
@@ -2236,6 +2257,7 @@ int main(int argc, char *argv[])
 			printf("Usage: %s [options] [host1 host2 host3 ...]\n", argv[0]);
 			printf("General options:\n");
 			printf("    --timeout=N                 : Timeout (in seconds) for service tests\n");
+			printf("    --cmdtimeout=N              : Timeout for external commands for testing NTP, RPC and traceroute\n");
 			printf("    --concurrency=N             : Number of tests run in parallel\n");
 			printf("    --dns-timeout=N             : DNS lookups timeout and fail after N seconds [30]\n");
 			printf("    --dns=[only|ip|standard]    : How IP's are decided\n");
@@ -2603,6 +2625,11 @@ int main(int argc, char *argv[])
 		if (errbuf) {
 			addtostatus("\n\nError output:\n");
 			addtostatus(prehtmlquoted(errbuf));
+		}
+
+		if (warnbuf) {
+			addtostatus("\n\nWarning output:\n");
+			addtostatus(prehtmlquoted(warnbuf));
 		}
 
 		show_timestamps(&timestamps);

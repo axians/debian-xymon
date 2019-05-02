@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: ldaptest.c 7678 2015-10-01 14:42:42Z jccleaver $";
+static char rcsid[] = "$Id: ldaptest.c 8043 2019-04-08 22:51:15Z jccleaver $";
 
 #include <sys/types.h>
 #include <stdlib.h>
@@ -408,7 +408,7 @@ void send_ldap_results(service_t *ldaptest, testedhost_t *host, char *nonetpage,
 	/* Check if this service is a NOPAGENET service. */
 	nopagename = (char *) malloc(strlen(svcname)+3);
 	sprintf(nopagename, ",%s,", svcname);
-	nopage = (strstr(nonetpage, svcname) != NULL);
+	nopage = (strstr(nonetpage, nopagename) != NULL);
 	xfree(nopagename);
 
 	dbgprintf("Calc ldap color host %s : ", host->hostname);

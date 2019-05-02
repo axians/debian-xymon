@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: httpresult.c 7773 2015-11-22 02:19:43Z jccleaver $";
+static char rcsid[] = "$Id: httpresult.c 8043 2019-04-08 22:51:15Z jccleaver $";
 
 #include <sys/types.h>
 #include <stdlib.h>
@@ -128,7 +128,7 @@ void send_http_results(service_t *httptest, testedhost_t *host, testitem_t *firs
 	/* Check if this service is a NOPAGENET service. */
 	nopagename = (char *) malloc(strlen(svcname)+3);
 	sprintf(nopagename, ",%s,", svcname);
-	nopage = (strstr(nonetpage, svcname) != NULL);
+	nopage = (strstr(nonetpage, nopagename) != NULL);
 	xfree(nopagename);
 
 	dbgprintf("Calc http color host %s : ", host->hostname);
@@ -429,7 +429,7 @@ void send_content_results(service_t *httptest, testedhost_t *host,
 	/* Check if this service is a NOPAGENET service. */
 	nopagename = (char *) malloc(strlen(contenttestname)+3);
 	sprintf(nopagename, ",%s,", contenttestname);
-	nopage = (strstr(nonetpage, contenttestname) != NULL);
+	nopage = (strstr(nonetpage, nopagename) != NULL);
 	xfree(nopagename);
 
 	dbgprintf("Calc content color host %s : ", host->hostname);
