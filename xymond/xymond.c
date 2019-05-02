@@ -25,7 +25,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymond.c 7999 2017-01-06 02:00:06Z jccleaver $";
+static char rcsid[] = "$Id: xymond.c 8045 2019-04-09 03:32:37Z jccleaver $";
 
 #include <limits.h>
 #include <sys/time.h>
@@ -43,6 +43,7 @@ static char rcsid[] = "$Id: xymond.c 7999 2017-01-06 02:00:06Z jccleaver $";
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <netdb.h>
 #include <ctype.h>
@@ -63,7 +64,7 @@ static char rcsid[] = "$Id: xymond.c 7999 2017-01-06 02:00:06Z jccleaver $";
  * The absolute maximum size we'll grow our buffers to accommodate an incoming message.
  * This is really just an upper bound to squash the bad guys trying to data-flood us. 
  */
-#define MAX_XYMON_INBUFSZ (10*1024*1024)	/* 10 MB */
+#define MAX_XYMON_INBUFSZ (64*1024*1024)	/* 64 MB */
 
 /* The initial size of an input buffer. Make this large enough for most traffic. */
 #define XYMON_INBUF_INITIAL   (128*1024)

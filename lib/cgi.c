@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: cgi.c 7949 2016-03-03 23:44:55Z jccleaver $";
+static char rcsid[] = "$Id: cgi.c 8015 2017-12-05 13:16:12Z jccleaver $";
 
 #include <ctype.h>
 #include <string.h>
@@ -275,7 +275,7 @@ char *csp_header(const char *str)
 	else if (strncmp(str, "ackinfo", 7) == 0) csppol = strdup("script-src 'self'; connect-src 'self'; form-action 'self';");
 	else if (strncmp(str, "acknowledge", 11) == 0) csppol = strdup("script-src 'self'; connect-src 'self'; form-action 'self';");
 	else if (strncmp(str, "criticaleditor", 14) == 0) csppol = strdup("script-src 'self'; connect-src 'self'; form-action 'self';");
-	else if (strncmp(str, "svcstatus-trends", 16) == 0) csppol = strdup("script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; sandbox allow-forms allow-scripts;");
+	else if (strncmp(str, "svcstatus-trends", 16) == 0) csppol = strdup("script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; sandbox allow-forms allow-scripts allow-same-origin;");
 	else if (strncmp(str, "svcstatus-info", 14) == 0) csppol = strdup("script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; sandbox allow-forms allow-same-origin allow-scripts allow-modals allow-popups;");
 	else if (strncmp(str, "svcstatus", 9) == 0) csppol = strdup("script-src 'self'; connect-src 'self'; form-action 'self'; sandbox allow-forms allow-same-origin;");
 	else if (strncmp(str, "historylog", 10) == 0) csppol = strdup("script-src 'self'; connect-src 'self'; form-action 'self'; sandbox allow-forms;");

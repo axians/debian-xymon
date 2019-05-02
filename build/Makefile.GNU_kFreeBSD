@@ -1,18 +1,13 @@
-# Xymon compile-time settings for LINUX systems
+# Xymon compile-time settings for GNU/kFreeBSD systems
 
-OSDEF = -DLINUX
+OSDEF = 
 
-# NETLIBS: Use replacement rpc
-NETLIBS = -ltirpc
+# NETLIBS: None needed
+NETLIBS = 
 
 # Compile flags for normal build
 CC = gcc
-GCCVER := $(shell test 0`gcc -dumpversion|cut -d. -f1` -ge 4 && echo yes)
-ifeq ($(GCCVER),yes)
-   CFLAGS = -g -O2 -Wall -Wno-unused -I/usr/include/tirpc -Wno-pointer-sign -D_REENTRANT $(LFSDEF) $(OSDEF)
-else
-   CFLAGS = -g -O2 -Wall -Wno-unused -I/usr/include/tirpc -D_REENTRANT $(LFSDEF) $(OSDEF)
-endif
+CFLAGS += -g -O2 -Wall -Wno-unused -D_REENTRANT $(LFSDEF) $(OSDEF)
 
 ifndef PKGBUILD
 RPATH = -Wl,--rpath,

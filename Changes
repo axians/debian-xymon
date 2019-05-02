@@ -1,3 +1,30 @@
+Changes from 4.3.28 -> 4.3.29 ()
+===========================================
+
+* rev 
+
+* Deal with Set-Cookie deprecation on normal pages (Thanks, Erik Schminke)
+* Support glibc->tirpc migration on newer distributions
+* Fix certain flags not being set on GCC 8/9
+* Fix wrong doc for --merge-clientlocal option (Thanks, Thomas Eckert)
+* Fix CSP errors on trends pages (Thanks, John Thurston)
+* Accept minimum libcares version >= 1.5.1; update bundled to 1.15.0
+* Fix RRD parsing for recent netstat (net-tools) on Linux
+* Ensure Content-Type always set in HTML headers (Thanks, Christoph Berg)
+* Ignore additional common tmpfs partitions on recent Linux
+* Fix NONETPAGE parsing (Thanks, John Horne)
+* Increase hard max xymon message size from 10MB to 64MB to match 4.4-alpha
+* Fix line-off-by-one error in logfetch retrieval when triggers are used
+  (Thanks, Toshimitsu FUJIWARA)
+* Fixes to do_temperature parsing (Thanks, Michael Pins)
+* Add support for GNU Hurd and GNU/kFreeBSD
+* Don't require apache authz_groupfile module by default when not needed
+* Add --no-cpu-listing option to xymond_client to block 'top' output in
+  cpu test (Thanks, John Horne)
+* Double-quote the display name of host titles handed to RRD
+* Ensure NTP checks not hung for unreachable hosts (Thanks, Tom Schmidt)
+
+
 Changes from 4.3.27 -> 4.3.28 (17 Jan 2017)
 ===========================================
 
