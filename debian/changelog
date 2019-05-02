@@ -1,3 +1,19 @@
+xymon (4.3.29~r8060-1) UNRELEASED; urgency=low
+
+  * Import 4.3.29 beta snapshot at r8060.
+    + Drop patches applied upstream:
+      - 00_htmlcontenttype.patch
+      - 39_kfreebsd-makefile.patch
+      - 66_apache2.4.patch
+      - 84_fix_compilation_on_GNU_Hurd.patch
+    + Refresh update patches where necessary:
+      - 24_hobbitclient-tmpfs.patch
+      - 51_hardening-buildflags.patch
+      - 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
+      - 90_fix-spelling-errors.patch
+
+ -- Axel Beckert <abe@debian.org>  Thu, 02 May 2019 19:21:10 +0200
+
 xymon (4.3.28-5) unstable; urgency=medium
 
   * xymon.postinst: Check for file existence before calling chgrp/chmod on

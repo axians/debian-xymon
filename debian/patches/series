@@ -1,4 +1,3 @@
-00_htmlcontenttype.patch
 03_doc-paths.patch
 09_hobbitclient-debian.patch
 12_hobbitvars.patch
@@ -9,14 +8,11 @@
 
 # bug fixes
 33_526176-ldap.patch
-39_kfreebsd-makefile.patch
 42_bbcombotest-fix.patch
 45_fix-configure-for-multiarch.patch
 48_png-multiarch.patch
 51_hardening-buildflags.patch
 63_netstat-ant-vs-ipv6-address-truncating.patch
-66_apache2.4.patch
 69_disk-no-duplicate-root.patch
-84_fix_compilation_on_GNU_Hurd.patch
 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
 90_fix-spelling-errors.patch

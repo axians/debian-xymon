@@ -5,7 +5,7 @@ Forwarded: http://lists.xymon.com/archive/2017-February/044370.html
 
 --- a/client/logfetch.c
 +++ b/client/logfetch.c
-@@ -28,6 +28,7 @@
+@@ -29,6 +29,7 @@
  #include <glob.h>
  #include <pwd.h>
  #include <grp.h>
