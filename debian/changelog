@@ -1,16 +1,27 @@
-xymon (4.3.29~r8060-1) UNRELEASED; urgency=low
+xymon (4.3.29-1) UNRELEASED; urgency=low
 
-  * Import 4.3.29 beta snapshot at r8060.
+  * Import new upstream release.
+    + Fixes multiple security vulnerabilities:
+      - CVE-2019-13451: service overflows histlogfn in history.c.
+      - CVE-2019-13452: service overflows histlogfn in reportlog.c.
+      - CVE-2019-13273: srdb overflows dbfn in csvinfo.c.
+      - CVE-2019-13274: reflected XSS in csvinfo.c.
+      - CVE-2019-13455: htmlquoted(hostname) overflows msgline in
+        acknowledge.c.
+      - CVE-2019-13484: htmlquoted(xymondreq) overflows errtxt appfeed.c.
+      - CVE-2019-13485: hostname overflows selfurl in history.c.
+      - CVE-2019-13486: htmlquoted(xymondreq) overflows errtxt in
+        svcstatus.c.
     + Drop patches applied upstream:
       - 00_htmlcontenttype.patch
       - 39_kfreebsd-makefile.patch
       - 66_apache2.4.patch
       - 84_fix_compilation_on_GNU_Hurd.patch
+      - 90_fix-spelling-errors.patch
     + Refresh update patches where necessary:
       - 24_hobbitclient-tmpfs.patch
       - 51_hardening-buildflags.patch
       - 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
-      - 90_fix-spelling-errors.patch
     + Add new build-dependency libtirpc-dev.
 
  -- Axel Beckert <abe@debian.org>  Thu, 02 May 2019 19:21:10 +0200
