@@ -1,4 +1,4 @@
-xymon (4.3.29-1) UNRELEASED; urgency=low
+xymon (4.3.29-1) UNRELEASED; urgency=high
 
   * Import new upstream release.
     + Fixes multiple security vulnerabilities:
