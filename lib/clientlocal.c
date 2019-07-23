@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: clientlocal.c 7985 2016-11-30 20:32:47Z jccleaver $";
+static char rcsid[] = "$Id: clientlocal.c 7985M 2019-07-23 14:46:51Z (local) $";
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -45,8 +45,9 @@ void load_clientconfig(void)
 	clientconfig_t *cctail = NULL;
 
 	if (!configfn) {
-		configfn = (char *)malloc(strlen(xgetenv("XYMONHOME"))+ strlen("/etc/client-local.cfg") + 1);
-		sprintf(configfn, "%s/etc/client-local.cfg", xgetenv("XYMONHOME"));
+		unsigned int configfn_buflen = strlen(xgetenv("XYMONHOME"))+ strlen("/etc/client-local.cfg") + 1;
+		configfn = (char *)malloc(configfn_buflen);
+		snprintf(configfn, configfn_buflen, "%s/etc/client-local.cfg", xgetenv("XYMONHOME"));
 	}
 
 	/* First check if there were no modifications at all */

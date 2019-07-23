@@ -13,7 +13,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: client_config.c 7948 2016-03-03 23:30:01Z jccleaver $";
+static char rcsid[] = "$Id: client_config.c 8068 2019-07-23 14:46:23Z jccleaver $";
 
 #include <stdio.h>
 #include <string.h>
@@ -3092,7 +3092,12 @@ strbuffer_t *check_rrdds_thresholds(char *hostname, char *classname, char *pagep
 	while (rule) {
 		int rulematch = 0;
 
-		if (!rule->rule.rrdds.rrdkey || !namematch(rrdkey, rule->rule.rrdds.rrdkey->pattern, rule->rule.rrdds.rrdkey->exp)) goto nextrule;
+		if (strcmp(rule->rule.rrdds.column, "http") == 0) {
+			if (!rule->rule.rrdds.rrdkey || !patternmatch(rrdkey, rule->rule.rrdds.rrdkey->pattern, rule->rule.rrdds.rrdkey->exp)) goto nextrule;
+		}
+		else {
+			if (!rule->rule.rrdds.rrdkey || !namematch(rrdkey, rule->rule.rrdds.rrdkey->pattern, rule->rule.rrdds.rrdkey->exp)) goto nextrule;
+		}
 
 		handle = xtreeFind(valnames, rule->rule.rrdds.rrdds);
 		if (handle == xtreeEnd(valnames)) goto nextrule;

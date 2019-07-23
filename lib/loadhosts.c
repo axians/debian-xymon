@@ -13,7 +13,7 @@
 /*----------------------------------------------------------------------------*/
 
 
-static char rcsid[] = "$Id: loadhosts.c 7720 2015-11-04 20:23:13Z jccleaver $";
+static char rcsid[] = "$Id: loadhosts.c 7720M 2019-07-23 14:46:51Z (local) $";
 
 #include <stdio.h>
 #include <string.h>
@@ -473,7 +473,7 @@ void *localhostinfo(char *hostname)
 		result = (namelist_t *)calloc(1, sizeof(namelist_t));
 	}
 
-	strcpy(result->ip, "127.0.0.1");
+	strncpy(result->ip, "127.0.0.1", sizeof(result->ip));
 
 	if (result->hostname) xfree(result->hostname);
 	result->hostname = strdup(hostname);
@@ -498,8 +498,8 @@ void *localhostinfo(char *hostname)
 
 char *xmh_item(void *hostin, enum xmh_item_t item)
 {
-	static char *result;
-	static char intbuf[10];
+	STATIC_SBUF_DEFINE(result);
+	static char intbuf[15];
 	static char *inttxt = NULL;
 	static strbuffer_t *rawtxt = NULL;
 	char *p;
@@ -550,7 +550,7 @@ char *xmh_item(void *hostin, enum xmh_item_t item)
 		  return "Top Page";
 
 	  case XMH_PAGEINDEX:
-		  sprintf(intbuf, "%d", host->pageindex);
+		  snprintf(intbuf, sizeof(intbuf), "%d", host->pageindex);
 		  return intbuf;
 
 	  case XMH_ALLPAGEPATHS:
@@ -573,8 +573,8 @@ char *xmh_item(void *hostin, enum xmh_item_t item)
 		  p = xmh_find_item(host, item);
 		  if (p) {
 			if (result) xfree(result);
-			result = (char *)malloc(strlen(p) + strlen(host->hostname) + 1);
-			sprintf(result, p, host->hostname);
+			SBUF_MALLOC(result, strlen(p) + strlen(host->hostname) + 1);
+			snprintf(result, result_buflen, p, host->hostname);
 		  	return result;
 		  }
 		  else

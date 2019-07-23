@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: suid.c 6712 2011-07-31 21:01:52Z storner $";
+static char rcsid[] = "$Id: suid.c 6712M 2019-07-23 14:46:51Z (local) $";
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -40,12 +40,19 @@ void get_root(void)
 void drop_root(void)
 {
 	if (!havemyuid) { myuid = getuid(); havemyuid = 1; }
-	seteuid(myuid);
+	if (seteuid(myuid) != 0) {
+		perror("Failed to drop root privileges\n");
+		abort();
+	}
+				 
 }
 
 void get_root(void)
 {
-	seteuid(0);
+	if (seteuid(0) != 0) {
+		perror("Failed to get root privileges\n");
+		abort();
+	}
 }
 
 #endif

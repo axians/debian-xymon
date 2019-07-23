@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: notifylog.c 7678 2015-10-01 14:42:42Z jccleaver $";
+static char rcsid[] = "$Id: notifylog.c 7678M 2019-07-23 14:46:51Z (local) $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -154,7 +154,7 @@ void do_notifylog(FILE *output,
 	if (rcptregex && *rcptregex) rcptregexp = pcre_compile(rcptregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
 	if (exrcptregex && *exrcptregex) exrcptregexp = pcre_compile(exrcptregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
 
-	sprintf(notifylogfilename, "%s/notifications.log", xgetenv("XYMONSERVERLOGS"));
+	snprintf(notifylogfilename, sizeof(notifylogfilename), "%s/notifications.log", xgetenv("XYMONSERVERLOGS"));
 	notifylog = fopen(notifylogfilename, "r");
 
 	if (notifylog && (stat(notifylogfilename, &st) == 0)) {
@@ -311,11 +311,11 @@ void do_notifylog(FILE *output,
 		} while (walk && (count<maxcount));
 
 		if (maxminutes)  { 
-			sprintf(title, "%d notifications in the past %u minutes", 
+			snprintf(title, sizeof(title), "%d notifications in the past %u minutes", 
 				count, (unsigned int)((getcurrenttime(NULL) - lasttoshow->eventtime) / 60));
 		}
 		else {
-			sprintf(title, "%d notifications sent.", count);
+			snprintf(title, sizeof(title), "%d notifications sent.", count);
 		}
 
 		fprintf(output, "<BR><BR>\n");
@@ -352,9 +352,9 @@ void do_notifylog(FILE *output,
 	else {
 		/* No notifications during the past maxminutes */
 		if (notifylog)
-			sprintf(title, "No notifications sent in the last %d minutes", maxminutes);
+			snprintf(title, sizeof(title), "No notifications sent in the last %d minutes", maxminutes);
 		else
-			strcpy(title, "No notifications logged");
+			strncpy(title, "No notifications logged", sizeof(title));
 
 		fprintf(output, "<CENTER><BR>\n");
 		fprintf(output, "<TABLE SUMMARY=\"%s\" BORDER=0>\n", title);

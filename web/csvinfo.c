@@ -13,7 +13,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: csvinfo.c 7678 2015-10-01 14:42:42Z jccleaver $";
+static char rcsid[] = "$Id: csvinfo.c 7678M 2019-07-23 14:46:51Z (local) $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -123,12 +123,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	sprintf(dbfn, "%s/etc/%s", xgetenv("XYMONHOME"), srcdb);
+	snprintf(dbfn, sizeof(dbfn), "%s/etc/%s", xgetenv("XYMONHOME"), srcdb);
 	db = fopen(dbfn, "r");
 	if (db == NULL) {
-		char msg[PATH_MAX];
+		SBUF_DEFINE(msg);
 
-		sprintf(msg, "Cannot open sourcedb %s\n", dbfn);
+		SBUF_MALLOC(msg, 30+strlen(htmlquoted(dbfn)));
+		snprintf(msg, msg_buflen, "Cannot open sourcedb %s\n", htmlquoted(dbfn));
 		errormsg(msg);
 		return 1;
 	}
