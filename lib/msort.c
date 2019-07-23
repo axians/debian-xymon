@@ -14,7 +14,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: msort.c 7058 2012-07-14 15:01:11Z storner $";
+static char rcsid[] = "$Id: msort.c 7058M 2019-07-23 14:46:51Z (local) $";
 
 #include <stdlib.h>
 #include <sys/time.h>
@@ -275,7 +275,7 @@ int main(int argc, char *argv[])
 		char numstr[10];
 		newrec = (rec_t *)calloc(1, sizeof(rec_t));
 		newrec->key = strdup(tdata[i]);
-		sprintf(numstr, "%d", i+1); newrec->val = strdup(numstr);
+		snprintf(numstr, sizeof(numstr), "%d", i+1); newrec->val = strdup(numstr);
 
 		if (tail) {
 			tail->next = newrec;

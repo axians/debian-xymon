@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: files.c 7678 2015-10-01 14:42:42Z jccleaver $";
+static char rcsid[] = "$Id: files.c 7678M 2019-07-23 14:46:51Z (local) $";
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -44,7 +44,7 @@ void dropdirectory(char *dirfn, int background)
 		dirfd = opendir(dirfn);
 		if (dirfd) {
 			while ( (de = readdir(dirfd)) != NULL ) {
-				sprintf(fn, "%s/%s", dirfn, de->d_name);
+				snprintf(fn, sizeof(fn), "%s/%s", dirfn, de->d_name);
 				if (strcmp(de->d_name, ".") && strcmp(de->d_name, "..") && (stat(fn, &st) == 0)) {
 					if (S_ISREG(st.st_mode)) {
 						dbgprintf("Removing file %s\n", fn);

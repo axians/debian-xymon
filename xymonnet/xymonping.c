@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymonping.c 7999 2017-01-06 02:00:06Z jccleaver $";
+static char rcsid[] = "$Id: xymonping.c 8064 2019-05-03 19:38:41Z jccleaver $";
 
 #include "config.h"
 
@@ -53,7 +53,7 @@ typedef struct hostdata_t {
 
 hostdata_t *hosthead = NULL;
 int hostcount = 0;
-hostdata_t **hosts = NULL;	/* Array of pointers to the hostdata records, for fast acces via ID */
+hostdata_t **hosts = NULL;	/* Array of pointers to the hostdata records, for fast access via ID */
 int myicmpid;
 int senddelay = (1000000 / 50);	/* Delay between sending packets, in microseconds */
 

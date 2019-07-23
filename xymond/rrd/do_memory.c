@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char memory_rcsid[] = "$Id: do_memory.c 7167 2012-08-08 10:24:34Z storner $";
+static char memory_rcsid[] = "$Id: do_memory.c 8066 2019-05-03 22:42:00Z jccleaver $";
 
 static char *memory_params[]      = { "DS:realmempct:GAUGE:600:0:U", NULL };
 static void *memory_tpl           = NULL;
@@ -45,7 +45,7 @@ void do_memory_rrd_update(time_t tstamp, char *hostname, char *testname, char *c
 	snprintf(rrdvalues, sizeof(rrdvalues), "%d:%d", (int)tstamp, swapval);
 	create_and_update_rrd(hostname, testname, classname, pagepaths, memory_params, memory_tpl);
 
-	if ((actval >= 0) && (actval <= 100)) {
+	if (actval >= 0) {
 		setupfn2("%s.%s.rrd", "memory", "actual");
 		snprintf(rrdvalues, sizeof(rrdvalues), "%d:%d", (int)tstamp, actval);
 		create_and_update_rrd(hostname, testname, classname, pagepaths, memory_params, memory_tpl);

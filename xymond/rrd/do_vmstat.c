@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char vmstat_rcsid[] = "$Id: do_vmstat.c 7334 2014-01-07 21:52:08Z storner $";
+static char vmstat_rcsid[] = "$Id: do_vmstat.c 8066 2019-05-03 22:42:00Z jccleaver $";
 
 typedef struct vmstat_layout_t {
 	int index;
@@ -76,6 +76,8 @@ static vmstat_layout_t vmstat_aix_layout[] = {
 	{ 14, "cpu_sys" },
 	{ 15, "cpu_idl" },
 	{ 16, "cpu_wait" },
+        { 17, "cpu_pc" },
+        { 18, "cpu_ec" },
 	{ -1, NULL }
 };
 
@@ -370,6 +372,17 @@ int do_vmstat_rrd(char *hostname, char *testname, char *classname, char *pagepat
 	p = strchr(datapart, '\n'); if (p) *p = '\0';
 	p = strtok(datapart, " "); datacount = 0;
 	while (p && (datacount < MAX_VMSTAT_VALUES)) {
+ 
+         /* Removing . and , from the numbers */
+         char *p1;
+         while ( (p1 = strchr(p,'.')) != NULL ) {
+            strcpy (p1, p1+1) ;
+         }
+         char *p2;
+         while ( (p2 = strchr(p,',')) != NULL ) {
+            strcpy (p2, p2+1) ;
+         }
+ 
 		values[datacount++] = atoi(p);
 		p = strtok(NULL, " ");
 	}

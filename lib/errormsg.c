@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: errormsg.c 7612 2015-03-24 00:18:08Z jccleaver $";
+static char rcsid[] = "$Id: errormsg.c 7612M 2019-07-23 14:46:51Z (local) $";
 
 #include <sys/types.h>
 #include <string.h>
@@ -26,14 +26,13 @@ static char rcsid[] = "$Id: errormsg.c 7612 2015-03-24 00:18:08Z jccleaver $";
 
 #include "libxymon.h"
 
-char *errbuf = NULL;
+SBUF_DEFINE(errbuf);
 static char msg[4096];
 static char timestr[20];
 static size_t timesize = sizeof(timestr);
 static struct timeval now;
 static time_t then = 0;
 int save_errbuf = 1;
-static unsigned int errbufsize = 0;
 static char *errappname = NULL;
 
 int debug = 0;
@@ -61,16 +60,14 @@ void errprintf(const char *fmt, ...)
 
 	if (save_errbuf) {
 		if (errbuf == NULL) {
-			errbufsize = 8192;
-			errbuf = (char *) malloc(errbufsize);
+			SBUF_MALLOC(errbuf, 8192);
 			*errbuf = '\0';
 		}
-		else if ((strlen(errbuf) + strlen(msg)) > errbufsize) {
-			errbufsize += 8192;
-			errbuf = (char *) realloc(errbuf, errbufsize);
+		else if ((strlen(errbuf) + strlen(msg)) > errbuf_buflen) {
+			SBUF_REALLOC(errbuf, errbuf_buflen+8192);
 		}
 
-		strcat(errbuf, msg);
+		strncat(errbuf, msg, (errbuf_buflen - strlen(errbuf)));
 	}
 }
 
@@ -183,12 +180,12 @@ void redirect_cgilog(char *cginame)
 	if (!cgilogdir) return;
 
 	if (cginame) errappname = strdup(cginame);
-	sprintf(logfn, "%s/cgierror.log", cgilogdir);
+	snprintf(logfn, sizeof(logfn), "%s/cgierror.log", cgilogdir);
 	reopen_file(logfn, "a", stderr);
 
 	/* If debugging, setup the debug logfile */
 	if (debug) {
-		sprintf(logfn, "%s/%s.dbg", cgilogdir, (errappname ? errappname : "cgi"));
+		snprintf(logfn, sizeof(logfn), "%s/%s.dbg", cgilogdir, (errappname ? errappname : "cgi"));
 		set_debugfile(logfn, 1);
 	}
 }
