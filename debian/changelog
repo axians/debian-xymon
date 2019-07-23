@@ -24,6 +24,8 @@ xymon (4.3.29-1) UNRELEASED; urgency=low
       - 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
     + Add new build-dependency libtirpc-dev.
   * Declare compliance with Debian Policy 4.4.0. (No changes needed.)
+  * Bump debhelper compatibility level to 12.
+    + Replace debian/compat with a versioned b-d on debhelper-compat.
 
  -- Axel Beckert <abe@debian.org>  Thu, 02 May 2019 19:21:10 +0200
 
