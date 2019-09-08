@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: htmllog.c 7861M 2019-07-23 14:46:51Z (local) $";
+static char rcsid[] = "$Id: htmllog.c 8084 2019-08-30 23:01:18Z jccleaver $";
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -647,8 +647,10 @@ char *hostnamehtml(char *hostname, char *defaultlink, int usetooltip)
 	 * else just put the hostname there.
 	 */
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif  // __GNUC__
 	if (documentationurl) {
 		snprintf(result, sizeof(result), "<A HREF=\"%s\" %s><FONT %s>%s</FONT></A>",
 			urldoclink(documentationurl, hostname),
@@ -668,8 +670,10 @@ char *hostnamehtml(char *hostname, char *defaultlink, int usetooltip)
 		snprintf(result, sizeof(result), "<FONT %s>%s</FONT>",
 			xgetenv("XYMONPAGEROWFONT"), nameandcomment(hinfo, hostname, usetooltip));
 	}
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 	#pragma GCC diagnostic pop
 
+#endif  // __GNUC__
 	return result;
 }
 

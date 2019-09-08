@@ -9,7 +9,7 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 #
-# $Id: xymonclient-linux.sh 7707 2015-10-19 22:34:59Z jccleaver $
+# $Id: xymonclient-linux.sh 8097 2019-09-02 19:10:26Z jccleaver $
 
 echo "[date]"
 date
@@ -67,8 +67,11 @@ netstat -rn
 echo "[netstat]"
 netstat -s
 echo "[ports]"
-# Bug in RedHat's netstat spews annoying error messages. 
-netstat -antu 2>/dev/null
+# For some reason, the option for Wide/unTrimmed display of IPs
+# changed in netstat versions and no one provided backwards compat,
+# so exactly ONE of these should work successfully:
+netstat -antuW 2>/dev/null
+netstat -antuT 2>/dev/null
 echo "[ifstat]"
 /sbin/ifconfig 2>/dev/null
 # Report mdstat data if it exists

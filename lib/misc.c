@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: misc.c 7892M 2019-07-23 14:46:51Z (local) $";
+static char rcsid[] = "$Id: misc.c 8084 2019-08-30 23:01:18Z jccleaver $";
 
 #include "config.h"
 
@@ -464,10 +464,6 @@ char *u32toIP(unsigned int ip32)
 	ip2 = ((ip32 >> 16) & 0xFF);
 	ip3 = ((ip32 >> 8) & 0xFF);
 	ip4 = (ip32 & 0xFF);
-
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wformat-truncation"
-	#pragma GCC diagnostic pop
 
 	snprintf(result, result_buflen, "%d.%d.%d.%d", ip1, ip2, ip3, ip4);
 	return result;

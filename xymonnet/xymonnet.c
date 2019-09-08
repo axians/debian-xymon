@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: xymonnet.c 8060M 2019-07-23 14:46:51Z (local) $";
+static char rcsid[] = "$Id: xymonnet.c 8084 2019-08-30 23:01:18Z jccleaver $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -56,6 +56,7 @@ extern struct rpcent *getrpcbyname(char *);
 #include "ldaptest.h"
 
 #define DEFAULT_PING_CHILD_COUNT 1
+#define MSGBUFSIZE 4096
 
 char *reqenv[] = {
 	"NONETPAGE",
@@ -1309,9 +1310,11 @@ int finish_ping_service(service_t *service)
 						pingcmd, WEXITSTATUS(pingstatus));
 		}
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 		/* Ignore gcc warnings about truncating filenames when adding a number */
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif  // __GNUC__
 
 		/* Open the new ping result file */
 		snprintf(fn, sizeof(fn), "%s.%02d", pinglog, i);
@@ -1335,7 +1338,9 @@ int finish_ping_service(service_t *service)
 			if (errfd) fclose(errfd);
 		}
 		if (!debug) unlink(fn);
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 		#pragma GCC diagnostic pop
+#endif  // __GNUC__
 
 		if (failed) {
 			/* Flag all ping tests as "undecided" */
@@ -1848,7 +1853,7 @@ void send_rpcinfo_results(service_t *service, int failgoesclear)
 	char		*msgbuf;
 	char		causetext[1024];
 
-	msgbuf = (char *)malloc(4096);
+	msgbuf = (char *)malloc(MSGBUFSIZE);
 
 	for (t=service->items; (t); t = t->next) {
 		char *wantedrpcsvcs = NULL;
@@ -1904,7 +1909,7 @@ void send_rpcinfo_results(service_t *service, int failgoesclear)
 					snprintf(msgline, sizeof(msgline), "&%s Unknown RPC service %s\n",
 						colorname(COL_RED), rpcsvc);
 				}
-				strncat(msgbuf, msgline, (sizeof(msgbuf) - strlen(msgbuf)));
+				strncat(msgbuf, msgline, (MSGBUFSIZE - strlen(msgbuf)));
 
 				rpcsvc = strtok(NULL, ",");
 			}

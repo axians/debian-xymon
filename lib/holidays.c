@@ -12,7 +12,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: holidays.c 7240M 2019-07-23 14:46:51Z (local) $";
+static char rcsid[] = "$Id: holidays.c 8084 2019-08-30 23:01:18Z jccleaver $";
 
 #include <time.h>
 #include <sys/time.h>
@@ -596,10 +596,14 @@ void printholidays(char *key, strbuffer_t *buf, int mfirst, int mlast)
 			if ((tm.tm_mon >= mfirst) && (tm.tm_mon <= mlast)) {
 				strftime(dstr, sizeof(dstr), fmt, localtime(&t));
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 				#pragma GCC diagnostic push
 				#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif  // __GNUC__
 				snprintf(oneh, sizeof(oneh), "<tr><td>%s</td><td>%s</td>\n", desc, dstr);
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 				#pragma GCC diagnostic pop
+#endif  // __GNUC__
 				addtobuffer(buf, oneh);
 			}
 		}
