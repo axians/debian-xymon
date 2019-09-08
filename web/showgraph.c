@@ -11,7 +11,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: showgraph.c 8064M 2019-07-23 14:46:51Z (local) $";
+static char rcsid[] = "$Id: showgraph.c 8076 2019-08-12 19:23:00Z jccleaver $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -1081,10 +1081,10 @@ void generate_graph(char *gdeffn, char *rrddir, char *graphfn)
 		for (i=0; (i<rrddbcount); i++) pcmdlen += (strlen(rrddbs[i].rrdfn) + 3);
 
 		p = pcmd = (char *)malloc(pcmdlen+1);
-		p += snprintf(p, (pcmdlen - (p - pcmd)), param_str, gdef->title+5, displayname, service, glegend);
+		p += snprintf(p, pcmdlen+1, param_str, gdef->title+5, displayname, service, glegend);
 		for (i=0; (i<rrddbcount); i++) {
 			if ((firstidx == -1) || ((i >= firstidx) && (i <= lastidx))) {
-				p += snprintf(p, (pcmdlen - (p - pcmd)), " \"%s\"", rrddbs[i].rrdfn);
+				p += snprintf(p, (pcmdlen - (p - pcmd) + 1), " \"%s\"", rrddbs[i].rrdfn);
 			}
 		}
 		pfd = popen(pcmd, "r");

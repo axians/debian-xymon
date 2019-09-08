@@ -10,7 +10,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: history.c 7678M 2019-07-23 14:46:51Z (local) $";
+static char rcsid[] = "$Id: history.c 8072 2019-08-05 20:21:55Z jccleaver $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -605,7 +605,7 @@ static void parse_query(void)
 		 */
 
 		if (strcasecmp(cwalk->name, "HISTFILE") == 0) {
-			char *p = cwalk->value + strspn(cwalk->value, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,");
+			char *p = cwalk->value + strspn(cwalk->value, "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ:,.\\/_-");
 			*p = '\0';
 
 			p = strrchr(cwalk->value, '.');

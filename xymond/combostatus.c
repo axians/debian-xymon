@@ -8,7 +8,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-static char rcsid[] = "$Id: combostatus.c 7718 2015-11-03 01:37:39Z jccleaver $";
+static char rcsid[] = "$Id: combostatus.c 8106 2019-09-03 21:46:55Z jccleaver $";
 
 #include <limits.h>
 #include <stdio.h>
@@ -251,6 +251,7 @@ static long getvalue(char *hostname, char *testname, int *color, char **errbuf)
 	for (walk = testhead; (walk && ( (strcmp(walk->reshostname, hostname) != 0) || (strcmp(walk->restestname, testname) != 0) ) ); walk = walk->next);
 	if (walk != NULL) {
 		/* It is a combo test they want the result of. */
+		*color = (walk->result ? COL_GREEN : COL_RED);
 		return walk->result;
 	}
 
