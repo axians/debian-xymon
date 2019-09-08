@@ -12,6 +12,5 @@
 45_fix-configure-for-multiarch.patch
 48_png-multiarch.patch
 51_hardening-buildflags.patch
-63_netstat-ant-vs-ipv6-address-truncating.patch
 69_disk-no-duplicate-root.patch
 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
