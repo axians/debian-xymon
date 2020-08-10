@@ -109,3 +109,7 @@ override_dh_installinit:
 
 override_dh_fixperms:
 	dh_fixperms -a -Xbin/xymonping
+
+# Needed as long as #968170 in dh_apache2/apache2-dev isn't fixed.
+override_dh_missing:
+	dh_missing --list-missing
