@@ -23,3 +23,8 @@ xymon: breakout-link usr/lib/xymon/server/etc -> etc/xymon
 xymon: breakout-link usr/lib/xymon/server/tmp -> var/lib/xymon/tmp
 xymon: breakout-link usr/lib/xymon/server/web -> etc/xymon/web
 xymon: breakout-link usr/lib/xymon/server/www -> var/lib/xymon/www
+# A rather overzealous lintian tag when applied to packages with many
+# parts like CGI scripts with man pages.
+xymon: spare-manual-page usr/share/man/man*/*.gz
+# Documentation available via web interface
+xymon: package-contains-documentation-outside-usr-share-doc usr/share/xymon/help/*
