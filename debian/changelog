@@ -8,6 +8,8 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * Update lintian overrides to match current phrasing of the tags.
   * Add new override for overzealous spare-manual-page and
     package-contains-documentation-outside-usr-share-doc lintian tags.
+  * Remove lintian override for no more emitted
+    apache2-deprecated-auth-config tag.
   * Bump debian/watch version to 4.
 
   [ Debian Janitor ]
