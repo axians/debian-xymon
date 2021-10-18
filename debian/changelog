@@ -4,11 +4,13 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * Bump debhelper-compat to 13.
     + Override dh_missing with --list-missing due to #968170 in
       dh_apache2/apache2-dev.
-  * Update lintian overrides to match current phrasing of the tags.
-  * Add new override for overzealous spare-manual-page and
-    package-contains-documentation-outside-usr-share-doc lintian tags.
-  * Remove lintian override for no more emitted
-    apache2-deprecated-auth-config tag.
+  * Lintian Overrides:
+    + Update where needed to match current phrasing of the tags.
+    + Add new overrides for overzealous spare-manual-page and
+      package-contains-documentation-outside-usr-share-doc lintian tags.
+    + Remove lintian override for no more emitted
+      apache2-deprecated-auth-config tag.
+    + Add overrides for very-long-line-length-in-source-file.
   * Bump debian/watch version to 4.
   * Remove packaging adaptions for the hobbit to xymon migration as well
     as maintainer-script snippets caring about versions before 4.3.7-1~~.
