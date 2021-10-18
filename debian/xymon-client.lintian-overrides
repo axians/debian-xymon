@@ -5,10 +5,6 @@ xymon-client: init.d-script-depends-on-all-virtual-facility etc/init.d/xymon-cli
 xymon-client: copyright-refers-to-symlink-license usr/share/common-licenses/GPL
 # ridiculous, see #904852
 xymon-client: package-contains-documentation-outside-usr-share-doc usr/lib/xymon/client/local/README
-# Sigh, this is necessary as xymon searches those files on non FHS locations
-xymon-client: breakout-link usr/lib/xymon/client/etc -> etc/xymon
-xymon-client: breakout-link usr/lib/xymon/client/logs -> var/log/xymon
-xymon-client: breakout-link usr/lib/xymon/client/tmp -> var/lib/xymon/tmp
 # A rather overzealous lintian tag when applied to packages with many
 # components with man pages.
 xymon-client: spare-manual-page usr/share/man/man*/*.gz

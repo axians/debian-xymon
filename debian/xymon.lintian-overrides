@@ -16,11 +16,6 @@ xymon: package-contains-hardlink usr/lib/xymon/server/bin/cgiwrap -> usr/lib/xym
 xymon: copyright-refers-to-symlink-license usr/share/common-licenses/GPL
 # ridiculous, see #904852
 xymon: package-contains-documentation-outside-usr-share-doc usr/share/xymon/gifs/README
-# Sigh, this is necessary as xymon searches those files on non FHS locations
-xymon: breakout-link usr/lib/xymon/server/etc -> etc/xymon
-xymon: breakout-link usr/lib/xymon/server/tmp -> var/lib/xymon/tmp
-xymon: breakout-link usr/lib/xymon/server/web -> etc/xymon/web
-xymon: breakout-link usr/lib/xymon/server/www -> var/lib/xymon/www
 # A rather overzealous lintian tag when applied to packages with many
 # parts like CGI scripts with man pages.
 xymon: spare-manual-page usr/share/man/man*/*.gz
