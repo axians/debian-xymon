@@ -12,18 +12,6 @@ case "$1" in
 	# stop the client when the server is installed
 	invoke-rc.d --quiet hobbit-client stop || true
 	invoke-rc.d xymon-client stop || true
-	if test "$2" && dpkg --compare-versions "$2" lt 4.3.7-1~~ &&
-			test -d /var/lib/hobbit/www ; then
-		# we want to replace symlinks with directories, prod dpkg to do it
-		move_link () {
-			test -h "$1" || return
-			test -d "$1" && return
-			test -e "$1.dpkg-old" && return
-			mv "$1" "$1.dpkg-old"
-		}
-		cd /var/lib/hobbit/www
-		move_link menu
-	fi
 	;;
 esac
 
