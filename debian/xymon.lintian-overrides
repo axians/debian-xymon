@@ -2,7 +2,7 @@ xymon: package-contains-empty-directory usr/lib/xymon/server/download/
 xymon: elevated-privileges usr/lib/xymon/server/bin/xymonping 4755 root/root
 xymon: spelling-error-in-binary usr/lib/xymon/server/bin/xymond_rrd retransmited retransmitted
 # Seems a false positive due to the fallback if apache2-maintscript-helper isn't there
-xymon: apache2-reverse-dependency-calls-invoke-rc.d postinst:159
+xymon: apache2-reverse-dependency-calls-invoke-rc.d postinst:122
 # Monitoring should start as late as possible and it's only "Should", not "Required"
 xymon: init.d-script-depends-on-all-virtual-facility etc/init.d/xymon should-start
 # Xymon server is not suitable for installation on a network file
