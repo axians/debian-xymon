@@ -22,9 +22,6 @@ Rules-Requires-Root: no
 
 Package: xymon
 Architecture: any
-Breaks: hobbit (<< 4.2.2)
-Provides: hobbit
-Replaces: hobbit (<< 4.2.2)
 Pre-Depends: ${misc:Pre-Depends}
 Depends: xymon-client,
          lsb-base,
@@ -53,10 +50,6 @@ Description: monitoring system for systems, networks and applications
 
 Package: xymon-client
 Architecture: any
-Breaks: hobbit (<= 4.2.0-1),
-        hobbit-client (<< 4.2.2)
-Provides: hobbit-client
-Replaces: hobbit-client (<< 4.2.2)
 Pre-Depends: debconf | debconf-2.0, ${misc:Pre-Depends}
 Depends: adduser,
          lsb-base,
