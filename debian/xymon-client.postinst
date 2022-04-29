@@ -72,8 +72,8 @@ case "$1" in
 	test -d /var/run/xymon || mkdir /var/run/xymon
 	chown xymon:xymon /var/run/xymon
 
-	test -d /var/lib/xymon/tmp || mkdir /var/lib/xymon/tmp
-	chown xymon:xymon /var/lib/xymon/tmp
+	test -d /var/lib/xymon/tmp || mkdir -pv /var/lib/xymon/tmp
+	chown xymon:xymon -c /var/lib/xymon /var/lib/xymon/tmp
 
 	[ "$MIGRATE" ] && test -d /var/log/hobbit -a ! -d /var/log/xymon && mv -v /var/log/hobbit /var/log/xymon || true
 	test -d /var/log/xymon || mkdir /var/log/xymon
