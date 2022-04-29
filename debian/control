@@ -14,7 +14,7 @@ Build-Depends: debhelper-compat (= 13),
                libtirpc-dev,
                po-debconf,
                procps
-Standards-Version: 4.4.0
+Standards-Version: 4.6.0
 Vcs-Git: https://salsa.debian.org/debian/xymon.git
 Vcs-Browser: https://salsa.debian.org/debian/xymon
 Homepage: http://xymon.sourceforge.net/
