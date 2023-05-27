@@ -42,6 +42,10 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * debian/control (Build-Depends): Replace libpcre3-dev with libpcre2-dev.
   * debian/rules (override_dh_auto_configure): Use pcre2-config.
 
+  [ Roland Rosenfeld ]
+  * 94_nousemultipart: set usemultipart=0 in snapshot and report to fix
+    Firefox (Closes: #990989).
+
  -- Axel Beckert <abe@debian.org>  Mon, 10 Aug 2020 04:39:28 +0200
 
 xymon (4.3.30-1) unstable; urgency=medium
