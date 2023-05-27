@@ -18,3 +18,4 @@
 92_ntpdate_obsoleted_-p_option
 93_pcre2.patch
 94_nousemultipart.patch
+95_fix_tls13_banner.patch
