@@ -31,6 +31,10 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
       Breaks.
     + Remove 77 maintscript entries from 2 files.
 
+  [ Carsten Leonhardt ]
+  * Update xymon-client.init: add "reload" to usage message as that is
+    supported, too.
+
  -- Axel Beckert <abe@debian.org>  Mon, 10 Aug 2020 04:39:28 +0200
 
 xymon (4.3.30-1) unstable; urgency=medium
