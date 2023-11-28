@@ -1,0 +1,17 @@
+Description: ntpdate obsoleted the "-p" option
+Author: Carsten Leonhardt <leo@debian.org>
+Bug-Debian: https://bugs.debian.org/1057044
+Forwarded: no
+Last-Update: 2023-11-28
+
+--- a/xymond/etcfiles/xymonserver.cfg.DIST
++++ b/xymond/etcfiles/xymonserver.cfg.DIST
+@@ -133,7 +133,7 @@
+ FPING="@FPING@"					# Path and options for the ping program.
+ FPINGOPTS="-Ae"					# Standard options to fping/xymonping
+ NTPDATE="ntpdate"				# Path to the 'ntpdate' program
+-NTPDATEOPTS="-u -q -p 1"			# Standard options to ntpdate
++NTPDATEOPTS="-u -q"				# Standard options to ntpdate
+ TRACEROUTE="traceroute"                         # How to do traceroute on failing ping tests. Requires "trace" in hosts.cfg .
+ TRACEROUTEOPTS="-n -q 2 -w 2 -m 15"		# Standard options to traceroute
+ XYMONROUTERTEXT="router"			# What to call a failing intermediate network device.
