@@ -37,7 +37,7 @@ override_dh_auto_configure:
 	INSTALLTMPDIR=/var/lib/xymon/tmp \
 	INSTALLWWWDIR=/var/lib/xymon/www \
 	./configure --server \
-	--pcrelib $(shell pcre-config --libs) \
+	--pcrelib $(shell pcre2-config --libs8) \
 	--ssllib /usr/lib/$(DEB_HOST_MULTIARCH) \
 	--ldaplib /usr/lib/$(DEB_HOST_MULTIARCH)
 

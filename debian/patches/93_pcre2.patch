@@ -1,0 +1,2167 @@
+Description: Port to PCRE2.
+Bug-Debian: https://bugs.debian.org/999921
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048291.html
+Last-Update: 2023-12-21
+---
+
+--- xymon.orig/lib/acknowledgementslog.c
++++ xymon/lib/acknowledgementslog.c
+@@ -26,7 +26,8 @@
+ #include <errno.h>
+ #include <time.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+@@ -103,16 +104,17 @@
+ 	char title[200];
+ 
+ 	/* For the PCRE matching */
+-	const char *errmsg = NULL;
+-	int errofs = 0;
+-	pcre *pageregexp = NULL;
+-	pcre *expageregexp = NULL;
+-	pcre *hostregexp = NULL;
+-	pcre *exhostregexp = NULL;
+-	pcre *testregexp = NULL;
+-	pcre *extestregexp = NULL;
+-	pcre *rcptregexp = NULL;
+-	pcre *exrcptregexp = NULL;
++	int err;
++	PCRE2_SIZE errofs;
++	pcre2_code *pageregexp = NULL;
++	pcre2_code *expageregexp = NULL;
++	pcre2_code *hostregexp = NULL;
++	pcre2_code *exhostregexp = NULL;
++	pcre2_code *testregexp = NULL;
++	pcre2_code *extestregexp = NULL;
++	pcre2_code *rcptregexp = NULL;
++	pcre2_code *exrcptregexp = NULL;
++	pcre2_match_data *ovector;
+ 
+ 	if (maxminutes && (fromtime || totime)) {
+ 		fprintf(output, "<B>Only one time interval type is allowed!</B>");
+@@ -147,14 +149,14 @@
+ 
+ 	if (!maxcount) maxcount = 100;
+ 
+-	if (pageregex && *pageregex) pageregexp = pcre_compile(pageregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (expageregex && *expageregex) expageregexp = pcre_compile(expageregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (hostregex && *hostregex) hostregexp = pcre_compile(hostregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (exhostregex && *exhostregex) exhostregexp = pcre_compile(exhostregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (testregex && *testregex) testregexp = pcre_compile(testregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (extestregex && *extestregex) extestregexp = pcre_compile(extestregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (rcptregex && *rcptregex) rcptregexp = pcre_compile(rcptregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (exrcptregex && *exrcptregex) exrcptregexp = pcre_compile(exrcptregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
++	if (pageregex && *pageregex) pageregexp = pcre2_compile(pageregex, strlen(pageregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (expageregex && *expageregex) expageregexp = pcre2_compile(expageregex, strlen(expageregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (hostregex && *hostregex) hostregexp = pcre2_compile(hostregex, strlen(hostregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (exhostregex && *exhostregex) exhostregexp = pcre2_compile(exhostregex, strlen(exhostregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (testregex && *testregex) testregexp = pcre2_compile(testregex, strlen(testregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (extestregex && *extestregex) extestregexp = pcre2_compile(extestregex, strlen(extestregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (rcptregex && *rcptregex) rcptregexp = pcre2_compile(rcptregex, strlen(rcptregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (exrcptregex && *exrcptregex) exrcptregexp = pcre2_compile(exrcptregex, strlen(exrcptregex), PCRE2_CASELESS, &err, &errofs, NULL);
+ 
+ 	snprintf(acknowledgementslogfilename, sizeof(acknowledgementslogfilename), "%s/acknowledge.log", xgetenv("XYMONSERVERLOGS"));
+ 	acknowledgementslog = fopen(acknowledgementslogfilename, "r");
+@@ -194,6 +196,7 @@
+ 	}
+ 	
+ 	head = NULL;
++	ovector = pcre2_match_data_create(30, NULL);
+ 
+ 	while (acknowledgementslog && (fgets(l, sizeof(l), acknowledgementslog))) {
+ 
+@@ -211,7 +214,6 @@
+ 		acknowledgements_t *newrec;
+ 		void *eventhost;
+ 		struct htnames_t *eventcolumn;
+-		int ovector[30];
+ 
+                 /* 2015-03-07 18:17:03 myserver disk andy 1 1425724570 1425752223 1425838623 testing message */
+ 		itemsfound = sscanf(l, "%*u-%*u-%*u %*u:%*u:%*u %s %s %s %*u %*u %u %u %[^\t\n]", host, svc, recipient, &etim, &valid, message);
+@@ -254,8 +256,8 @@
+ 			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
+ 			pagematch = 0;
+ 			while (!pagematch && pagename) {
+-			pagematch = (pcre_exec(pageregexp, NULL, pagename, strlen(pagename), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			pagematch = (pcre2_match(pageregexp, pagename, strlen(pagename), 0, 0,
++					ovector, NULL) >= 0);
+ 				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
+ 			}
+ 		}
+@@ -269,8 +271,8 @@
+ 			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
+ 			pagematch = 0;
+ 			while (!pagematch && pagename) {
+-			pagematch = (pcre_exec(expageregexp, NULL, pagename, strlen(pagename), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			pagematch = (pcre2_match(expageregexp, pagename, strlen(pagename), 0, 0,
++					ovector, NULL) >= 0);
+ 				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
+ 			}
+ 		}
+@@ -279,43 +281,43 @@
+ 		if (pagematch) continue;
+ 
+ 		if (hostregexp)
+-			hostmatch = (pcre_exec(hostregexp, NULL, hostname, strlen(hostname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			hostmatch = (pcre2_match(hostregexp, hostname, strlen(hostname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			hostmatch = 1;
+ 		if (!hostmatch) continue;
+ 
+ 		if (exhostregexp)
+-			hostmatch = (pcre_exec(exhostregexp, NULL, hostname, strlen(hostname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			hostmatch = (pcre2_match(exhostregexp, hostname, strlen(hostname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			hostmatch = 0;
+ 		if (hostmatch) continue;
+ 
+ 		if (testregexp)
+-			testmatch = (pcre_exec(testregexp, NULL, svcname, strlen(svcname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			testmatch = (pcre2_match(testregexp, svcname, strlen(svcname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			testmatch = 1;
+ 		if (!testmatch) continue;
+ 
+ 		if (extestregexp)
+-			testmatch = (pcre_exec(extestregexp, NULL, svcname, strlen(svcname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			testmatch = (pcre2_match(extestregexp, svcname, strlen(svcname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			testmatch = 0;
+ 		if (testmatch) continue;
+ 
+ 		if (rcptregexp)
+-			rcptmatch = (pcre_exec(rcptregexp, NULL, recipient, strlen(recipient), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			rcptmatch = (pcre2_match(rcptregexp, recipient, strlen(recipient), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			rcptmatch = 1;
+ 		if (!rcptmatch) continue;
+ 
+ 		if (exrcptregexp)
+-			rcptmatch = (pcre_exec(exrcptregexp, NULL, recipient, strlen(recipient), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			rcptmatch = (pcre2_match(exrcptregexp, recipient, strlen(recipient), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			rcptmatch = 0;
+ 		if (rcptmatch) continue;
+@@ -405,13 +407,14 @@
+ 
+ 	if (acknowledgementslog) fclose(acknowledgementslog);
+ 
+-	if (pageregexp)   pcre_free(pageregexp);
+-	if (expageregexp) pcre_free(expageregexp);
+-	if (hostregexp)   pcre_free(hostregexp);
+-	if (exhostregexp) pcre_free(exhostregexp);
+-	if (testregexp)   pcre_free(testregexp);
+-	if (extestregexp) pcre_free(extestregexp);
+-	if (rcptregexp)   pcre_free(rcptregexp);
+-	if (exrcptregexp) pcre_free(exrcptregexp);
++	if (pageregexp)   pcre2_code_free(pageregexp);
++	if (expageregexp) pcre2_code_free(expageregexp);
++	if (hostregexp)   pcre2_code_free(hostregexp);
++	if (exhostregexp) pcre2_code_free(exhostregexp);
++	if (testregexp)   pcre2_code_free(testregexp);
++	if (extestregexp) pcre2_code_free(extestregexp);
++	if (rcptregexp)   pcre2_code_free(rcptregexp);
++	if (exrcptregexp) pcre2_code_free(exrcptregexp);
++	pcre2_match_data_free(ovector);
+ }
+ 
+--- xymon.orig/lib/eventlog.c
++++ xymon/lib/eventlog.c
+@@ -28,7 +28,8 @@
+ #include <errno.h>
+ #include <time.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+@@ -176,32 +177,36 @@
+ }
+ 
+ static int  eventfilter(void *hinfo, char *testname,
+-			pcre *pageregexp, pcre *expageregexp,
+-			pcre *hostregexp, pcre *exhostregexp,
+-			pcre *testregexp, pcre *extestregexp,
++			pcre2_code *pageregexp, pcre2_code *expageregexp,
++			pcre2_code *hostregexp, pcre2_code *exhostregexp,
++			pcre2_code *testregexp, pcre2_code *extestregexp,
+ 			int ignoredialups, f_hostcheck hostcheck)
+ {
+ 	int pagematch, hostmatch, testmatch;
+ 	char *hostname = xmh_item(hinfo, XMH_HOSTNAME);
+-	int ovector[30];
++	pcre2_match_data *ovector;
+ 
+ 	if (ignoredialups && xmh_item(hinfo, XMH_FLAG_DIALUP)) return 0;
+ 	if (hostcheck && (hostcheck(hostname) == 0)) return 0;
+ 
++	ovector = pcre2_match_data_create(30, NULL);
+ 	if (pageregexp) {
+ 		char *pagename;
+ 
+ 		pagename = xmh_item_multi(hinfo, XMH_PAGEPATH);
+ 		pagematch = 0;
+ 		while (!pagematch && pagename) {
+-			pagematch = (pcre_exec(pageregexp, NULL, pagename, strlen(pagename), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			pagematch = (pcre2_match(pageregexp, pagename, strlen(pagename), 0, 0,
++					ovector, NULL) >= 0);
+ 			pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
+ 		}
+ 	}
+ 	else
+ 		pagematch = 1;
+-	if (!pagematch) return 0;
++	if (!pagematch) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
+ 
+ 	if (expageregexp) {
+ 		char *pagename;
+@@ -209,51 +214,67 @@
+ 		pagename = xmh_item_multi(hinfo, XMH_PAGEPATH);
+ 		pagematch = 0;
+ 		while (!pagematch && pagename) {
+-			pagematch = (pcre_exec(expageregexp, NULL, pagename, strlen(pagename), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			pagematch = (pcre2_match(expageregexp, pagename, strlen(pagename), 0, 0,
++					ovector, NULL) >= 0);
+ 			pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
+ 		}
+ 	}
+ 	else
+ 		pagematch = 0;
+-	if (pagematch) return 0;
++	if (pagematch) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
+ 
+ 	if (hostregexp)
+-		hostmatch = (pcre_exec(hostregexp, NULL, hostname, strlen(hostname), 0, 0, 
+-				ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++		hostmatch = (pcre2_match(hostregexp, hostname, strlen(hostname), 0, 0,
++				ovector, NULL) >= 0);
+ 	else
+ 		hostmatch = 1;
+-	if (!hostmatch) return 0;
++	if (!hostmatch) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
+ 
+ 	if (exhostregexp)
+-		hostmatch = (pcre_exec(exhostregexp, NULL, hostname, strlen(hostname), 0, 0, 
+-				ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++		hostmatch = (pcre2_match(exhostregexp, hostname, strlen(hostname), 0, 0,
++				ovector, NULL) >= 0);
+ 	else
+ 		hostmatch = 0;
+-	if (hostmatch) return 0;
++	if (hostmatch) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
+ 
+ 	if (testregexp)
+-		testmatch = (pcre_exec(testregexp, NULL, testname, strlen(testname), 0, 0, 
+-				ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++		testmatch = (pcre2_match(testregexp, testname, strlen(testname), 0, 0,
++				ovector, NULL) >= 0);
+ 	else
+ 		testmatch = 1;
+-	if (!testmatch) return 0;
++	if (!testmatch) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
+ 
+ 	if (extestregexp)
+-		testmatch = (pcre_exec(extestregexp, NULL, testname, strlen(testname), 0, 0, 
+-				ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++		testmatch = (pcre2_match(extestregexp, testname, strlen(testname), 0, 0,
++				ovector, NULL) >= 0);
+ 	else
+ 		testmatch = 0;
+-	if (testmatch) return 0;
++	if (testmatch) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
++	pcre2_match_data_free(ovector);
+ 
+ 	return 1;
+ }
+ 
+ 
+ static void count_duration(time_t fromtime, time_t totime,
+-			   pcre *pageregexp, pcre *expageregexp,
+-			   pcre *hostregexp, pcre *exhostregexp,
+-			   pcre *testregexp, pcre *extestregexp,
++			   pcre2_code *pageregexp, pcre2_code *expageregexp,
++			   pcre2_code *hostregexp, pcre2_code *exhostregexp,
++			   pcre2_code *testregexp, pcre2_code *extestregexp,
+ 			   int ignoredialups, f_hostcheck hostcheck,
+ 			   event_t *eventhead, countlist_t **hostcounthead, countlist_t **svccounthead)
+ {
+@@ -515,15 +536,16 @@
+ 	char title[200];
+ 
+ 	/* For the PCRE matching */
+-	const char *errmsg = NULL;
+-	int errofs = 0;
+-	pcre *pageregexp = NULL;
+-	pcre *expageregexp = NULL;
+-	pcre *hostregexp = NULL;
+-	pcre *exhostregexp = NULL;
+-	pcre *testregexp = NULL;
+-	pcre *extestregexp = NULL;
+-	pcre *colrregexp = NULL;
++	int err;
++	PCRE2_SIZE errofs;
++	pcre2_code *pageregexp = NULL;
++	pcre2_code *expageregexp = NULL;
++	pcre2_code *hostregexp = NULL;
++	pcre2_code *exhostregexp = NULL;
++	pcre2_code *testregexp = NULL;
++	pcre2_code *extestregexp = NULL;
++	pcre2_code *colrregexp = NULL;
++	pcre2_match_data *ovector;
+ 	countlist_t *hostcounthead = NULL, *svccounthead = NULL;
+ 
+ 	if (eventlist) *eventlist = NULL;
+@@ -569,13 +591,13 @@
+ 
+ 	if (!maxcount) maxcount = 100;
+ 
+-	if (pageregex && *pageregex) pageregexp = pcre_compile(pageregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (expageregex && *expageregex) expageregexp = pcre_compile(expageregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (hostregex && *hostregex) hostregexp = pcre_compile(hostregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (exhostregex && *exhostregex) exhostregexp = pcre_compile(exhostregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (testregex && *testregex) testregexp = pcre_compile(testregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (extestregex && *extestregex) extestregexp = pcre_compile(extestregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (colrregex && *colrregex) colrregexp = pcre_compile(colrregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
++	if (pageregex && *pageregex) pageregexp = pcre2_compile(pageregex, strlen(pageregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (expageregex && *expageregex) expageregexp = pcre2_compile(expageregex, strlen(expageregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (hostregex && *hostregex) hostregexp = pcre2_compile(hostregex, strlen(hostregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (exhostregex && *exhostregex) exhostregexp = pcre2_compile(exhostregex, strlen(exhostregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (testregex && *testregex) testregexp = pcre2_compile(testregex, strlen(testregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (extestregex && *extestregex) extestregexp = pcre2_compile(extestregex, strlen(extestregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (colrregex && *colrregex) colrregexp = pcre2_compile(colrregex, strlen(colrregex), PCRE2_CASELESS, &err, &errofs, NULL);
+ 
+ 	snprintf(eventlogfilename, sizeof(eventlogfilename), "%s/allevents", xgetenv("XYMONHISTDIR"));
+ 	eventlog = fopen(eventlogfilename, "r");
+@@ -618,6 +640,7 @@
+ 	}
+ 	
+ 	eventhead = NULL;
++	ovector = pcre2_match_data_create(30, NULL);
+ 
+ 	while (eventlog && (fgets(l, sizeof(l), eventlog))) {
+ 
+@@ -629,7 +652,6 @@
+ 		event_t *newevent;
+ 		void *eventhost;
+ 		struct htnames_t *eventcolumn;
+-		int ovector[30];
+ 		eventcount_t *countrec;
+ 
+ 		itemsfound = sscanf(l, "%s %s %u %u %u %s %s %d",
+@@ -657,10 +679,10 @@
+ 
+ 			/* For duration counts, record all events. We'll filter out the colors later. */
+ 			if (colrregexp && (counttype != XYMON_COUNT_DURATION)) {
+-				colrmatch = ( (pcre_exec(colrregexp, NULL, newcolname, strlen(newcolname), 0, 0,
+-							ovector, (sizeof(ovector)/sizeof(int))) >= 0) ||
+-					      (pcre_exec(colrregexp, NULL, oldcolname, strlen(oldcolname), 0, 0,
+-							ovector, (sizeof(ovector)/sizeof(int))) >= 0) );
++				colrmatch = ( (pcre2_match(colrregexp, newcolname, strlen(newcolname), 0, 0,
++							ovector, NULL) >= 0) ||
++					      (pcre2_match(colrregexp, oldcolname, strlen(oldcolname), 0, 0,
++							ovector, NULL) >= 0) );
+ 			}
+ 			else
+ 				colrmatch = 1;
+@@ -842,10 +864,11 @@
+ 
+ 	if (eventlog) fclose(eventlog);
+ 
+-	if (pageregexp) pcre_free(pageregexp);
+-	if (hostregexp) pcre_free(hostregexp);
+-	if (testregexp) pcre_free(testregexp);
+-	if (colrregexp) pcre_free(colrregexp);
++	if (pageregexp) pcre2_code_free(pageregexp);
++	if (hostregexp) pcre2_code_free(hostregexp);
++	if (testregexp) pcre2_code_free(testregexp);
++	if (colrregexp) pcre2_code_free(colrregexp);
++	pcre2_match_data_free(ovector);
+ 
+ 	/* Return the event- and count-lists, if wanted - or clean them up */
+ 	if (eventlist) {
+--- xymon.orig/lib/headfoot.c
++++ xymon/lib/headfoot.c
+@@ -22,7 +22,8 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <fcntl.h>
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ #include "version.h"
+@@ -50,13 +51,13 @@
+ static char *scheduleboard = NULL;
+ 
+ static char *hostpattern_text = NULL;
+-static pcre *hostpattern = NULL;
++static pcre2_code *hostpattern = NULL;
+ static char *pagepattern_text = NULL;
+-static pcre *pagepattern = NULL;
++static pcre2_code *pagepattern = NULL;
+ static char *ippattern_text = NULL;
+-static pcre *ippattern = NULL;
++static pcre2_code *ippattern = NULL;
+ static char *classpattern_text = NULL;
+-static pcre *classpattern = NULL;
++static pcre2_code *classpattern = NULL;
+ static void * hostnames;
+ static void * testnames;
+ 
+@@ -158,34 +159,34 @@
+ 
+ void sethostenv_filter(char *hostptn, char *pageptn, char *ipptn, char *classptn)
+ {
+-	const char *errmsg;
+-	int errofs;
++	int err;
++	PCRE2_SIZE errofs;
+ 
+ 	if (hostpattern_text) xfree(hostpattern_text);
+-	if (hostpattern) { pcre_free(hostpattern); hostpattern = NULL; }
++	if (hostpattern) { pcre2_code_free(hostpattern); hostpattern = NULL; }
+ 	if (pagepattern_text) xfree(pagepattern_text);
+-	if (pagepattern) { pcre_free(pagepattern); pagepattern = NULL; }
++	if (pagepattern) { pcre2_code_free(pagepattern); pagepattern = NULL; }
+ 	if (ippattern_text) xfree(ippattern_text);
+-	if (ippattern) { pcre_free(ippattern); ippattern = NULL; }
++	if (ippattern) { pcre2_code_free(ippattern); ippattern = NULL; }
+ 	if (classpattern_text) xfree(classpattern_text);
+-	if (classpattern) { pcre_free(classpattern); classpattern = NULL; }
++	if (classpattern) { pcre2_code_free(classpattern); classpattern = NULL; }
+ 
+ 	/* Setup the pattern to match names against */
+ 	if (hostptn) {
+ 		hostpattern_text = strdup(hostptn);
+-		hostpattern = pcre_compile(hostptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
++		hostpattern = pcre2_compile(hostptn, strlen(hostptn), PCRE2_CASELESS, &err, &errofs, NULL);
+ 	}
+ 	if (pageptn) {
+ 		pagepattern_text = strdup(pageptn);
+-		pagepattern = pcre_compile(pageptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
++		pagepattern = pcre2_compile(pageptn, strlen(pageptn), PCRE2_CASELESS, &err, &errofs, NULL);
+ 	}
+ 	if (ipptn) {
+ 		ippattern_text = strdup(ipptn);
+-		ippattern = pcre_compile(ipptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
++		ippattern = pcre2_compile(ipptn, strlen(ipptn), PCRE2_CASELESS, &err, &errofs, NULL);
+ 	}
+ 	if (classptn) {
+ 		classpattern_text = strdup(classptn);
+-		classpattern = pcre_compile(classptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
++		classpattern = pcre2_compile(classptn, strlen(classptn), PCRE2_CASELESS, &err, &errofs, NULL);
+ 	}
+ }
+ 
+@@ -371,38 +372,53 @@
+ static void *wanted_host(char *hostname)
+ {
+ 	void *hinfo = hostinfo(hostname);
+-	int result, ovector[30];
++	int result;
++	pcre2_match_data *ovector;
+ 
+ 	if (!hinfo) return NULL;
+ 
++	ovector = pcre2_match_data_create(30, NULL);
+ 	if (hostpattern) {
+-		result = pcre_exec(hostpattern, NULL, hostname, strlen(hostname), 0, 0,
+-				ovector, (sizeof(ovector)/sizeof(int)));
+-		if (result < 0) return NULL;
++		result = pcre2_match(hostpattern, hostname, strlen(hostname), 0, 0,
++				ovector, NULL);
++		if (result < 0) {
++			pcre2_match_data_free(ovector);
++			return NULL;
++		}
+ 	}
+ 
+ 	if (pagepattern && hinfo) {
+ 		char *pname = xmh_item(hinfo, XMH_PAGEPATH);
+-		result = pcre_exec(pagepattern, NULL, pname, strlen(pname), 0, 0,
+-				ovector, (sizeof(ovector)/sizeof(int)));
+-		if (result < 0) return NULL;
++		result = pcre2_match(pagepattern, pname, strlen(pname), 0, 0,
++				ovector, NULL);
++		if (result < 0) {
++			pcre2_match_data_free(ovector);
++			return NULL;
++		}
+ 	}
+ 
+ 	if (ippattern && hinfo) {
+ 		char *hostip = xmh_item(hinfo, XMH_IP);
+-		result = pcre_exec(ippattern, NULL, hostip, strlen(hostip), 0, 0,
+-				ovector, (sizeof(ovector)/sizeof(int)));
+-		if (result < 0) return NULL;
++		result = pcre2_match(ippattern, hostip, strlen(hostip), 0, 0,
++				ovector, NULL);
++		if (result < 0) {
++			pcre2_match_data_free(ovector);
++			return NULL;
++		}
+ 	}
+ 
+ 	if (classpattern && hinfo) {
+ 		char *hostclass = xmh_item(hinfo, XMH_CLASS);
+ 		if (!hostclass) return NULL;
+ 
+-		result = pcre_exec(classpattern, NULL, hostclass, strlen(hostclass), 0, 0,
+-				ovector, (sizeof(ovector)/sizeof(int)));
+-		if (result < 0) return NULL;
++		result = pcre2_match(classpattern, hostclass, strlen(hostclass), 0, 0,
++				ovector, NULL);
++		if (result < 0) {
++			pcre2_match_data_free(ovector);
++			return NULL;
++		}
+ 	}
++	pcre2_match_data_free(ovector);
+ 
+ 	return hinfo;
+ }
+--- xymon.orig/lib/loadalerts.c
++++ xymon/lib/loadalerts.c
+@@ -25,7 +25,8 @@
+ #include <limits.h>
+ #include <errno.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+@@ -164,29 +165,29 @@
+ {
+ 	if (crit->cfline)        xfree(crit->cfline);
+ 	if (crit->pagespec)      xfree(crit->pagespec);
+-	if (crit->pagespecre)    pcre_free(crit->pagespecre);
++	if (crit->pagespecre)    pcre2_code_free(crit->pagespecre);
+ 	if (crit->expagespec)    xfree(crit->expagespec);
+-	if (crit->expagespecre)  pcre_free(crit->expagespecre);
++	if (crit->expagespecre)  pcre2_code_free(crit->expagespecre);
+ 	if (crit->dgspec)        xfree(crit->dgspec);
+-	if (crit->dgspecre)      pcre_free(crit->dgspecre);
++	if (crit->dgspecre)      pcre2_code_free(crit->dgspecre);
+ 	if (crit->exdgspec)      xfree(crit->exdgspec);
+-	if (crit->exdgspecre)    pcre_free(crit->exdgspecre);
++	if (crit->exdgspecre)    pcre2_code_free(crit->exdgspecre);
+ 	if (crit->hostspec)      xfree(crit->hostspec);
+-	if (crit->hostspecre)    pcre_free(crit->hostspecre);
++	if (crit->hostspecre)    pcre2_code_free(crit->hostspecre);
+ 	if (crit->exhostspec)    xfree(crit->exhostspec);
+-	if (crit->exhostspecre)  pcre_free(crit->exhostspecre);
++	if (crit->exhostspecre)  pcre2_code_free(crit->exhostspecre);
+ 	if (crit->svcspec)       xfree(crit->svcspec);
+-	if (crit->svcspecre)     pcre_free(crit->svcspecre);
++	if (crit->svcspecre)     pcre2_code_free(crit->svcspecre);
+ 	if (crit->exsvcspec)     xfree(crit->exsvcspec);
+-	if (crit->exsvcspecre)   pcre_free(crit->exsvcspecre);
++	if (crit->exsvcspecre)   pcre2_code_free(crit->exsvcspecre);
+ 	if (crit->classspec)     xfree(crit->classspec);
+-	if (crit->classspecre)   pcre_free(crit->classspecre);
++	if (crit->classspecre)   pcre2_code_free(crit->classspecre);
+ 	if (crit->exclassspec)   xfree(crit->exclassspec);
+-	if (crit->exclassspecre) pcre_free(crit->exclassspecre);
++	if (crit->exclassspecre) pcre2_code_free(crit->exclassspecre);
+ 	if (crit->groupspec)     xfree(crit->groupspec);
+-	if (crit->groupspecre)   pcre_free(crit->groupspecre);
++	if (crit->groupspecre)   pcre2_code_free(crit->groupspecre);
+ 	if (crit->exgroupspec)   xfree(crit->exgroupspec);
+-	if (crit->exgroupspecre) pcre_free(crit->exgroupspecre);
++	if (crit->exgroupspecre) pcre2_code_free(crit->exgroupspecre);
+ 	if (crit->timespec)      xfree(crit->timespec);
+ 	if (crit->extimespec)    xfree(crit->extimespec);
+ }
+--- xymon.orig/lib/matching.c
++++ xymon/lib/matching.c
+@@ -18,55 +18,60 @@
+ #include <string.h>
+ #include <stdlib.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+-pcre *compileregex_opts(const char *pattern, int flags)
++pcre2_code *compileregex_opts(const char *pattern, uint32_t flags)
+ {
+-	pcre *result;
+-	const char *errmsg;
+-	int errofs;
++	pcre2_code *result;
++	char errmsg[120];
++	int err;
++	PCRE2_SIZE errofs;
+ 
+ 	dbgprintf("Compiling regex %s\n", pattern);
+-	result = pcre_compile(pattern, flags, &errmsg, &errofs, NULL);
++	result = pcre2_compile(pattern, strlen(pattern), flags, &err, &errofs, NULL);
+ 	if (result == NULL) {
+-		errprintf("pcre compile '%s' failed (offset %d): %s\n", pattern, errofs, errmsg);
++		pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++		errprintf("pcre compile '%s' failed (offset %zu): %s\n", pattern, errofs, errmsg);
+ 		return NULL;
+ 	}
+ 
+ 	return result;
+ }
+ 
+-pcre *compileregex(const char *pattern)
++pcre2_code *compileregex(const char *pattern)
+ {
+-	return compileregex_opts(pattern, PCRE_CASELESS);
++	return compileregex_opts(pattern, PCRE2_CASELESS);
+ }
+ 
+-pcre *multilineregex(const char *pattern)
++pcre2_code *multilineregex(const char *pattern)
+ {
+-	return compileregex_opts(pattern, PCRE_CASELESS|PCRE_MULTILINE);
++	return compileregex_opts(pattern, PCRE2_CASELESS|PCRE2_MULTILINE);
+ }
+ 
+-int matchregex(const char *needle, pcre *pcrecode)
++int matchregex(const char *needle, pcre2_code *pcrecode)
+ {
+-	int ovector[30];
++	pcre2_match_data *ovector;
+ 	int result;
+ 
+ 	if (!needle || !pcrecode) return 0;
+ 
+-	result = pcre_exec(pcrecode, NULL, needle, strlen(needle), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++	ovector = pcre2_match_data_create(30, NULL);
++	result = pcre2_match(pcrecode, needle, strlen(needle), 0, 0, ovector, NULL);
++	pcre2_match_data_free(ovector);
+ 	return (result >= 0);
+ }
+ 
+-void freeregex(pcre *pcrecode)
++void freeregex(pcre2_code *pcrecode)
+ {
+ 	if (!pcrecode) return;
+ 
+-	pcre_free(pcrecode);
++	pcre2_code_free(pcrecode);
+ }
+ 
+-int namematch(const char *needle, char *haystack, pcre *pcrecode)
++int namematch(const char *needle, char *haystack, pcre2_code *pcrecode)
+ {
+ 	char *xhay;
+ 	char *tokbuf = NULL, *tok;
+@@ -118,7 +123,7 @@
+ 	return result;
+ }
+ 
+-int patternmatch(char *datatosearch, char *pattern, pcre *pcrecode)
++int patternmatch(char *datatosearch, char *pattern, pcre2_code *pcrecode)
+ {
+ 	if (pcrecode) {
+ 		/* Do regex matching. The regex has already been compiled for us. */
+@@ -133,17 +138,17 @@
+ 	return (strstr(datatosearch, pattern) != NULL);
+ }
+ 
+-pcre **compile_exprs(char *id, const char **patterns, int count)
++pcre2_code **compile_exprs(char *id, const char **patterns, int count)
+ {
+-	pcre **result = NULL;
++	pcre2_code **result = NULL;
+ 	int i;
+ 
+-	result = (pcre **)calloc(count, sizeof(pcre *));
++	result = (pcre2_code **)calloc(count, sizeof(pcre2_code *));
+ 	for (i=0; (i < count); i++) {
+ 		result[i] = compileregex(patterns[i]);
+ 		if (!result[i]) {
+ 			errprintf("Internal error: %s pickdata PCRE-compile failed\n", id);
+-			for (i=0; (i < count); i++) if (result[i]) pcre_free(result[i]);
++			for (i=0; (i < count); i++) if (result[i]) pcre2_code_free(result[i]);
+ 			xfree(result);
+ 			return NULL;
+ 		}
+@@ -152,24 +157,30 @@
+ 	return result;
+ }
+ 
+-int pickdata(char *buf, pcre *expr, int dupok, ...)
++int pickdata(char *buf, pcre2_code *expr, int dupok, ...)
+ {
+ 	int res, i;
+-	int ovector[30];
++	pcre2_match_data *ovector;
+ 	va_list ap;
+ 	char **ptr;
+ 	char w[100];
++	PCRE2_SIZE l;
+ 
+ 	if (!expr) return 0;
+ 
+-	res = pcre_exec(expr, NULL, buf, strlen(buf), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
+-	if (res < 0) return 0;
++	ovector = pcre2_match_data_create(30, NULL);
++	res = pcre2_match(expr, buf, strlen(buf), 0, 0, ovector, NULL);
++	if (res < 0) {
++		pcre2_match_data_free(ovector);
++		return 0;
++	}
+ 
+ 	va_start(ap, dupok);
+ 
+ 	for (i=1; (i < res); i++) {
+ 		*w = '\0';
+-		pcre_copy_substring(buf, ovector, res, i, w, sizeof(w));
++		l = sizeof(w);
++		pcre2_substring_copy_bynumber(ovector, i, w, &l);
+ 		ptr = va_arg(ap, char **);
+ 		if (dupok) {
+ 			if (*ptr) xfree(*ptr);
+@@ -186,6 +197,7 @@
+ 	}
+ 
+ 	va_end(ap);
++	pcre2_match_data_free(ovector);
+ 
+ 	return 1;
+ }
+--- xymon.orig/lib/matching.h
++++ xymon/lib/matching.h
+@@ -13,11 +13,12 @@
+ 
+ /* The clients probably don't have the pcre headers */
+ #if defined(LOCALCLIENT) || !defined(CLIENTONLY)
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ #include <stdarg.h>
+ 
+-extern pcre *compileregex(const char *pattern);
+-extern pcre *compileregex_opts(const char *pattern, int flags);
++extern pcre2_code *compileregex(const char *pattern);
++extern pcre2_code *compileregex_opts(const char *pattern, uint32_t flags);
+ #ifdef PCRE_FIRSTLINE
+ #define firstlineregex(P) compileregex_opts(P, PCRE_FIRSTLINE);
+ #define firstlineregexnocase(P) compileregex_opts(P, PCRE_CASELESS|PCRE_FIRSTLINE);
+@@ -25,13 +26,13 @@
+ #define firstlineregex(P) compileregex_opts(P, 0);
+ #define firstlineregexnocase(P) compileregex_opts(P, PCRE_CASELESS);
+ #endif
+-extern pcre *multilineregex(const char *pattern);
+-extern int matchregex(const char *needle, pcre *pcrecode);
+-extern void freeregex(pcre *pcrecode);
+-extern int namematch(const char *needle, char *haystack, pcre *pcrecode);
+-extern int patternmatch(char *datatosearch, char *pattern, pcre *pcrecode);
+-extern pcre **compile_exprs(char *id, const char **patterns, int count);
+-extern int pickdata(char *buf, pcre *expr, int dupok, ...);
++extern pcre2_code *multilineregex(const char *pattern);
++extern int matchregex(const char *needle, pcre2_code *pcrecode);
++extern void freeregex(pcre2_code *pcrecode);
++extern int namematch(const char *needle, char *haystack, pcre2_code *pcrecode);
++extern int patternmatch(char *datatosearch, char *pattern, pcre2_code *pcrecode);
++extern pcre2_code **compile_exprs(char *id, const char **patterns, int count);
++extern int pickdata(char *buf, pcre2_code *expr, int dupok, ...);
+ extern int timematch(char *holidaykey, char *tspec);
+ #endif
+ 
+--- xymon.orig/lib/notifylog.c
++++ xymon/lib/notifylog.c
+@@ -26,7 +26,8 @@
+ #include <errno.h>
+ #include <time.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+@@ -101,16 +102,17 @@
+ 	char title[200];
+ 
+ 	/* For the PCRE matching */
+-	const char *errmsg = NULL;
+-	int errofs = 0;
+-	pcre *pageregexp = NULL;
+-	pcre *expageregexp = NULL;
+-	pcre *hostregexp = NULL;
+-	pcre *exhostregexp = NULL;
+-	pcre *testregexp = NULL;
+-	pcre *extestregexp = NULL;
+-	pcre *rcptregexp = NULL;
+-	pcre *exrcptregexp = NULL;
++	int err;
++	PCRE2_SIZE errofs;
++	pcre2_code *pageregexp = NULL;
++	pcre2_code *expageregexp = NULL;
++	pcre2_code *hostregexp = NULL;
++	pcre2_code *exhostregexp = NULL;
++	pcre2_code *testregexp = NULL;
++	pcre2_code *extestregexp = NULL;
++	pcre2_code *rcptregexp = NULL;
++	pcre2_code *exrcptregexp = NULL;
++	pcre2_match_data *ovector;
+ 
+ 	if (maxminutes && (fromtime || totime)) {
+ 		fprintf(output, "<B>Only one time interval type is allowed!</B>");
+@@ -145,14 +147,14 @@
+ 
+ 	if (!maxcount) maxcount = 100;
+ 
+-	if (pageregex && *pageregex) pageregexp = pcre_compile(pageregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (expageregex && *expageregex) expageregexp = pcre_compile(expageregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (hostregex && *hostregex) hostregexp = pcre_compile(hostregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (exhostregex && *exhostregex) exhostregexp = pcre_compile(exhostregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (testregex && *testregex) testregexp = pcre_compile(testregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (extestregex && *extestregex) extestregexp = pcre_compile(extestregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (rcptregex && *rcptregex) rcptregexp = pcre_compile(rcptregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-	if (exrcptregex && *exrcptregex) exrcptregexp = pcre_compile(exrcptregex, PCRE_CASELESS, &errmsg, &errofs, NULL);
++	if (pageregex && *pageregex) pageregexp = pcre2_compile(pageregex, strlen(pageregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (expageregex && *expageregex) expageregexp = pcre2_compile(expageregex, strlen(expageregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (hostregex && *hostregex) hostregexp = pcre2_compile(hostregex, strlen(hostregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (exhostregex && *exhostregex) exhostregexp = pcre2_compile(exhostregex, strlen(exhostregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (testregex && *testregex) testregexp = pcre2_compile(testregex, strlen(testregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (extestregex && *extestregex) extestregexp = pcre2_compile(extestregex, strlen(extestregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (rcptregex && *rcptregex) rcptregexp = pcre2_compile(rcptregex, strlen(rcptregex), PCRE2_CASELESS, &err, &errofs, NULL);
++	if (exrcptregex && *exrcptregex) exrcptregexp = pcre2_compile(exrcptregex, strlen(exrcptregex), PCRE2_CASELESS, &err, &errofs, NULL);
+ 
+ 	snprintf(notifylogfilename, sizeof(notifylogfilename), "%s/notifications.log", xgetenv("XYMONSERVERLOGS"));
+ 	notifylog = fopen(notifylogfilename, "r");
+@@ -188,6 +190,7 @@
+ 	}
+ 	
+ 	head = NULL;
++	ovector = pcre2_match_data_create(30, NULL);
+ 
+ 	while (notifylog && (fgets(l, sizeof(l), notifylog))) {
+ 
+@@ -200,7 +203,6 @@
+ 		notification_t *newrec;
+ 		void *eventhost;
+ 		struct htnames_t *eventcolumn;
+-		int ovector[30];
+ 
+ 		itemsfound = sscanf(l, "%*s %*s %*u %*u:%*u:%*u %*u %s %*s %s %u %*d", hostsvc, recipient, &etim);
+ 		eventtime = etim;
+@@ -221,8 +223,8 @@
+ 			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
+ 			pagematch = 0;
+ 			while (!pagematch && pagename) {
+-			pagematch = (pcre_exec(pageregexp, NULL, pagename, strlen(pagename), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			pagematch = (pcre2_match(pageregexp, pagename, strlen(pagename), 0, 0,
++					ovector, NULL) >= 0);
+ 				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
+ 			}
+ 		}
+@@ -236,8 +238,8 @@
+ 			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
+ 			pagematch = 0;
+ 			while (!pagematch && pagename) {
+-			pagematch = (pcre_exec(expageregexp, NULL, pagename, strlen(pagename), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			pagematch = (pcre2_match(expageregexp, pagename, strlen(pagename), 0, 0,
++					ovector, NULL) >= 0);
+ 				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
+ 			}
+ 		}
+@@ -246,43 +248,43 @@
+ 		if (pagematch) continue;
+ 
+ 		if (hostregexp)
+-			hostmatch = (pcre_exec(hostregexp, NULL, hostname, strlen(hostname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			hostmatch = (pcre2_match(hostregexp, hostname, strlen(hostname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			hostmatch = 1;
+ 		if (!hostmatch) continue;
+ 
+ 		if (exhostregexp)
+-			hostmatch = (pcre_exec(exhostregexp, NULL, hostname, strlen(hostname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			hostmatch = (pcre2_match(exhostregexp, hostname, strlen(hostname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			hostmatch = 0;
+ 		if (hostmatch) continue;
+ 
+ 		if (testregexp)
+-			testmatch = (pcre_exec(testregexp, NULL, svcname, strlen(svcname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			testmatch = (pcre2_match(testregexp, svcname, strlen(svcname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			testmatch = 1;
+ 		if (!testmatch) continue;
+ 
+ 		if (extestregexp)
+-			testmatch = (pcre_exec(extestregexp, NULL, svcname, strlen(svcname), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			testmatch = (pcre2_match(extestregexp, svcname, strlen(svcname), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			testmatch = 0;
+ 		if (testmatch) continue;
+ 
+ 		if (rcptregexp)
+-			rcptmatch = (pcre_exec(rcptregexp, NULL, recipient, strlen(recipient), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			rcptmatch = (pcre2_match(rcptregexp, recipient, strlen(recipient), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			rcptmatch = 1;
+ 		if (!rcptmatch) continue;
+ 
+ 		if (exrcptregexp)
+-			rcptmatch = (pcre_exec(exrcptregexp, NULL, recipient, strlen(recipient), 0, 0, 
+-					ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++			rcptmatch = (pcre2_match(exrcptregexp, recipient, strlen(recipient), 0, 0,
++					ovector, NULL) >= 0);
+ 		else
+ 			rcptmatch = 0;
+ 		if (rcptmatch) continue;
+@@ -367,13 +369,14 @@
+ 
+ 	if (notifylog) fclose(notifylog);
+ 
+-	if (pageregexp)   pcre_free(pageregexp);
+-	if (expageregexp) pcre_free(expageregexp);
+-	if (hostregexp)   pcre_free(hostregexp);
+-	if (exhostregexp) pcre_free(exhostregexp);
+-	if (testregexp)   pcre_free(testregexp);
+-	if (extestregexp) pcre_free(extestregexp);
+-	if (rcptregexp)   pcre_free(rcptregexp);
+-	if (exrcptregexp) pcre_free(exrcptregexp);
++	if (pageregexp)   pcre2_code_free(pageregexp);
++	if (expageregexp) pcre2_code_free(expageregexp);
++	if (hostregexp)   pcre2_code_free(hostregexp);
++	if (exhostregexp) pcre2_code_free(exhostregexp);
++	if (testregexp)   pcre2_code_free(testregexp);
++	if (extestregexp) pcre2_code_free(extestregexp);
++	if (rcptregexp)   pcre2_code_free(rcptregexp);
++	if (exrcptregexp) pcre2_code_free(exrcptregexp);
++	pcre2_match_data_free(ovector);
+ }
+ 
+--- xymon.orig/web/showgraph.c
++++ xymon/web/showgraph.c
+@@ -27,7 +27,8 @@
+ #include <sys/un.h>
+ #include <fcntl.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ #include <rrd.h>
+ 
+ #include "libxymon.h"
+@@ -950,10 +951,11 @@
+ 	}
+ 	else {
+ 		struct dirent *d;
+-		pcre *pat, *expat = NULL;
+-		const char *errmsg;
+-		int errofs, result;
+-		int ovector[30];
++		pcre2_code *pat, *expat = NULL;
++		char errmsg[120];
++		int err, result;
++		PCRE2_SIZE errofs;
++		pcre2_match_data *ovector;
+ 		struct stat st;
+ 		time_t now = getcurrenttime(NULL);
+ 
+@@ -961,21 +963,23 @@
+ 		dir = opendir("."); if (dir == NULL) errormsg("Unexpected error while accessing RRD directory");
+ 
+ 		/* Setup the pattern to match filenames against */
+-		pat = pcre_compile(gdef->fnpat, PCRE_CASELESS, &errmsg, &errofs, NULL);
++		pat = pcre2_compile(gdef->fnpat, strlen(gdef->fnpat), PCRE2_CASELESS, &err, &errofs, NULL);
+ 		if (!pat) {
+ 			char msg[8192];
+ 
+-			snprintf(msg, sizeof(msg), "graphs.cfg error, PCRE pattern %s invalid: %s, offset %d\n",
++			pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++			snprintf(msg, sizeof(msg), "graphs.cfg error, PCRE pattern %s invalid: %s, offset %zu\n",
+ 				 htmlquoted(gdef->fnpat), errmsg, errofs);
+ 			errormsg(msg);
+ 		}
+ 		if (gdef->exfnpat) {
+-			expat = pcre_compile(gdef->exfnpat, PCRE_CASELESS, &errmsg, &errofs, NULL);
++			expat = pcre2_compile(gdef->exfnpat, strlen(gdef->exfnpat), PCRE2_CASELESS, &err, &errofs, NULL);
+ 			if (!expat) {
+ 				char msg[8192];
+ 
++				pcre2_get_error_message(err, errmsg, sizeof(errmsg));
+ 				snprintf(msg, sizeof(msg), 
+-					 "graphs.cfg error, PCRE pattern %s invalid: %s, offset %d\n",
++					 "graphs.cfg error, PCRE pattern %s invalid: %s, offset %zu\n",
+ 					 htmlquoted(gdef->exfnpat), errmsg, errofs);
+ 				errormsg(msg);
+ 			}
+@@ -985,9 +989,11 @@
+ 		rrddbsize = 5;
+ 		rrddbs = (rrddb_t *) malloc((rrddbsize+1) * sizeof(rrddb_t));
+ 
++		ovector = pcre2_match_data_create(30, NULL);
+ 		while ((d = readdir(dir)) != NULL) {
+ 			char *ext;
+ 			char param[PATH_MAX];
++			PCRE2_SIZE l = sizeof(param);
+ 
+ 			/* Ignore dot-files and files with names shorter than ".rrd" */
+ 			if (*(d->d_name) == '.') continue;
+@@ -996,14 +1002,14 @@
+ 
+ 			/* First check the exclude pattern. */
+ 			if (expat) {
+-				result = pcre_exec(expat, NULL, d->d_name, strlen(d->d_name), 0, 0, 
+-						   ovector, (sizeof(ovector)/sizeof(int)));
++				result = pcre2_match(expat, d->d_name, strlen(d->d_name), 0, 0,
++						     ovector, NULL);
+ 				if (result >= 0) continue;
+ 			}
+ 
+ 			/* Then see if the include pattern matches. */
+-			result = pcre_exec(pat, NULL, d->d_name, strlen(d->d_name), 0, 0, 
+-					   ovector, (sizeof(ovector)/sizeof(int)));
++			result = pcre2_match(pat, d->d_name, strlen(d->d_name), 0, 0,
++					     ovector, NULL);
+ 			if (result < 0) continue;
+ 
+ 			if (wantsingle) {
+@@ -1021,7 +1027,7 @@
+ 
+ 			/* We have a matching file! */
+ 			rrddbs[rrddbcount].rrdfn = strdup(d->d_name);
+-			if (pcre_copy_substring(d->d_name, ovector, result, 1, param, sizeof(param)) > 0) {
++			if (pcre2_substring_copy_bynumber(ovector, 1, param, &l) > 0) {
+ 				/*
+ 				 * This is ugly, but I cannot find a pretty way of un-mangling
+ 				 * the disk- and http-data that has been molested by the back-end.
+@@ -1059,8 +1065,9 @@
+ 				rrddbs = (rrddb_t *)realloc(rrddbs, (rrddbsize+1) * sizeof(rrddb_t));
+ 			}
+ 		}
+-		pcre_free(pat);
+-		if (expat) pcre_free(expat);
++		pcre2_code_free(pat);
++		if (expat) pcre2_code_free(expat);
++		pcre2_match_data_free(ovector);
+ 		closedir(dir);
+ 	}
+ 	rrddbs[rrddbcount].key = rrddbs[rrddbcount].rrdfn = rrddbs[rrddbcount].rrdparam = NULL;
+--- xymon.orig/xymond/client_config.c
++++ xymon/xymond/client_config.c
+@@ -28,14 +28,15 @@
+ #include <limits.h>
+ #include <errno.h>
+ 
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ #include "client_config.h"
+ 
+ typedef struct exprlist_t {
+ 	char *pattern;
+-	pcre *exp;
++	pcre2_code *exp;
+ 	struct exprlist_t *next;
+ } exprlist_t;
+ 
+@@ -592,7 +593,7 @@
+ 		exprlist_t *tmp = exprhead;
+ 		exprhead = exprhead->next;
+ 		if (tmp->pattern) xfree(tmp->pattern);
+-		if (tmp->exp) pcre_free(tmp->exp);
++		if (tmp->exp) pcre2_code_free(tmp->exp);
+ 		xfree(tmp);
+ 	}
+ 	exprhead = NULL;
+--- xymon.orig/xymond/do_rrd.c
++++ xymon/xymond/do_rrd.c
+@@ -23,7 +23,8 @@
+ #include <utime.h>
+ 
+ #include <rrd.h>
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+--- xymon.orig/xymond/rrd/do_netstat.c
++++ xymon/xymond/rrd/do_netstat.c
+@@ -65,7 +65,7 @@
+ 	outp += sprintf(outp, ":%s", (tcpretranspackets ? tcpretranspackets : "U")); if (tcpretranspackets) xfree(tcpretranspackets);
+ }
+ 
+-static int handle_pcre_netstat(char *msg, pcre **pcreset, char *outp)
++static int handle_pcre_netstat(char *msg, pcre2_code **pcreset, char *outp)
+ {
+ 	enum { AT_NONE, AT_TCP, AT_UDP } sect = AT_NONE;
+ 	int havedata = 0;
+@@ -432,12 +432,12 @@
+ int do_netstat_rrd(char *hostname, char *testname, char *classname, char *pagepaths, char *msg, time_t tstamp)
+ {
+ 	static int pcres_compiled = 0;
+-	static pcre **netstat_osf_pcres = NULL;
+-	static pcre **netstat_aix_pcres = NULL;
+-	static pcre **netstat_irix_pcres = NULL;
+-	static pcre **netstat_hpux_pcres = NULL;
+-	static pcre **netstat_bsd_pcres = NULL;
+-	static pcre **netstat_sco_sv_pcres = NULL;
++	static pcre2_code **netstat_osf_pcres = NULL;
++	static pcre2_code **netstat_aix_pcres = NULL;
++	static pcre2_code **netstat_irix_pcres = NULL;
++	static pcre2_code **netstat_hpux_pcres = NULL;
++	static pcre2_code **netstat_bsd_pcres = NULL;
++	static pcre2_code **netstat_sco_sv_pcres = NULL;
+ 
+ 	enum ostype_t ostype;
+ 	char *datapart = msg;
+--- xymon.orig/xymond/xymon-mailack.c
++++ xymon/xymond/xymon-mailack.c
+@@ -17,7 +17,8 @@
+ #include <ctype.h>
+ #include <stdio.h>
+ #include <string.h>
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+@@ -31,11 +32,12 @@
+ 	char *firsttxtline = NULL;
+ 	int inheaders = 1;
+ 	char *p;
+-	pcre *subjexp;
+-	const char *errmsg;
+-	int errofs, result;
+-	int ovector[30];
++	pcre2_code *subjexp;
++	int err, result;
++	PCRE2_SIZE errofs;
++	pcre2_match_data *ovector;
+ 	char cookie[10];
++	PCRE2_SIZE l = sizeof(cookie);
+ 	int duration = 0;
+ 	int argi;
+ 	char *envarea = NULL;
+@@ -96,51 +98,58 @@
+ 	}
+ 
+ 	/* Get the alert cookie */
+-	subjexp = pcre_compile(".*(Xymon|Hobbit|BB)[ -]* \\[*(-*[0-9]+)[\\]!]*", PCRE_CASELESS, &errmsg, &errofs, NULL);
++	subjexp = pcre2_compile(".*(Xymon|Hobbit|BB)[ -]* \\[*(-*[0-9]+)[\\]!]*", PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &err, &errofs, NULL);
+ 	if (subjexp == NULL) {
+ 		dbgprintf("pcre compile failed - 1\n");
+ 		return 2;
+ 	}
+-	result = pcre_exec(subjexp, NULL, subjectline, strlen(subjectline), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++	ovector = pcre2_match_data_create(30, NULL);
++	result = pcre2_match(subjexp, subjectline, strlen(subjectline), 0, 0, ovector, NULL);
+ 	if (result < 0) {
++		pcre2_match_data_free(ovector);
+ 		dbgprintf("Subject line did not match pattern\n");
+ 		return 3; /* Subject did not match what we expected */
+ 	}
+-	if (pcre_copy_substring(subjectline, ovector, result, 2, cookie, sizeof(cookie)) <= 0) {
++	if (pcre2_substring_copy_bynumber(ovector, 2, cookie, &l) <= 0) {
++		pcre2_match_data_free(ovector);
+ 		dbgprintf("Could not find cookie value\n");
+ 		return 4; /* No cookie */
+ 	}
+-	pcre_free(subjexp);
++	pcre2_code_free(subjexp);
+ 
+ 	/* See if there's a "DELAY=" delay-value also */
+-	subjexp = pcre_compile(".*DELAY[ =]+([0-9]+[mhdw]*)", PCRE_CASELESS, &errmsg, &errofs, NULL);
++	subjexp = pcre2_compile(".*DELAY[ =]+([0-9]+[mhdw]*)", PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &err, &errofs, NULL);
+ 	if (subjexp == NULL) {
++		pcre2_match_data_free(ovector);
+ 		dbgprintf("pcre compile failed - 2\n");
+ 		return 2;
+ 	}
+-	result = pcre_exec(subjexp, NULL, subjectline, strlen(subjectline), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++	result = pcre2_match(subjexp, subjectline, strlen(subjectline), 0, 0, ovector, NULL);
+ 	if (result >= 0) {
+ 		char delaytxt[4096];
+-		if (pcre_copy_substring(subjectline, ovector, result, 1, delaytxt, sizeof(delaytxt)) > 0) {
++		l = sizeof(delaytxt);
++		if (pcre2_substring_copy_bynumber(ovector, 1, delaytxt, &l) > 0) {
+ 			duration = durationvalue(delaytxt);
+ 		}
+ 	}
+-	pcre_free(subjexp);
++	pcre2_code_free(subjexp);
+ 
+ 	/* See if there's a "msg" text also */
+-	subjexp = pcre_compile(".*MSG[ =]+(.*)", PCRE_CASELESS, &errmsg, &errofs, NULL);
++	subjexp = pcre2_compile(".*MSG[ =]+(.*)", PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &err, &errofs, NULL);
+ 	if (subjexp == NULL) {
++		pcre2_match_data_free(ovector);
+ 		dbgprintf("pcre compile failed - 3\n");
+ 		return 2;
+ 	}
+-	result = pcre_exec(subjexp, NULL, subjectline, strlen(subjectline), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++	result = pcre2_match(subjexp, subjectline, strlen(subjectline), 0, 0, ovector, NULL);
+ 	if (result >= 0) {
+ 		char msgtxt[4096];
+-		if (pcre_copy_substring(subjectline, ovector, result, 1, msgtxt, sizeof(msgtxt)) > 0) {
++		l = sizeof(msgtxt);
++		if (pcre2_substring_copy_bynumber(ovector, 1, msgtxt, &l) > 0) {
+ 			firsttxtline = strdup(msgtxt);
+ 		}
+ 	}
+-	pcre_free(subjexp);
++	pcre2_code_free(subjexp);
+ 
+ 	/* Use the "return-path:" header if we didn't see a From: line */
+ 	if ((fromline == NULL) && returnpathline) fromline = returnpathline;
+--- xymon.orig/xymond/xymond_capture.c
++++ xymon/xymond/xymond_capture.c
+@@ -34,13 +34,14 @@
+ 	int running;
+ 	int argi, seq;
+ 	struct timespec *timeout = NULL;
+-	pcre *hostexp = NULL;
+-	pcre *exhostexp = NULL;
+-	pcre *testexp = NULL;
+-	pcre *extestexp = NULL;
+-	pcre *colorexp = NULL;
+-        const char *errmsg = NULL;
+-	int errofs = 0;
++	pcre2_code *hostexp = NULL;
++	pcre2_code *exhostexp = NULL;
++	pcre2_code *testexp = NULL;
++	pcre2_code *extestexp = NULL;
++	pcre2_code *colorexp = NULL;
++	pcre2_match_data *ovector;
++	int err;
++	PCRE2_SIZE errofs;
+ 	FILE *logfd = stdout;
+ 	int batchtimeout = 30;
+ 	char *batchcmd = NULL;
+@@ -75,27 +76,27 @@
+ 		}
+ 		else if (argnmatch(argv[argi], "--hosts=")) {
+ 			char *exp = strchr(argv[argi], '=') + 1;
+-			hostexp = pcre_compile(exp, PCRE_CASELESS, &errmsg, &errofs, NULL);
++			hostexp = pcre2_compile(exp, strlen(exp), PCRE2_CASELESS, &err, &errofs, NULL);
+ 			if (hostexp == NULL) printf("Invalid expression '%s'\n", exp);
+ 		}
+ 		else if (argnmatch(argv[argi], "--exhosts=")) {
+ 			char *exp = strchr(argv[argi], '=') + 1;
+-			exhostexp = pcre_compile(exp, PCRE_CASELESS, &errmsg, &errofs, NULL);
++			exhostexp = pcre2_compile(exp, strlen(exp), PCRE2_CASELESS, &err, &errofs, NULL);
+ 			if (exhostexp == NULL) printf("Invalid expression '%s'\n", exp);
+ 		}
+ 		else if (argnmatch(argv[argi], "--tests=")) {
+ 			char *exp = strchr(argv[argi], '=') + 1;
+-			testexp = pcre_compile(exp, PCRE_CASELESS, &errmsg, &errofs, NULL);
++			testexp = pcre2_compile(exp, strlen(exp), PCRE2_CASELESS, &err, &errofs, NULL);
+ 			if (testexp == NULL) printf("Invalid expression '%s'\n", exp);
+ 		}
+ 		else if (argnmatch(argv[argi], "--extests=")) {
+ 			char *exp = strchr(argv[argi], '=') + 1;
+-			extestexp = pcre_compile(exp, PCRE_CASELESS, &errmsg, &errofs, NULL);
++			extestexp = pcre2_compile(exp, strlen(exp), PCRE2_CASELESS, &err, &errofs, NULL);
+ 			if (extestexp == NULL) printf("Invalid expression '%s'\n", exp);
+ 		}
+ 		else if (argnmatch(argv[argi], "--colors=")) {
+ 			char *exp = strchr(argv[argi], '=') + 1;
+-			colorexp = pcre_compile(exp, PCRE_CASELESS, &errmsg, &errofs, NULL);
++			colorexp = pcre2_compile(exp, strlen(exp), PCRE2_CASELESS, &err, &errofs, NULL);
+ 			if (colorexp == NULL) printf("Invalid expression '%s'\n", exp);
+ 		}
+ 		else if (argnmatch(argv[argi], "--outfile=")) {
+@@ -127,6 +128,7 @@
+ 
+ 	signal(SIGCHLD, SIG_IGN);
+ 
++	ovector = pcre2_match_data_create(30, NULL);
+ 	running = 1;
+ 	while (running) {
+ 		char *eoln, *restofmsg, *p;
+@@ -245,7 +247,6 @@
+ 		 * Process this message.
+ 		 */
+ 		else {
+-			int ovector[30];
+ 			int match, i;
+ 			char *hostname = metadata[hostnameitem];
+ 			char *testname = metadata[testnameitem];
+@@ -298,23 +299,23 @@
+ 
+ 
+ 			if (hostexp) {
+-				match = (pcre_exec(hostexp, NULL, hostname, strlen(hostname), 0, 0, ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++				match = (pcre2_match(hostexp, hostname, strlen(hostname), 0, 0, ovector, NULL) >= 0);
+ 				if (!match) continue;
+ 			}
+ 			if (exhostexp) {
+-				match = (pcre_exec(exhostexp, NULL, hostname, strlen(hostname), 0, 0, ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++				match = (pcre2_match(exhostexp, hostname, strlen(hostname), 0, 0, ovector, NULL) >= 0);
+ 				if (match) continue;
+ 			}
+ 			if (testexp) {
+-				match = (pcre_exec(testexp, NULL, testname, strlen(testname), 0, 0, ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++				match = (pcre2_match(testexp, testname, strlen(testname), 0, 0, ovector, NULL) >= 0);
+ 				if (!match) continue;
+ 			}
+ 			if (extestexp) {
+-				match = (pcre_exec(extestexp, NULL, testname, strlen(testname), 0, 0, ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++				match = (pcre2_match(extestexp, testname, strlen(testname), 0, 0, ovector, NULL) >= 0);
+ 				if (match) continue;
+ 			}
+ 			if (colorexp) {
+-				match = (pcre_exec(colorexp, NULL, color, strlen(color), 0, 0, ovector, (sizeof(ovector)/sizeof(int))) >= 0);
++				match = (pcre2_match(colorexp, color, strlen(color), 0, 0, ovector, NULL) >= 0);
+ 				if (!match) continue;
+ 			}
+ 
+@@ -338,6 +339,7 @@
+ 			}
+ 		}
+ 	}
++	pcre2_match_data_free(ovector);
+ 
+ 	return 0;
+ }
+--- xymon.orig/build/test-pcre.c
++++ xymon/build/test-pcre.c
+@@ -1,11 +1,12 @@
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ int main(int argc, char *argv[])
+ {
+-	pcre *result;
+-	const char *errmsg;
+-	int errofs;
+-	result = pcre_compile("xymon.*", PCRE_CASELESS, &errmsg, &errofs, NULL);
++	pcre2_code *result;
++	int err;
++	PCRE2_SIZE errofs;
++	result = pcre2_compile("xymon.*", PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &err, &errofs, NULL);
+ 
+ 	return 0;
+ }
+--- xymon.orig/build/Makefile.test-pcre
++++ xymon/build/Makefile.test-pcre
+@@ -4,7 +4,7 @@
+ 	@$(CC) $(CFLAGS) $(PCREINC) -o test-pcre.o -c test-pcre.c
+ 
+ test-link:
+-	@$(CC) $(CFLAGS) $(PCRELIB) -o test-pcre test-pcre.o -lpcre
++	@$(CC) $(CFLAGS) $(PCRELIB) -o test-pcre test-pcre.o -lpcre2-8
+ 
+ clean:
+ 	@rm -f test-pcre.o test-pcre
+--- xymon.orig/lib/loadalerts.h
++++ xymon/lib/loadalerts.h
+@@ -16,7 +16,8 @@
+ 
+ /* The clients probably don't have the pcre headers */
+ #if defined(LOCALCLIENT) || !defined(CLIENTONLY)
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ typedef enum { A_PAGING, A_NORECIP, A_ACKED, A_RECOVERED, A_DISABLED, A_NOTIFY, A_DEAD } astate_t;
+ 
+@@ -50,29 +51,29 @@
+ 	int cfid;
+ 	char *cfline;
+ 	char *pagespec;		/* Pages to include */
+-	pcre *pagespecre;
++	pcre2_code *pagespecre;
+ 	char *expagespec;	/* Pages to exclude */
+-	pcre *expagespecre;
++	pcre2_code *expagespecre;
+ 	char *dgspec;		/* Display groups to include */
+-	pcre *dgspecre;
++	pcre2_code *dgspecre;
+ 	char *exdgspec;		/* Display groups to exclude */
+-	pcre *exdgspecre;
++	pcre2_code *exdgspecre;
+ 	char *hostspec;		/* Hosts to include */
+-	pcre *hostspecre;
++	pcre2_code *hostspecre;
+ 	char *exhostspec;	/* Hosts to exclude */
+-	pcre *exhostspecre;
++	pcre2_code *exhostspecre;
+ 	char *svcspec;		/* Services to include */
+-	pcre *svcspecre;
++	pcre2_code *svcspecre;
+ 	char *exsvcspec;	/* Services to exclude */
+-	pcre *exsvcspecre;
++	pcre2_code *exsvcspecre;
+ 	char *classspec;
+-	pcre *classspecre;
++	pcre2_code *classspecre;
+ 	char *exclassspec;
+-	pcre *exclassspecre;
++	pcre2_code *exclassspecre;
+ 	char *groupspec;
+-	pcre *groupspecre;
++	pcre2_code *groupspecre;
+ 	char *exgroupspec;
+-	pcre *exgroupspecre;
++	pcre2_code *exgroupspecre;
+ 	int colors;
+ 	char *timespec;
+ 	char *extimespec;
+--- xymon.orig/lib/clientlocal.c
++++ xymon/lib/clientlocal.c
+@@ -16,11 +16,13 @@
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <string.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+ typedef struct clientconfig_t {
+-	pcre *hostptn, *classptn, *osptn;
++	pcre2_code *hostptn, *classptn, *osptn;
+ 	strbuffer_t *config;
+ 	struct clientconfig_t *next;
+ } clientconfig_t;
+@@ -117,7 +119,7 @@
+ 
+ 		if (!insection) {
+ 			if (*STRBUF(buf) == '[') {
+-				pcre *hostptn = NULL, *classptn = NULL, *osptn = NULL;
++				pcre2_code *hostptn = NULL, *classptn = NULL, *osptn = NULL;
+ 				clientconfig_t *newrec;
+ 
+ 				p = STRBUF(buf) + strcspn(STRBUF(buf), "\r\n");
+--- xymon.orig/configure.server
++++ xymon/configure.server
+@@ -470,10 +470,10 @@
+ 	echo "PCREINCDIR = -I$PCREINC"   >>Makefile
+     fi
+     if test "$PCRELIB" != ""; then
+-	echo "PCRELIBS = -L$PCRELIB -lpcre" >>Makefile
++	echo "PCRELIBS = -L$PCRELIB -lpcre2-8" >>Makefile
+ 	echo "RPATHVAL += ${PCRELIB}"       >>Makefile
+     else
+-	echo "PCRELIBS = -lpcre"         >>Makefile
++	echo "PCRELIBS = -lpcre2-8"      >>Makefile
+     fi
+ fi
+ echo ""                                  >>Makefile
+--- xymon.orig/xymonnet/httpresult.c
++++ xymon/xymonnet/httpresult.c
+@@ -80,7 +80,7 @@
+ {
+ 	int result = -1;
+ 	char codestr[15];
+-	pcre *ptn;
++	pcre2_code *ptn;
+ 
+ 	/* Use code 999 to indicate we could not fetch the URL */
+ 	snprintf(codestr, sizeof(codestr), "%d", (status ? status : 999));
+--- xymon.orig/xymonnet/beastat.c
++++ xymon/xymonnet/beastat.c
+@@ -22,8 +22,6 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ 
+-#include <pcre.h>
+-
+ #include "libxymon.h"
+ #include "version.h"
+ 
+--- xymon.orig/xymond/xymond.c
++++ xymon/xymond/xymond.c
+@@ -361,7 +361,7 @@
+ 
+ typedef struct hostfilter_rec_t {
+ 	enum filtertype_t filtertype;
+-	pcre *wantedptn; int wantedvalue;
++	pcre2_code *wantedptn; int wantedvalue;
+ 	struct hostfilter_rec_t *next;
+ 	enum xmh_item_t field;	/* Only for filtertype == FILTER_XMH */
+ 	enum boardfield_t boardfield;	/* Only for filtertype == FILTER_FIELD(TIME) */
+@@ -2870,7 +2870,7 @@
+ {
+ 	char *tok;
+ 	hostfilter_rec_t *filterhead = NULL, *filtertail = NULL;
+-	static pcre *xmhptn = NULL;
++	static pcre2_code *xmhptn = NULL;
+ 
+ 	dbgprintf("-> setup_filter: %s\n", buf);
+ 
+--- xymon.orig/xymond/xymond_channel.c
++++ xymon/xymond/xymond_channel.c
+@@ -426,8 +426,8 @@
+ 	char *pidfile = NULL;
+ 	char *envarea = NULL;
+ 	int cnid = -1;
+-	pcre *msgfilter = NULL;
+-	pcre *stdfilter = NULL;
++	pcre2_code *msgfilter = NULL;
++	pcre2_code *stdfilter = NULL;
+ 
+ 	int argi;
+ 	struct sigaction sa;
+--- xymon.orig/xymond/do_alert.c
++++ xymon/xymond/do_alert.c
+@@ -27,8 +27,6 @@
+ #include <errno.h>
+ #include <sys/wait.h>
+ 
+-#include <pcre.h>
+-
+ #include "libxymon.h"
+ 
+ /*
+--- xymon.orig/xymond/client/irix.c
++++ xymon/xymond/client/irix.c
+@@ -16,7 +16,7 @@
+ 			void *hinfo, char *sender, time_t timestamp,
+ 			char *clientdata)
+ {
+-	static pcre *memptn = NULL;
++	static pcre2_code *memptn = NULL;
+ 	char *timestr;
+ 	char *uptimestr;
+ 	char *clockstr;
+@@ -69,8 +69,9 @@
+ 	if (topstr) {
+ 		char *memline, *eoln = NULL;
+ 		int res;
+-		int ovector[20];
++		pcre2_match_data *ovector;
+ 		char w[20];
++		PCRE2_SIZE l;
+ 		long memphystotal = -1, memphysused = -1, memphysfree = 0,
+ 		     memacttotal = -1, memactused = -1, memactfree = -1,
+ 		     memswaptotal = -1, memswapused = -1, memswapfree = 0;
+@@ -79,40 +80,47 @@
+ 			memptn = compileregex("^Memory: (\\d+)M max, (\\d+)M avail, (\\d+)M free, (\\d+)M swap, (\\d+)M free swap");
+ 		}
+ 
++		ovector = pcre2_match_data_create(20, NULL);
+ 		memline = strstr(topstr, "\nMemory:");
+ 		if (memline) {
+ 			memline++;
+ 			eoln = strchr(memline, '\n'); if (eoln) *eoln = '\0';
+ 
+-			res = pcre_exec(memptn, NULL, memline, strlen(memline), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++			res = pcre2_match(memptn, memline, strlen(memline), 0, 0, ovector, NULL);
+ 		}
+ 		else res = -1;
+ 
+ 		if (res > 1) {
+-			pcre_copy_substring(memline, ovector, res, 1, w, sizeof(w));
++			l = sizeof(w);
++			pcre2_substring_copy_bynumber(ovector, 1, w, &l);
+ 			memphystotal = atol(w);
+ 		}
+ 		if (res > 2) {
+-			pcre_copy_substring(memline, ovector, res, 2, w, sizeof(w));
++			l = sizeof(w);
++			pcre2_substring_copy_bynumber(ovector, 2, w, &l);
+ 			memactfree = atol(w);
+ 			memacttotal = memphystotal;
+ 			memactused = memphystotal - memactfree;
+ 		}
+ 		if (res > 3) {
+-			pcre_copy_substring(memline, ovector, res, 3, w, sizeof(w));
++			l = sizeof(w);
++			pcre2_substring_copy_bynumber(ovector, 3, w, &l);
+ 			memphysfree = atol(w);
+ 			memphysused = memphystotal - memphysfree;
+ 		}
+ 
+ 		if (res > 4) {
+-			pcre_copy_substring(memline, ovector, res, 4, w, sizeof(w));
++			l = sizeof(w);
++			pcre2_substring_copy_bynumber(ovector, 4, w, &l);
+ 			memswaptotal = atol(w);
+ 		}
+ 		if (res > 5) {
+-			pcre_copy_substring(memline, ovector, res, 5, w, sizeof(w));
++			l = sizeof(w);
++			pcre2_substring_copy_bynumber(ovector, 5, w, &l);
+ 			memswapfree = atol(w);
+ 		}
+ 		memswapused = memswaptotal - memswapfree;
++		pcre2_match_data_free(ovector);
+ 
+ 		if (eoln) *eoln = '\n';
+ 
+--- xymon.orig/xymond/rrd/do_ifstat.c
++++ xymon/xymond/rrd/do_ifstat.c
+@@ -120,17 +120,17 @@
+ int do_ifstat_rrd(char *hostname, char *testname, char *classname, char *pagepaths, char *msg, time_t tstamp)
+ {
+ 	static int pcres_compiled = 0;
+-	static pcre **ifstat_linux_pcres = NULL;
+-	static pcre **ifstat_freebsd_pcres = NULL;
+-	static pcre **ifstat_freebsdV8_pcres = NULL;
+-	static pcre **ifstat_openbsd_pcres = NULL;
+-	static pcre **ifstat_netbsd_pcres = NULL;
+-	static pcre **ifstat_darwin_pcres = NULL;
+-	static pcre **ifstat_solaris_pcres = NULL;
+-	static pcre **ifstat_aix_pcres = NULL;
+-	static pcre **ifstat_hpux_pcres = NULL;
+-	static pcre **ifstat_sco_sv_pcres = NULL;
+-	static pcre **ifstat_bbwin_pcres = NULL;
++	static pcre2_code **ifstat_linux_pcres = NULL;
++	static pcre2_code **ifstat_freebsd_pcres = NULL;
++	static pcre2_code **ifstat_freebsdV8_pcres = NULL;
++	static pcre2_code **ifstat_openbsd_pcres = NULL;
++	static pcre2_code **ifstat_netbsd_pcres = NULL;
++	static pcre2_code **ifstat_darwin_pcres = NULL;
++	static pcre2_code **ifstat_solaris_pcres = NULL;
++	static pcre2_code **ifstat_aix_pcres = NULL;
++	static pcre2_code **ifstat_hpux_pcres = NULL;
++	static pcre2_code **ifstat_sco_sv_pcres = NULL;
++	static pcre2_code **ifstat_bbwin_pcres = NULL;
+ 
+ 	enum ostype_t ostype;
+ 	char *datapart = msg;
+@@ -138,7 +138,7 @@
+ 	int dmatch;
+ 
+ 	void *xmh;
+-	pcre *ifname_filter_pcre = NULL;
++	pcre2_code *ifname_filter_pcre = NULL;
+ 
+ 	xmh = hostinfo(hostname);
+ 	if (xmh) {
+--- xymon.orig/xymond/rrd/do_dbcheck.c
++++ xymon/xymond/rrd/do_dbcheck.c
+@@ -223,28 +223,36 @@
+ 
+        char *eoln, *curline;
+        static int ptnsetup = 0;
+-       static pcre *inclpattern = NULL;
+-       static pcre *exclpattern = NULL;
++       static pcre2_code *inclpattern = NULL;
++       static pcre2_code *exclpattern = NULL;
++       pcre2_match_data *ovector;
+ 
+        if (tablespace_tpl == NULL) tablespace_tpl = setup_template(tablespace_params);
+ 
+        if (!ptnsetup) {
+-               const char *errmsg;
+-               int errofs;
++               char errmsg[120];
++               int err;
++               PCRE2_SIZE errofs;
+                char *ptn;
+ 
+                ptnsetup = 1;
+                ptn = getenv("RRDDISKS");
+                if (ptn && strlen(ptn)) {
+-                       inclpattern = pcre_compile(ptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-                       if (!inclpattern) errprintf("PCRE compile of RRDDISKS='%s' failed, error %s, offset %d\n",
++                       inclpattern = pcre2_compile(ptn, strlen(ptn), PCRE2_CASELESS, &err, &errofs, NULL);
++                       if (!inclpattern) {
++                               pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++                               errprintf("PCRE compile of RRDDISKS='%s' failed, error %s, offset %zu\n",
+                                                    ptn, errmsg, errofs);
++                       }
+                }
+                ptn = getenv("NORRDDISKS");
+                if (ptn && strlen(ptn)) {
+-                       exclpattern = pcre_compile(ptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-                       if (!exclpattern) errprintf("PCRE compile of NORRDDISKS='%s' failed, error %s, offset %d\n",
++                       exclpattern = pcre2_compile(ptn, strlen(ptn), PCRE2_CASELESS, &err, &errofs, NULL);
++                       if (!exclpattern) {
++                               pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++                               errprintf("PCRE compile of NORRDDISKS='%s' failed, error %s, offset %zu\n",
+                                                    ptn, errmsg, errofs);
++                       }
+                }
+        }
+ 
+@@ -261,6 +269,7 @@
+                eoln = strchr(curline, '\n');
+                curline = (eoln ? (eoln+1) : NULL);
+        }
++       ovector = pcre2_match_data_create(30, NULL);
+ 
+        while (curline)  {
+                char *fsline, *p;
+@@ -307,20 +316,18 @@
+                /* Check include/exclude patterns */
+                wanteddisk = 1;
+                if (exclpattern) {
+-                       int ovector[30];
+                        int result;
+ 
+-                       result = pcre_exec(exclpattern, NULL, diskname, strlen(diskname),
+-                                          0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++                       result = pcre2_match(exclpattern, diskname, strlen(diskname),
++                                            0, 0, ovector, NULL);
+ 
+                        wanteddisk = (result < 0);
+                }
+                if (wanteddisk && inclpattern) {
+-                       int ovector[30];
+                        int result;
+ 
+-                       result = pcre_exec(inclpattern, NULL, diskname, strlen(diskname),
+-                                          0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++                       result = pcre2_match(inclpattern, diskname, strlen(diskname),
++                                            0, 0, ovector, NULL);
+ 
+                        wanteddisk = (result >= 0);
+                }
+@@ -350,6 +357,7 @@
+ nextline:
+                curline = (eoln ? (eoln+1) : NULL);
+        }
++       pcre2_match_data_free(ovector);
+ 
+        return 0;
+ }
+--- xymon.orig/xymond/rrd/do_devmon.c
++++ xymon/xymond/rrd/do_devmon.c
+@@ -18,8 +18,8 @@
+ 
+ 	char *eoln, *curline;
+ 	static int ptnsetup = 0;
+-	static pcre *inclpattern = NULL;
+-	static pcre *exclpattern = NULL;
++	static pcre2_code *inclpattern = NULL;
++	static pcre2_code *exclpattern = NULL;
+ 	int in_devmon = 1;
+ 	int numds = 0;
+ 	char *rrdbasename;
+--- xymon.orig/xymond/rrd/do_disk.c
++++ xymon/xymond/rrd/do_disk.c
+@@ -18,8 +18,9 @@
+ 	enum { DT_IRIX, DT_AS400, DT_NT, DT_UNIX, DT_NETAPP, DT_NETWARE, DT_BBWIN } dsystype;
+ 	char *eoln, *curline;
+ 	static int ptnsetup = 0;
+-	static pcre *inclpattern = NULL;
+-	static pcre *exclpattern = NULL;
++	static pcre2_code *inclpattern = NULL;
++	static pcre2_code *exclpattern = NULL;
++	pcre2_match_data *ovector;
+ 	int seen_root_fs = 0;
+ 
+ 	if (strstr(msg, "netapp.pl")) return do_netapp_disk_rrd(hostname, testname, classname, pagepaths, msg, tstamp);
+@@ -28,22 +29,29 @@
+ 	if (disk_tpl == NULL) disk_tpl = setup_template(disk_params);
+ 
+ 	if (!ptnsetup) {
+-		const char *errmsg;
+-		int errofs;
++		char errmsg[120];
++		int err;
++		PCRE2_SIZE errofs;
+ 		char *ptn;
+ 
+ 		ptnsetup = 1;
+ 		ptn = getenv("RRDDISKS");
+ 		if (ptn && strlen(ptn)) {
+-			inclpattern = pcre_compile(ptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-			if (!inclpattern) errprintf("PCRE compile of RRDDISKS='%s' failed, error %s, offset %d\n", 
++			inclpattern = pcre2_compile(ptn, strlen(ptn), PCRE2_CASELESS, &err, &errofs, NULL);
++			if (!inclpattern) {
++				pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++				errprintf("PCRE compile of RRDDISKS='%s' failed, error %s, offset %zu\n",
+ 						    ptn, errmsg, errofs);
++			}
+ 		}
+ 		ptn = getenv("NORRDDISKS");
+ 		if (ptn && strlen(ptn)) {
+-			exclpattern = pcre_compile(ptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-			if (!exclpattern) errprintf("PCRE compile of NORRDDISKS='%s' failed, error %s, offset %d\n", 
++			exclpattern = pcre2_compile(ptn, strlen(ptn), PCRE2_CASELESS, &err, &errofs, NULL);
++			if (!exclpattern) {
++				pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++				errprintf("PCRE compile of NORRDDISKS='%s' failed, error %s, offset %zu\n",
+ 						    ptn, errmsg, errofs);
++			}
+ 		}
+ 	}
+ 
+@@ -72,6 +80,7 @@
+ 	 * line - we never have any disk reports there anyway.
+ 	 */
+ 	curline = strchr(msg, '\n'); if (curline) curline++;
++	ovector = pcre2_match_data_create(30, NULL);
+ 	while (curline)  {
+ 		char *fsline, *p;
+ 		char *columns[20];
+@@ -178,20 +187,18 @@
+ 				seen_root_fs = 1;
+ 		}
+ 		if (exclpattern) {
+-			int ovector[30];
+ 			int result;
+ 
+-			result = pcre_exec(exclpattern, NULL, diskname, strlen(diskname), 
+-					   0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++			result = pcre2_match(exclpattern, diskname, strlen(diskname),
++					     0, 0, ovector, NULL);
+ 
+ 			wanteddisk = (result < 0);
+ 		}
+ 		if (wanteddisk && inclpattern) {
+-			int ovector[30];
+ 			int result;
+ 
+-			result = pcre_exec(inclpattern, NULL, diskname, strlen(diskname), 
+-					   0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++			result = pcre2_match(inclpattern, diskname, strlen(diskname),
++					     0, 0, ovector, NULL);
+ 
+ 			wanteddisk = (result >= 0);
+ 		}
+@@ -221,6 +228,7 @@
+ nextline:
+ 		curline = (eoln ? (eoln+1) : NULL);
+ 	}
++	pcre2_match_data_free(ovector);
+ 
+ 	return 0;
+ }
+--- xymon.orig/xymond/rrd/do_la.c
++++ xymon/xymond/rrd/do_la.c
+@@ -17,8 +17,8 @@
+ 	static char *clock_params[]       = { "DS:la:GAUGE:600:U:U", NULL }; /* "la" is a misnomer, but to stay compatiable with existing RRD files */
+ 	static void *clock_tpl            = NULL;
+ 
+-	static pcre *as400_exp = NULL;
+-	static pcre *zVM_exp = NULL;
++	static pcre2_code *as400_exp = NULL;
++	static pcre2_code *zVM_exp = NULL;
+ 	static time_t starttime = 0;
+ 
+ 	char *p, *eoln = NULL;
+@@ -66,25 +66,28 @@
+ 		 * the operating system name is part of the message (as in the tests above).
+ 		 */
+ 
+-		int ovector[30];
++		pcre2_match_data *ovector;
+ 		char w[100];
++		PCRE2_SIZE l = sizeof(w);
+ 		int res;
+ 
+ 		if (zVM_exp == NULL) {
+-			const char *errmsg = NULL;
+-			int errofs = 0;
++			int err;
++			PCRE2_SIZE errofs;
+ 
+-			zVM_exp = pcre_compile(".* CPU Utilization *([0-9]+)%", PCRE_CASELESS, &errmsg, &errofs, NULL);
++			zVM_exp = pcre2_compile(".* CPU Utilization *([0-9]+)%", PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &err, &errofs, NULL);
+ 		}
+ 
+-		res = pcre_exec(zVM_exp, NULL, msg, strlen(msg), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++		ovector = pcre2_match_data_create(30, NULL);
++		res = pcre2_match(zVM_exp, msg, strlen(msg), 0, 0, ovector, NULL);
+ 		if (res >= 0) {
+ 			/* We have a match - pick up the data. */
+-			*w = '\0'; if (res > 0) pcre_copy_substring(msg, ovector, res, 1, w, sizeof(w));
++			*w = '\0'; if (res > 0) pcre2_substring_copy_bynumber(ovector, 1, w, &l);
+ 			if (strlen(w)) {
+ 				load = atoi(w); gotload = 1;
+ 			}
+ 		}
++		pcre2_match_data_free(ovector);
+ 
+ 		goto done_parsing;
+ 	}
+@@ -139,31 +142,34 @@
+ 		 * No "uptime" in message - could be from an AS/400. They look like this:
+ 		 * green March 21, 2005 12:33:24 PM EST deltacdc 108 users 45525 jobs(126 batch,0 waiting for message), load=26%
+ 		 */
+-		int ovector[30];
++		pcre2_match_data *ovector;
+ 		char w[100];
++		PCRE2_SIZE l = sizeof(w);
+ 		int res;
+ 
+ 		if (as400_exp == NULL) {
+-			const char *errmsg = NULL;
+-			int errofs = 0;
++			int err;
++			PCRE2_SIZE errofs;
+ 
+-			as400_exp = pcre_compile(".* ([0-9]+) users ([0-9]+) jobs.* load=([0-9]+)\\%", 
+-						 PCRE_CASELESS, &errmsg, &errofs, NULL);
++			as400_exp = pcre2_compile(".* ([0-9]+) users ([0-9]+) jobs.* load=([0-9]+)\\%",
++			                          PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &err, &errofs, NULL);
+ 		}
+ 
+-		res = pcre_exec(as400_exp, NULL, msg, strlen(msg), 0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++		ovector = pcre2_match_data_create(30, NULL);
++		res = pcre2_match(as400_exp, msg, strlen(msg), 0, 0, ovector, NULL);
+ 		if (res >= 0) {
+ 			/* We have a match - pick up the AS/400 data. */
+-			*w = '\0'; if (res > 0) pcre_copy_substring(msg, ovector, res, 1, w, sizeof(w));
++			*w = '\0'; if (res > 0) pcre2_substring_copy_bynumber(ovector, 1, w, &l);
+ 			if (strlen(w)) {
+ 				users = atoi(w); gotusers = 1;
+ 			}
+ 
+-			*w = '\0'; if (res > 0) pcre_copy_substring(msg, ovector, res, 3, w, sizeof(w));
++			*w = '\0'; l = sizeof(w); if (res > 0) pcre2_substring_copy_bynumber(ovector, 3, w, &l);
+ 			if (strlen(w)) {
+ 				load = atoi(w); gotload = 1;
+ 			}
+ 		}
++		pcre2_match_data_free(ovector);
+ 	}
+ 
+ done_parsing:
+--- xymon.orig/xymond/rrd/do_netapp.c
++++ xymon/xymond/rrd/do_netapp.c
+@@ -492,8 +492,9 @@
+ 
+        char *eoln, *curline;
+        static int ptnsetup = 0;
+-       static pcre *inclpattern = NULL;
+-       static pcre *exclpattern = NULL;
++       static pcre2_code *inclpattern = NULL;
++       static pcre2_code *exclpattern = NULL;
++       pcre2_match_data *ovector;
+        int newdfreport;
+ 
+ 	newdfreport = (strstr(msg,"netappnewdf") != NULL);
+@@ -501,22 +502,29 @@
+        if (netapp_disk_tpl == NULL) netapp_disk_tpl = setup_template(netapp_disk_params);
+ 
+        if (!ptnsetup) {
+-               const char *errmsg;
+-               int errofs;
++               char errmsg[120];
++               int err;
++               PCRE2_SIZE errofs;
+                char *ptn;
+ 
+                ptnsetup = 1;
+                ptn = getenv("RRDDISKS");
+                if (ptn && strlen(ptn)) {
+-                       inclpattern = pcre_compile(ptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-                       if (!inclpattern) errprintf("PCRE compile of RRDDISKS='%s' failed, error %s, offset %d\n",
++                       inclpattern = pcre2_compile(ptn, strlen(ptn), PCRE2_CASELESS, &err, &errofs, NULL);
++                       if (!inclpattern) {
++                               pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++                               errprintf("PCRE compile of RRDDISKS='%s' failed, error %s, offset %zu\n",
+                                                    ptn, errmsg, errofs);
++                       }
+                }
+                ptn = getenv("NORRDDISKS");
+                if (ptn && strlen(ptn)) {
+-                       exclpattern = pcre_compile(ptn, PCRE_CASELESS, &errmsg, &errofs, NULL);
+-                       if (!exclpattern) errprintf("PCRE compile of NORRDDISKS='%s' failed, error %s, offset %d\n",
++                       exclpattern = pcre2_compile(ptn, strlen(ptn), PCRE2_CASELESS, &err, &errofs, NULL);
++                       if (!exclpattern) {
++                               pcre2_get_error_message(err, errmsg, sizeof(errmsg));
++                               errprintf("PCRE compile of NORRDDISKS='%s' failed, error %s, offset %zu\n",
+                                                    ptn, errmsg, errofs);
++                       }
+                }
+        }
+ 
+@@ -527,6 +535,7 @@
+         * line - we never have any disk reports there anyway.
+         */
+        curline = strchr(msg, '\n'); if (curline) curline++;
++       ovector = pcre2_match_data_create(30, NULL);
+ 
+        while (curline)  {
+                char *fsline, *p;
+@@ -592,20 +601,18 @@
+                /* Check include/exclude patterns */
+                wanteddisk = 1;
+                if (exclpattern) {
+-                       int ovector[30];
+                        int result;
+ 
+-                       result = pcre_exec(exclpattern, NULL, diskname, strlen(diskname),
+-                                          0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++                       result = pcre2_match(exclpattern, diskname, strlen(diskname),
++                                            0, 0, ovector, NULL);
+ 
+                        wanteddisk = (result < 0);
+                }
+                if (wanteddisk && inclpattern) {
+-                       int ovector[30];
+                        int result;
+ 
+-                       result = pcre_exec(inclpattern, NULL, diskname, strlen(diskname),
+-                                          0, 0, ovector, (sizeof(ovector)/sizeof(int)));
++                       result = pcre2_match(inclpattern, diskname, strlen(diskname),
++                                            0, 0, ovector, NULL);
+ 
+                        wanteddisk = (result >= 0);
+                }
+@@ -635,6 +642,7 @@
+ nextline:
+                curline = (eoln ? (eoln+1) : NULL);
+        }
++       pcre2_match_data_free(ovector);
+ 
+        return 0;
+ }
+--- xymon.orig/web/acknowledge.c
++++ xymon/web/acknowledge.c
+@@ -264,7 +264,7 @@
+ 
+ 			if (obeycookies && !gotfilter && ((hostname = get_cookie("host")) != NULL)) {
+ 				if (*hostname) {
+-					pcre *dummy;
++					pcre2_code *dummy;
+ 					SBUF_DEFINE(re);
+ 
+ 					SBUF_MALLOC(re, 3+strlen(hostname));
+@@ -286,7 +286,7 @@
+ 
+ 			if (obeycookies && !gotfilter && ((pagename = get_cookie("pagepath")) != NULL)) {
+ 				if (*pagename) {
+-					pcre *dummy;
++					pcre2_code *dummy;
+ 					SBUF_DEFINE(re);
+ 
+ 					SBUF_MALLOC(re, 8 + strlen(pagename)*2);
+--- xymon.orig/web/svcstatus.c
++++ xymon/web/svcstatus.c
+@@ -359,7 +359,7 @@
+ 
+ 		/* We need not check that hostname is valid, has already been done with loadhostdata() */
+ 		if (!complist) {
+-			pcre *dummy = NULL;
++			pcre2_code *dummy = NULL;
+ 
+ 			/* Check service as a pcre pattern. And no spaces in servicenames */
+ 			if (strchr(service, ' ') == NULL) dummy = compileregex(service);
+@@ -373,7 +373,7 @@
+ 			snprintf(xymondreq, xymondreq_buflen, "xymondlog host=%s test=%s fields=hostname,testname,color,flags,lastchange,logtime,validtime,acktime,disabletime,sender,cookie,ackmsg,dismsg,client,acklist,XMH_IP,XMH_DISPLAYNAME,clntstamp,flapinfo,modifiers", hostname, service);
+ 		}
+ 		else {
+-			pcre *dummy = NULL;
++			pcre2_code *dummy = NULL;
+ 			SBUF_DEFINE(re);
+ 
+ 			SBUF_MALLOC(re, 5 + strlen(complist));
+--- xymon.orig/web/confreport.c
++++ xymon/web/confreport.c
+@@ -693,7 +693,7 @@
+ 
+ 	/* Fetch the list of host+test statuses we currently know about */
+ 	if (pagepattern) {
+-		pcre *dummy;
++		pcre2_code *dummy;
+ 		SBUF_DEFINE(re);
+ 
+ 		SBUF_MALLOC(re, 8 + 2*strlen(pagepattern));
+@@ -716,7 +716,7 @@
+ 		xfree(re);
+ 	}
+ 	else if (hostpattern) {
+-		pcre *dummy;
++		pcre2_code *dummy;
+ 		SBUF_DEFINE(re);
+ 
+ 		SBUF_MALLOC(re,3 + strlen(hostpattern));
+--- xymon.orig/web/statusreport.c
++++ xymon/web/statusreport.c
+@@ -128,7 +128,7 @@
+       		/* Setup the filter we use for the report */
+ 		cookie = get_cookie("pagepath");
+ 		if (cookie && *cookie) {
+-			pcre *dummy;
++			pcre2_code *dummy;
+ 			SBUF_DEFINE(re);
+ 
+ 			SBUF_MALLOC(re, 8 + 2*strlen(cookie));
+--- xymon.orig/web/hostlist.c
++++ xymon/web/hostlist.c
+@@ -71,7 +71,7 @@
+ 	int argi, res;
+ 	sendreturn_t *sres;
+ 	char *cookie;
+-	pcre *dummy;
++	pcre2_code *dummy;
+ 
+ 	init_timestamp();
+ 	for (argi=1; (argi < argc); argi++) {
+--- xymon.orig/web/perfdata.c
++++ xymon/web/perfdata.c
+@@ -21,7 +21,8 @@
+ #include <dirent.h>
+ 
+ #include <rrd.h>
+-#include <pcre.h>
++#define PCRE2_CODE_UNIT_WIDTH 8
++#include <pcre2.h>
+ 
+ #include "libxymon.h"
+ 
+@@ -314,7 +315,7 @@
+ 
+ int main(int argc, char **argv)
+ {
+-	pcre *hostptn, *exhostptn, *pageptn, *expageptn;
++	pcre2_code *hostptn, *exhostptn, *pageptn, *expageptn;
+ 	void *hwalk;
+ 	char *hostname, *pagename;
+ 

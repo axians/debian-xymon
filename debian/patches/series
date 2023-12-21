@@ -16,3 +16,4 @@
 87_fix_logfetch_FTBFS_with_glibc_2.26.patch
 90_reproducible-build.patch
 92_ntpdate_obsoleted_-p_option
+93_pcre2.patch
