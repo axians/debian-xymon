@@ -48,6 +48,7 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * 95_fix_tls13_banner: Fix problems with imaps/pop3s (Closes: #930532).
   * Replace dependency on lsb-base lsb-release.
   * Update lintian overrides to new syntax.
+  * Update debian/po/es.po.  Thanks to Camaleón (Closes: #1017462).
 
  -- Axel Beckert <abe@debian.org>  Mon, 10 Aug 2020 04:39:28 +0200
 
