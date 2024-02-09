@@ -1,10 +1,10 @@
 # Normal, but long code lines, most of them just long parameter or variable lists.
-xymon source: very-long-line-length-in-source-file build/Makefile.rules line 109 is 907 characters long (>512)
-xymon source: very-long-line-length-in-source-file debian/patches/30_prefer-packaged-temp-plugin-over-unpackaged-devmon.patch line 22 is 514 characters long (>512)
+xymon source: very-long-line-length-in-source-file 908 > 512 [build/Makefile.rules:109]
+xymon source: very-long-line-length-in-source-file 515 > 512 [debian/patches/30_prefer-packaged-temp-plugin-over-unpackaged-devmon.patch:22]
 
 # Long shell pip with a lot of long variable names
-xymon source: very-long-line-length-in-source-file xymond/Makefile line 141 is 624 characters long (>512)
+xymon source: very-long-line-length-in-source-file 625 > 512 [xymond/Makefile:141]
 
 # Documented mini blank PNG image embedded in a CGI script ("file"
 # says: "PNG image data, 1 x 1, 8-bit/color RGBA, non-interlaced")
-xymon source: very-long-line-length-in-source-file web/showgraph.c line 48 is 606 characters long (>512)
+xymon source: very-long-line-length-in-source-file 607 > 512 [web/showgraph.c:49]
