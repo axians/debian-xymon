@@ -24,7 +24,6 @@ Package: xymon
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: xymon-client,
-         lsb-base,
          ${misc:Depends},
          ${shlibs:Depends}
 Recommends: apache2 | httpd-cgi
@@ -52,7 +51,7 @@ Package: xymon-client
 Architecture: any
 Pre-Depends: debconf | debconf-2.0, ${misc:Pre-Depends}
 Depends: adduser,
-         lsb-base,
+         lsb-release,
          net-tools,
          procps,
          ${misc:Depends},
