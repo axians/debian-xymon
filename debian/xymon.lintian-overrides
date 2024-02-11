@@ -21,3 +21,7 @@ xymon: package-contains-documentation-outside-usr-share-doc [usr/share/xymon/gif
 xymon: spare-manual-page [usr/share/man/man*/*.gz]
 # Documentation available via web interface
 xymon: package-contains-documentation-outside-usr-share-doc [usr/share/xymon/help/*]
+# The offending commands are wrapped between <IfModule !mod_authz_core.c> ... </IfModule>
+# See: https://bugs.debian.org/1063710
+xymon: apache2-deprecated-auth-config Allow [etc/apache2/conf-available/xymon.conf:23]
+xymon: apache2-deprecated-auth-config Order [etc/apache2/conf-available/xymon.conf:22]
