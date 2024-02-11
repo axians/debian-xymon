@@ -19,3 +19,4 @@
 94_nousemultipart.patch
 95_fix_tls13_banner.patch
 96_manual-backslash.patch
+97_makehtml.patch

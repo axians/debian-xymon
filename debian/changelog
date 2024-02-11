@@ -65,6 +65,8 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * Lintian override apache2-deprecated-auth-config, because offending
     lines are already wrapped by <IfModule !mod_authz_core.c>.
   * 96_manual-backslash: Correct encoding of backslash in man pages.
+  * Regenerate HTML documentation during build (Closes: #646168).
+  * 97_makehtml: Makes HTML documentation reproducible.
 
  -- Axel Beckert <abe@debian.org>  Mon, 10 Aug 2020 04:39:28 +0200
 

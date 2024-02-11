@@ -5,6 +5,7 @@ DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
+include /usr/share/dpkg/pkg-info.mk
 
 S=$(CURDIR)/debian/xymon
 C=$(CURDIR)/debian/xymon-client
@@ -42,11 +43,18 @@ override_dh_auto_configure:
 	--ldaplib /usr/lib/$(DEB_HOST_MULTIARCH)
 
 override_dh_auto_build:
+	# preserve some files from upstream tarball:
+	tar cf debian/preserve.tar docs/manpages/*/*.html
+
+	env -u LANG LC_ALL=C.UTF-8 TZ=UTC ./build/makehtml.sh $(DEB_VERSION_UPSTREAM)
 	MAKEFLAGS=-j1 CFLAGS="$(CFLAGS) $(CPPFLAGS) $(LDFLAGS)" PKGBUILD=1 $(MAKE)
 
 override_dh_clean:
 	dh_clean
 	debconf-updatepo
+	# restore overwritten files from upstream tarball:
+	[ ! -f debian/preserve.tar ] || tar xf debian/preserve.tar
+	rm -f debian/preserve.tar
 
 override_dh_auto_install:
 # SERVER

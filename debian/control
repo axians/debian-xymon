@@ -12,6 +12,7 @@ Build-Depends: debhelper-compat (= 13),
                librrd-dev,
                libssl-dev,
                libtirpc-dev,
+	       man2html-base,
                po-debconf,
                procps
 Standards-Version: 4.6.2
