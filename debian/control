@@ -26,7 +26,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends: xymon-client (>= 4.3.30-2),
          ${misc:Depends},
          ${shlibs:Depends}
-Recommends: apache2 | httpd-cgi
+Recommends: ${misc:Recommends}
 # The relation with rename is only for file-rename in postinst script
 Suggests: rename,
           rrdtool

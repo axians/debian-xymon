@@ -59,6 +59,7 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * Add a systemd xymon.service file (Closes: #1039429).
   * Move xymond_client from xymon to xymon-client (Closes: #903614)
   * Remove invoke-rc.d hobbit[-client] stop calls from preinst scripts.
+  * Auto-generate apache2 recommends via ${misc:Recommends}.
 
  -- Axel Beckert <abe@debian.org>  Mon, 10 Aug 2020 04:39:28 +0200
 
