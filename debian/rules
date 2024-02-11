@@ -108,6 +108,11 @@ override_dh_installdocs:
 	dh_installdocs
 	mv -v $S/usr/share/doc/xymon/RELEASENOTES $S/usr/share/doc/xymon/NEWS
 	mv -v $C/usr/share/doc/xymon-client/RELEASENOTES $C/usr/share/doc/xymon-client/NEWS
+	# Fix encoding of CREDITS:
+	for f in $C/usr/share/doc/xymon-client/CREDITS $S/usr/share/doc/xymon/CREDITS; do \
+		iconv -f ISO-8859-1 -t UTF-8 -o $$f.new $$f; \
+		mv $$f.new $$f; \
+	done
 
 override_dh_installinit:
 	dh_installinit -a -- defaults 98 02
