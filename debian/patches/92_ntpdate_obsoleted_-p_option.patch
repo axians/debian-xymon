@@ -1,7 +1,7 @@
 Description: ntpdate obsoleted the "-p" option
 Author: Carsten Leonhardt <leo@debian.org>
 Bug-Debian: https://bugs.debian.org/1057044
-Forwarded: no
+Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048289.html
 Last-Update: 2023-11-28
 
 --- a/xymond/etcfiles/xymonserver.cfg.DIST

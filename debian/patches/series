@@ -14,7 +14,7 @@
 51_hardening-buildflags.patch
 69_disk-no-duplicate-root.patch
 90_reproducible-build.patch
-92_ntpdate_obsoleted_-p_option
+92_ntpdate_obsoleted_-p_option.patch
 93_pcre2.patch
 94_nousemultipart.patch
 95_fix_tls13_banner.patch
