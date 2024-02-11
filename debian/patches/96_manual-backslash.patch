@@ -1,0 +1,182 @@
+From: Roland Rosenfeld <roland@debian.org>
+Date: Sun, 11 Feb 2024 13:54:04 +0100
+Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048288.html
+Subject: Write backslash in man pages as \e (not \\)
+ According to groff(7):
+  Printable backslashes must be denoted as \e.
+ See also https://bugs.debian.org/966803.
+
+--- a/xymond/combo.cfg.5
++++ b/xymond/combo.cfg.5
+@@ -60,10 +60,10 @@ out as non-zero, the combined test is gr
+ Note: If the expression involves hostnames with a character that is also
+ an operator - e.g. if you have a host "t1-router-newyork.foo.com" with a
+ dash in the hostname - then the operator-character must be escaped with
+-a backslash '\\' in the expression, or it will be interpreted as an operator. 
++a backslash '\e' in the expression, or it will be interpreted as an operator. 
+ E.g. like this:
+ 
+- nyc.conn = (t1\\-router\\-nyc.conn || backup\\-router\\-nyc.conn)
++ nyc.conn = (t1\e-router\e-nyc.conn || backup\e-router\e-nyc.conn)
+ 
+ 
+ .SH EXAMPLE
+--- a/common/hosts.cfg.5
++++ b/common/hosts.cfg.5
+@@ -1102,19 +1102,19 @@ as a regular expression (except that <sp
+ or as a message digest (typically using an MD5 sum or 
+ SHA-1 hash).
+ 
+-The regex is pre-processed for backslash "\\" escape
++The regex is pre-processed for backslash "\e" escape
+ sequences. So you can really put any character in this
+ string by escaping it first:
+ .br
+-   \\n     Newline (LF, ASCII 10 decimal)
++   \en     Newline (LF, ASCII 10 decimal)
+ .br
+-   \\r     Carriage return (CR, ASCII 13 decimal)
++   \er     Carriage return (CR, ASCII 13 decimal)
+ .br
+-   \\t     TAB (ASCII 8 decimal)
++   \et     TAB (ASCII 8 decimal)
+ .br
+-   \\\\    Backslash (ASCII 92 decimal)
++   \e\e    Backslash (ASCII 92 decimal)
+ .br
+-   \\XX    The character with ASCII hex-value XX
++   \eXX    The character with ASCII hex-value XX
+ .br
+ 
+ If you must have whitespace in the regex, use the
+@@ -1206,10 +1206,10 @@ it by beginning the form-data with \fB(c
+ e.g. "(content\-type=text/xml)" followed by the POST data. Note
+ that as with normal forms, the POST data should be specified using
+ escape-sequences for reserved characters: "space" should be
+-entered as "\\x20", double quote as "\\x22", newline as "\\n",
+-carriage-return as "\\r", TAB as "\\t", backslash as "\\\\".
+-Any byte value can be entered using "\\xNN" with NN being
+-the hexadecimal value, e.g. "\\x20" is the space character.
++entered as "\ex20", double quote as "\ex22", newline as "\en",
++carriage-return as "\er", TAB as "\et", backslash as "\e\e".
++Any byte value can be entered using "\exNN" with NN being
++the hexadecimal value, e.g. "\ex20" is the space character.
+ 
+ The [expected_data_regexp|#digesttype:digest] is the expected
+ data returned from the server in response to the POST.
+--- a/common/xymon.1
++++ b/common/xymon.1
+@@ -293,16 +293,16 @@ Include only hosts with a xymon-xmh(5) v
+ Advanced Filtering
+ .sp
+ .BR msg=MESSAGE
+-Include only tests with full content matching MESSAGE. Use "\\s" to escape 
++Include only tests with full content matching MESSAGE. Use "\es" to escape 
+ spaces (or other PCRE strings)
+ .sp
+ .BR ackmsg=MESSAGE
+-Include only tests with acknowledgement(s) MESSAGE. Use "\\s" to escape 
++Include only tests with acknowledgement(s) MESSAGE. Use "\es" to escape 
+ spaces (or other PCRE strings)
+ .sp
+ .BR dismsg=MESSAGE
+ Include only tests that have been disabled with strings matching MESSAGE. 
+-Use "\\s" to escape spaces (or other PCRE strings). (It is most efficient
++Use "\es" to escape spaces (or other PCRE strings). (It is most efficient
+ to pair this with color=blue.)
+ 
+ 
+@@ -399,8 +399,8 @@ configuration settings. A full list of t
+ man-page.
+ 
+ The ackmsg, dismsg and msg fields have certain characters encoded: Newline
+-is "\\n", TAB is "\\t", carriage return is "\\r", a pipe-sign is "\\p", 
+-and a backslash is "\\\\".
++is "\en", TAB is "\et", carriage return is "\er", a pipe-sign is "\ep", 
++and a backslash is "\e\e".
+ 
+ If the "fields" parameter is omitted, a default set of
+ hostname,testname,color,flags,lastchange,logtime,validtime,acktime,disabletime,sender,cookie,line1
+--- a/web/graphs.cfg.5
++++ b/web/graphs.cfg.5
+@@ -61,7 +61,7 @@ is a simple definition that uses a singl
+ .br
+         GPRINT:la:MIN: \: %5.1lf (min)
+ .br
+-        GPRINT:la:AVERAGE: \: %5.1lf (avg)\\n
++        GPRINT:la:AVERAGE: \: %5.1lf (avg)\en
+ .sp
+ 
+ Here is an example of a graph that uses multiple RRD-files, determined
+@@ -92,7 +92,7 @@ for the graph legend:
+ .br
+         GPRINT:p@RRDIDX@:MIN: \: %5.1lf (min)
+ .br
+-        GPRINT:p@RRDIDX@:AVERAGE: \: %5.1lf (avg)\\n
++        GPRINT:p@RRDIDX@:AVERAGE: \: %5.1lf (avg)\en
+ 
+ .SH ADVANCED GRAPH  TITLES
+ Normally the title of a graph is a static text defined in
+--- a/xymongen/xymongen.1
++++ b/xymongen/xymongen.1
+@@ -495,8 +495,8 @@ you define - i.e. create an extension sc
+ .nf
+ #!/bin/sh
+ 
+-XYMONWEB="/xymon/os" $XYMONHOME/bin/xymongen \\
+-	\-\-pageset=os \-\-template=os \\
++XYMONWEB="/xymon/os" $XYMONHOME/bin/xymongen \e
++	\-\-pageset=os \-\-template=os \e
+ 	$XYMONHOME/www/os/
+ .fi
+ .LP
+@@ -672,11 +672,11 @@ So a typical invocation of xymongen for
+ 
+   START=`date +%s \-\-date="22 Jun 2003 00:00:00"`
+   END=`date +%s \-\-date="22 Jun 2003 23:59:59"`
+-  XYMONWEB=/reports/bigbrother/daily/2003/06/22 \\
+-  XYMONHELPSKIN=/xymon/help \\
+-  XYMONNOTESSKIN=/xymon/notes \\
+-  xymongen \-\-reportopts=$START:$END:1:crit \\
+-        \-\-subpagecolumns=2 \\
++  XYMONWEB=/reports/bigbrother/daily/2003/06/22 \e
++  XYMONHELPSKIN=/xymon/help \e
++  XYMONNOTESSKIN=/xymon/notes \e
++  xymongen \-\-reportopts=$START:$END:1:crit \e
++        \-\-subpagecolumns=2 \e
+         /var/www/docroot/reports/xymon/daily/2003/06/22
+ 
+ The "XYMONWEB" setting means that the report will be available with
+--- a/xymonnet/protocols.cfg.5
++++ b/xymonnet/protocols.cfg.5
+@@ -22,7 +22,7 @@ the SMTP service would be this:
+ .sp
+    [smtp]
+ .br
+-      send "mail\\r\\nquit\\r\\n"
++      send "mail\er\enquit\er\en"
+ .br
+       expect "220"
+ .br
+@@ -30,7 +30,7 @@ the SMTP service would be this:
+ .br
+ .sp
+ This defines a service called "smtp". When the connection is
+-first established, xymonnet will send the string "mail\\r\\nquit\\r\\n"
++first established, xymonnet will send the string "mail\er\enquit\er\en"
+ to the service. It will then expect a response beginning with "220".
+ Any data returned by the service (a so-called "banner") will be recorded 
+ and included in the status message.
+@@ -53,9 +53,9 @@ may be omitted, in which case
+ will simply not send any data, or match a response against anything.
+ 
+ The send- and expect-strings use standard escaping for non-printable
+-characters. "\\r" represents a carriage-return (ASCII 13), "\\n"
+-represents a line-feed (ASCII 10), "\\t" represents a TAB (ASCII 8). 
+-Binary data is input as "\\xNN" with NN being the hexadecimal value
++characters. "\er" represents a carriage-return (ASCII 13), "\en"
++represents a line-feed (ASCII 10), "\et" represents a TAB (ASCII 8). 
++Binary data is input as "\exNN" with NN being the hexadecimal value
+ of the byte.
+ 
+ .IP "port NUMBER"
