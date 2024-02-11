@@ -10,7 +10,6 @@ export DPKG_MAINTSCRIPT_NAME=${DPKG_MAINTSCRIPT_NAME:-preinst}
 case "$1" in
     install|upgrade)
 	# stop the client when the server is installed
-	invoke-rc.d --quiet hobbit-client stop || true
 	invoke-rc.d xymon-client stop || true
 	;;
 esac
