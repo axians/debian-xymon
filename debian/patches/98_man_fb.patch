@@ -1,0 +1,38 @@
+From: Roland Rosenfeld <roland@debian.org>
+Date: Sun, 11 Feb 2024 17:44:04 +0100
+Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048292.html
+Subject: Fix typo \fb (instead of \fB) in some man pages
+
+--- a/common/tasks.cfg.5
++++ b/common/tasks.cfg.5
+@@ -56,7 +56,7 @@ The \fBkey\fR is enclosed in angle brack
+ for each task. You can choose your key-names as you like, they
+ are only used internally in xymonlaunch to identify each task.
+ 
+-The \fBcommand\fR is defined by the \fbCMD\fR keyword. This is
++The \fBcommand\fR is defined by the \fBCMD\fR keyword. This is
+ the full command including any options you want to use for this 
+ task. This is required for all tasks.
+ 
+--- a/common/xymon.7
++++ b/common/xymon.7
+@@ -43,7 +43,7 @@ These are some of the core features in X
+ Xymon collects information about your systems in two ways: From
+ querying network services (Web, LDAP, DNS, Mail etc.), or from
+ scripts that run either on the Xymon server or on the systems 
+-you monitor. The Xymon package includes a \fbXymon client\fR
++you monitor. The Xymon package includes a \fBXymon client\fR
+ which you can install on the servers you monitor; it collects
+ data about the CPU-load, disk- and memory-utilization, log files,
+ network ports in use, file- and directory-information and more.
+--- a/xymond/analysis.cfg.5
++++ b/xymond/analysis.cfg.5
+@@ -448,7 +448,7 @@ placeholders in the text: "&N" is replac
+ dataset, "&V" is replaced with the current value, "&L" is replaced
+ by the low threshold, "&U" is replaced with the upper threshold.
+ .sp
+-NOTE: This rule uses the \fbraw\fR data value from a client
++NOTE: This rule uses the \fBraw\fR data value from a client
+ to examine the rules. So this type of test is only really
+ suitable for datasets that are of the "GAUGE" type. It cannot
+ be used meaningfully for datasets that use "COUNTER" or
