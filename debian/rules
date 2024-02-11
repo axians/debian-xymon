@@ -99,6 +99,11 @@ endif
 		done
 	rmdir $S/usr/share/man/man7
 
+	# move xymond_client to xymon-client package (see #903614):
+	mv $S/usr/share/man/man8/xymond_client.8 $C/usr/share/man/man8/
+	mv $S/usr/lib/xymon/server/bin/xymond_client $C/usr/lib/xymon/client/bin/
+	(cd $S/usr/lib/xymon/server/bin && ln -s ../../client/bin/xymond_client)
+
 override_dh_installdocs:
 	dh_installdocs
 	mv -v $S/usr/share/doc/xymon/RELEASENOTES $S/usr/share/doc/xymon/NEWS
