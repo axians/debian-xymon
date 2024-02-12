@@ -29,7 +29,8 @@ Depends: xymon-client (>= 4.3.30-2),
          ${shlibs:Depends}
 Recommends: ${misc:Recommends}
 # The relation with rename is only for file-rename in postinst script
-Suggests: rename,
+Suggests: ntpsec-ntpdig,
+          rename,
           rrdtool
 Description: monitoring system for systems, networks and applications
  Xymon (previously called Hobbit) is a network- and applications-

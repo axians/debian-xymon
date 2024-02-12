@@ -1,0 +1,23 @@
+From: Roland Rosenfeld <roland@debian.org>
+Date: Mon, 12 Feb 2024 09:31:58 +0100
+Bug-Debian: https://bugs.debian.org/1057044
+Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048295.html
+Subject: Use "ntpdig -t 1" as a ntpdate replacement
+ ntpdate (from package ntpsec-ntpdate) is only a shell wrapper around ntpdig,
+ which maps "ntpdate -u -q -p 1" to "ntpdig -t 1" and warns about obsolete
+ option "-p".
+ Using ntpdig directly saves a shell call.
+
+--- a/xymond/etcfiles/xymonserver.cfg.DIST
++++ b/xymond/etcfiles/xymonserver.cfg.DIST
+@@ -132,8 +132,8 @@ IPTEST_2_CLEAR_ON_FAILED_CONN="TRUE"		#
+ NONETPAGE=""					# Network tests that go YELLOW upon failure
+ FPING="@FPING@"					# Path and options for the ping program.
+ FPINGOPTS="-Ae"					# Standard options to fping/xymonping
+-NTPDATE="ntpdate"				# Path to the 'ntpdate' program
+-NTPDATEOPTS="-u -q -p 1"			# Standard options to ntpdate
++NTPDATE="ntpdig"				# Path to the 'ntpdate' program
++NTPDATEOPTS="-t 1"				# Standard options to ntpdate
+ TRACEROUTE="traceroute"                         # How to do traceroute on failing ping tests. Requires "trace" in hosts.cfg .
+ TRACEROUTEOPTS="-n -q 2 -w 2 -m 15"		# Standard options to traceroute
+ XYMONROUTERTEXT="router"			# What to call a failing intermediate network device.
