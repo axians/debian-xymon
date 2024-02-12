@@ -10,7 +10,8 @@ License: GPL-2 with OpenSSL exception
 Files: debian/*
 Copyright: 2005-2007 Henrik Størner <henrik@hswn.dk>
            2007-2016 Christoph Berg <myon@debian.org>
-           2011-2016 Axel Beckert <abe@debian.org>
+           2011-2023 Axel Beckert <abe@debian.org>
+           2024 Roland Rosenfeld <roland@debian.org>
 License: GPL-2 with OpenSSL exception
 
 Files: client/xymonclient-sco_sv.sh

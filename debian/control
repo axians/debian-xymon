@@ -1,8 +1,9 @@
 Source: xymon
 Section: net
 Priority: optional
-Maintainer: Christoph Berg <myon@debian.org>
-Uploaders: Axel Beckert <abe@debian.org>
+Maintainer: Axel Beckert <abe@debian.org>
+Uploaders: Christoph Berg <myon@debian.org>,
+           Roland Rosenfeld <roland@debian.org>
 Build-Depends: debhelper-compat (= 13),
                dh-apache2,
                imagemagick,
