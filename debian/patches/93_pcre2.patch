@@ -1,13 +1,14 @@
-Description: Port to PCRE2.
+From: Yavor Doganov <yavor@gnu.org>
+Date: Thu, 21 Dec 2023 18:52:13 +0200
 Bug-Debian: https://bugs.debian.org/999921
-Author: Yavor Doganov <yavor@gnu.org>
-Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048291.html
-Last-Update: 2023-12-21
----
+Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048296.html
+Last-Update: 2024-02-12
+Subject: Port to PCRE2.
+ pcre2_substring_copy_bynumber() return value fixup by Roland Rosenfeld.
 
---- xymon.orig/lib/acknowledgementslog.c
-+++ xymon/lib/acknowledgementslog.c
-@@ -26,7 +26,8 @@
+--- a/lib/acknowledgementslog.c
++++ b/lib/acknowledgementslog.c
+@@ -26,7 +26,8 @@ static char rcsid[] = "$Id: acknowledgem
  #include <errno.h>
  #include <time.h>
  
@@ -17,7 +18,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
-@@ -103,16 +104,17 @@
+@@ -103,16 +104,17 @@ void do_acknowledgementslog(FILE *output
  	char title[200];
  
  	/* For the PCRE matching */
@@ -45,7 +46,7 @@ Last-Update: 2023-12-21
  
  	if (maxminutes && (fromtime || totime)) {
  		fprintf(output, "<B>Only one time interval type is allowed!</B>");
-@@ -147,14 +149,14 @@
+@@ -147,14 +149,14 @@ void do_acknowledgementslog(FILE *output
  
  	if (!maxcount) maxcount = 100;
  
@@ -68,7 +69,7 @@ Last-Update: 2023-12-21
  
  	snprintf(acknowledgementslogfilename, sizeof(acknowledgementslogfilename), "%s/acknowledge.log", xgetenv("XYMONSERVERLOGS"));
  	acknowledgementslog = fopen(acknowledgementslogfilename, "r");
-@@ -194,6 +196,7 @@
+@@ -194,6 +196,7 @@ void do_acknowledgementslog(FILE *output
  	}
  	
  	head = NULL;
@@ -76,7 +77,7 @@ Last-Update: 2023-12-21
  
  	while (acknowledgementslog && (fgets(l, sizeof(l), acknowledgementslog))) {
  
-@@ -211,7 +214,6 @@
+@@ -211,7 +214,6 @@ void do_acknowledgementslog(FILE *output
  		acknowledgements_t *newrec;
  		void *eventhost;
  		struct htnames_t *eventcolumn;
@@ -84,7 +85,7 @@ Last-Update: 2023-12-21
  
                  /* 2015-03-07 18:17:03 myserver disk andy 1 1425724570 1425752223 1425838623 testing message */
  		itemsfound = sscanf(l, "%*u-%*u-%*u %*u:%*u:%*u %s %s %s %*u %*u %u %u %[^\t\n]", host, svc, recipient, &etim, &valid, message);
-@@ -254,8 +256,8 @@
+@@ -254,8 +256,8 @@ void do_acknowledgementslog(FILE *output
  			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
  			pagematch = 0;
  			while (!pagematch && pagename) {
@@ -95,7 +96,7 @@ Last-Update: 2023-12-21
  				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
  			}
  		}
-@@ -269,8 +271,8 @@
+@@ -269,8 +271,8 @@ void do_acknowledgementslog(FILE *output
  			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
  			pagematch = 0;
  			while (!pagematch && pagename) {
@@ -106,7 +107,7 @@ Last-Update: 2023-12-21
  				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
  			}
  		}
-@@ -279,43 +281,43 @@
+@@ -279,43 +281,43 @@ void do_acknowledgementslog(FILE *output
  		if (pagematch) continue;
  
  		if (hostregexp)
@@ -162,7 +163,7 @@ Last-Update: 2023-12-21
  		else
  			rcptmatch = 0;
  		if (rcptmatch) continue;
-@@ -405,13 +407,14 @@
+@@ -405,13 +407,14 @@ void do_acknowledgementslog(FILE *output
  
  	if (acknowledgementslog) fclose(acknowledgementslog);
  
@@ -185,9 +186,9 @@ Last-Update: 2023-12-21
 +	pcre2_match_data_free(ovector);
  }
  
---- xymon.orig/lib/eventlog.c
-+++ xymon/lib/eventlog.c
-@@ -28,7 +28,8 @@
+--- a/lib/eventlog.c
++++ b/lib/eventlog.c
+@@ -28,7 +28,8 @@ static char rcsid[] = "$Id: eventlog.c 8
  #include <errno.h>
  #include <time.h>
  
@@ -197,7 +198,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
-@@ -176,32 +177,36 @@
+@@ -176,32 +177,36 @@ void dump_countlists(countlist_t *hosthe
  }
  
  static int  eventfilter(void *hinfo, char *testname,
@@ -241,7 +242,7 @@ Last-Update: 2023-12-21
  
  	if (expageregexp) {
  		char *pagename;
-@@ -209,51 +214,67 @@
+@@ -209,51 +214,67 @@ static int  eventfilter(void *hinfo, cha
  		pagename = xmh_item_multi(hinfo, XMH_PAGEPATH);
  		pagematch = 0;
  		while (!pagematch && pagename) {
@@ -327,7 +328,7 @@ Last-Update: 2023-12-21
  			   int ignoredialups, f_hostcheck hostcheck,
  			   event_t *eventhead, countlist_t **hostcounthead, countlist_t **svccounthead)
  {
-@@ -515,15 +536,16 @@
+@@ -515,15 +536,16 @@ void do_eventlog(FILE *output, int maxco
  	char title[200];
  
  	/* For the PCRE matching */
@@ -353,7 +354,7 @@ Last-Update: 2023-12-21
  	countlist_t *hostcounthead = NULL, *svccounthead = NULL;
  
  	if (eventlist) *eventlist = NULL;
-@@ -569,13 +591,13 @@
+@@ -569,13 +591,13 @@ void do_eventlog(FILE *output, int maxco
  
  	if (!maxcount) maxcount = 100;
  
@@ -374,7 +375,7 @@ Last-Update: 2023-12-21
  
  	snprintf(eventlogfilename, sizeof(eventlogfilename), "%s/allevents", xgetenv("XYMONHISTDIR"));
  	eventlog = fopen(eventlogfilename, "r");
-@@ -618,6 +640,7 @@
+@@ -618,6 +640,7 @@ void do_eventlog(FILE *output, int maxco
  	}
  	
  	eventhead = NULL;
@@ -382,7 +383,7 @@ Last-Update: 2023-12-21
  
  	while (eventlog && (fgets(l, sizeof(l), eventlog))) {
  
-@@ -629,7 +652,6 @@
+@@ -629,7 +652,6 @@ void do_eventlog(FILE *output, int maxco
  		event_t *newevent;
  		void *eventhost;
  		struct htnames_t *eventcolumn;
@@ -390,7 +391,7 @@ Last-Update: 2023-12-21
  		eventcount_t *countrec;
  
  		itemsfound = sscanf(l, "%s %s %u %u %u %s %s %d",
-@@ -657,10 +679,10 @@
+@@ -657,10 +679,10 @@ void do_eventlog(FILE *output, int maxco
  
  			/* For duration counts, record all events. We'll filter out the colors later. */
  			if (colrregexp && (counttype != XYMON_COUNT_DURATION)) {
@@ -405,7 +406,7 @@ Last-Update: 2023-12-21
  			}
  			else
  				colrmatch = 1;
-@@ -842,10 +864,11 @@
+@@ -842,10 +864,11 @@ void do_eventlog(FILE *output, int maxco
  
  	if (eventlog) fclose(eventlog);
  
@@ -421,9 +422,9 @@ Last-Update: 2023-12-21
  
  	/* Return the event- and count-lists, if wanted - or clean them up */
  	if (eventlist) {
---- xymon.orig/lib/headfoot.c
-+++ xymon/lib/headfoot.c
-@@ -22,7 +22,8 @@
+--- a/lib/headfoot.c
++++ b/lib/headfoot.c
+@@ -22,7 +22,8 @@ static char rcsid[] = "$Id: headfoot.c 8
  #include <stdio.h>
  #include <string.h>
  #include <fcntl.h>
@@ -433,7 +434,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  #include "version.h"
-@@ -50,13 +51,13 @@
+@@ -50,13 +51,13 @@ static char *statusboard = NULL;
  static char *scheduleboard = NULL;
  
  static char *hostpattern_text = NULL;
@@ -451,7 +452,7 @@ Last-Update: 2023-12-21
  static void * hostnames;
  static void * testnames;
  
-@@ -158,34 +159,34 @@
+@@ -158,34 +159,34 @@ void sethostenv_pagepath(char *s)
  
  void sethostenv_filter(char *hostptn, char *pageptn, char *ipptn, char *classptn)
  {
@@ -496,7 +497,7 @@ Last-Update: 2023-12-21
  	}
  }
  
-@@ -371,38 +372,53 @@
+@@ -371,38 +372,53 @@ char *wkdayselect(char wkday, char *valt
  static void *wanted_host(char *hostname)
  {
  	void *hinfo = hostinfo(hostname);
@@ -563,9 +564,9 @@ Last-Update: 2023-12-21
  
  	return hinfo;
  }
---- xymon.orig/lib/loadalerts.c
-+++ xymon/lib/loadalerts.c
-@@ -25,7 +25,8 @@
+--- a/lib/loadalerts.c
++++ b/lib/loadalerts.c
+@@ -25,7 +25,8 @@ static char rcsid[] = "$Id: loadalerts.c
  #include <limits.h>
  #include <errno.h>
  
@@ -575,7 +576,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
-@@ -164,29 +165,29 @@
+@@ -164,29 +165,29 @@ static void free_criteria(criteria_t *cr
  {
  	if (crit->cfline)        xfree(crit->cfline);
  	if (crit->pagespec)      xfree(crit->pagespec);
@@ -617,9 +618,9 @@ Last-Update: 2023-12-21
  	if (crit->timespec)      xfree(crit->timespec);
  	if (crit->extimespec)    xfree(crit->extimespec);
  }
---- xymon.orig/lib/matching.c
-+++ xymon/lib/matching.c
-@@ -18,55 +18,60 @@
+--- a/lib/matching.c
++++ b/lib/matching.c
+@@ -18,55 +18,60 @@ static char rcsid[] = "$Id: matching.c 7
  #include <string.h>
  #include <stdlib.h>
  
@@ -697,7 +698,7 @@ Last-Update: 2023-12-21
  {
  	char *xhay;
  	char *tokbuf = NULL, *tok;
-@@ -118,7 +123,7 @@
+@@ -118,7 +123,7 @@ int namematch(const char *needle, char *
  	return result;
  }
  
@@ -706,7 +707,7 @@ Last-Update: 2023-12-21
  {
  	if (pcrecode) {
  		/* Do regex matching. The regex has already been compiled for us. */
-@@ -133,17 +138,17 @@
+@@ -133,17 +138,17 @@ int patternmatch(char *datatosearch, cha
  	return (strstr(datatosearch, pattern) != NULL);
  }
  
@@ -728,7 +729,7 @@ Last-Update: 2023-12-21
  			xfree(result);
  			return NULL;
  		}
-@@ -152,24 +157,30 @@
+@@ -152,24 +157,30 @@ pcre **compile_exprs(char *id, const cha
  	return result;
  }
  
@@ -764,7 +765,7 @@ Last-Update: 2023-12-21
  		ptr = va_arg(ap, char **);
  		if (dupok) {
  			if (*ptr) xfree(*ptr);
-@@ -186,6 +197,7 @@
+@@ -186,6 +197,7 @@ int pickdata(char *buf, pcre *expr, int
  	}
  
  	va_end(ap);
@@ -772,8 +773,8 @@ Last-Update: 2023-12-21
  
  	return 1;
  }
---- xymon.orig/lib/matching.h
-+++ xymon/lib/matching.h
+--- a/lib/matching.h
++++ b/lib/matching.h
 @@ -13,11 +13,12 @@
  
  /* The clients probably don't have the pcre headers */
@@ -790,7 +791,7 @@ Last-Update: 2023-12-21
  #ifdef PCRE_FIRSTLINE
  #define firstlineregex(P) compileregex_opts(P, PCRE_FIRSTLINE);
  #define firstlineregexnocase(P) compileregex_opts(P, PCRE_CASELESS|PCRE_FIRSTLINE);
-@@ -25,13 +26,13 @@
+@@ -25,13 +26,13 @@ extern pcre *compileregex_opts(const cha
  #define firstlineregex(P) compileregex_opts(P, 0);
  #define firstlineregexnocase(P) compileregex_opts(P, PCRE_CASELESS);
  #endif
@@ -811,9 +812,9 @@ Last-Update: 2023-12-21
  extern int timematch(char *holidaykey, char *tspec);
  #endif
  
---- xymon.orig/lib/notifylog.c
-+++ xymon/lib/notifylog.c
-@@ -26,7 +26,8 @@
+--- a/lib/notifylog.c
++++ b/lib/notifylog.c
+@@ -26,7 +26,8 @@ static char rcsid[] = "$Id: notifylog.c
  #include <errno.h>
  #include <time.h>
  
@@ -823,7 +824,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
-@@ -101,16 +102,17 @@
+@@ -101,16 +102,17 @@ void do_notifylog(FILE *output,
  	char title[200];
  
  	/* For the PCRE matching */
@@ -851,7 +852,7 @@ Last-Update: 2023-12-21
  
  	if (maxminutes && (fromtime || totime)) {
  		fprintf(output, "<B>Only one time interval type is allowed!</B>");
-@@ -145,14 +147,14 @@
+@@ -145,14 +147,14 @@ void do_notifylog(FILE *output,
  
  	if (!maxcount) maxcount = 100;
  
@@ -874,7 +875,7 @@ Last-Update: 2023-12-21
  
  	snprintf(notifylogfilename, sizeof(notifylogfilename), "%s/notifications.log", xgetenv("XYMONSERVERLOGS"));
  	notifylog = fopen(notifylogfilename, "r");
-@@ -188,6 +190,7 @@
+@@ -188,6 +190,7 @@ void do_notifylog(FILE *output,
  	}
  	
  	head = NULL;
@@ -882,7 +883,7 @@ Last-Update: 2023-12-21
  
  	while (notifylog && (fgets(l, sizeof(l), notifylog))) {
  
-@@ -200,7 +203,6 @@
+@@ -200,7 +203,6 @@ void do_notifylog(FILE *output,
  		notification_t *newrec;
  		void *eventhost;
  		struct htnames_t *eventcolumn;
@@ -890,7 +891,7 @@ Last-Update: 2023-12-21
  
  		itemsfound = sscanf(l, "%*s %*s %*u %*u:%*u:%*u %*u %s %*s %s %u %*d", hostsvc, recipient, &etim);
  		eventtime = etim;
-@@ -221,8 +223,8 @@
+@@ -221,8 +223,8 @@ void do_notifylog(FILE *output,
  			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
  			pagematch = 0;
  			while (!pagematch && pagename) {
@@ -901,7 +902,7 @@ Last-Update: 2023-12-21
  				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
  			}
  		}
-@@ -236,8 +238,8 @@
+@@ -236,8 +238,8 @@ void do_notifylog(FILE *output,
  			pagename = xmh_item_multi(eventhost, XMH_PAGEPATH);
  			pagematch = 0;
  			while (!pagematch && pagename) {
@@ -912,7 +913,7 @@ Last-Update: 2023-12-21
  				pagename = xmh_item_multi(NULL, XMH_PAGEPATH);
  			}
  		}
-@@ -246,43 +248,43 @@
+@@ -246,43 +248,43 @@ void do_notifylog(FILE *output,
  		if (pagematch) continue;
  
  		if (hostregexp)
@@ -968,7 +969,7 @@ Last-Update: 2023-12-21
  		else
  			rcptmatch = 0;
  		if (rcptmatch) continue;
-@@ -367,13 +369,14 @@
+@@ -367,13 +369,14 @@ void do_notifylog(FILE *output,
  
  	if (notifylog) fclose(notifylog);
  
@@ -991,9 +992,9 @@ Last-Update: 2023-12-21
 +	pcre2_match_data_free(ovector);
  }
  
---- xymon.orig/web/showgraph.c
-+++ xymon/web/showgraph.c
-@@ -27,7 +27,8 @@
+--- a/web/showgraph.c
++++ b/web/showgraph.c
+@@ -27,7 +27,8 @@ static char rcsid[] = "$Id: showgraph.c
  #include <sys/un.h>
  #include <fcntl.h>
  
@@ -1003,7 +1004,7 @@ Last-Update: 2023-12-21
  #include <rrd.h>
  
  #include "libxymon.h"
-@@ -950,10 +951,11 @@
+@@ -950,10 +951,11 @@ void generate_graph(char *gdeffn, char *
  	}
  	else {
  		struct dirent *d;
@@ -1019,7 +1020,7 @@ Last-Update: 2023-12-21
  		struct stat st;
  		time_t now = getcurrenttime(NULL);
  
-@@ -961,21 +963,23 @@
+@@ -961,21 +963,23 @@ void generate_graph(char *gdeffn, char *
  		dir = opendir("."); if (dir == NULL) errormsg("Unexpected error while accessing RRD directory");
  
  		/* Setup the pattern to match filenames against */
@@ -1047,7 +1048,7 @@ Last-Update: 2023-12-21
  					 htmlquoted(gdef->exfnpat), errmsg, errofs);
  				errormsg(msg);
  			}
-@@ -985,9 +989,11 @@
+@@ -985,9 +989,11 @@ void generate_graph(char *gdeffn, char *
  		rrddbsize = 5;
  		rrddbs = (rrddb_t *) malloc((rrddbsize+1) * sizeof(rrddb_t));
  
@@ -1059,7 +1060,7 @@ Last-Update: 2023-12-21
  
  			/* Ignore dot-files and files with names shorter than ".rrd" */
  			if (*(d->d_name) == '.') continue;
-@@ -996,14 +1002,14 @@
+@@ -996,14 +1002,14 @@ void generate_graph(char *gdeffn, char *
  
  			/* First check the exclude pattern. */
  			if (expat) {
@@ -1078,16 +1079,16 @@ Last-Update: 2023-12-21
  			if (result < 0) continue;
  
  			if (wantsingle) {
-@@ -1021,7 +1027,7 @@
+@@ -1021,7 +1027,7 @@ void generate_graph(char *gdeffn, char *
  
  			/* We have a matching file! */
  			rrddbs[rrddbcount].rrdfn = strdup(d->d_name);
 -			if (pcre_copy_substring(d->d_name, ovector, result, 1, param, sizeof(param)) > 0) {
-+			if (pcre2_substring_copy_bynumber(ovector, 1, param, &l) > 0) {
++			if (pcre2_substring_copy_bynumber(ovector, 1, param, &l) == 0) {
  				/*
  				 * This is ugly, but I cannot find a pretty way of un-mangling
  				 * the disk- and http-data that has been molested by the back-end.
-@@ -1059,8 +1065,9 @@
+@@ -1059,8 +1065,9 @@ void generate_graph(char *gdeffn, char *
  				rrddbs = (rrddb_t *)realloc(rrddbs, (rrddbsize+1) * sizeof(rrddb_t));
  			}
  		}
@@ -1099,9 +1100,9 @@ Last-Update: 2023-12-21
  		closedir(dir);
  	}
  	rrddbs[rrddbcount].key = rrddbs[rrddbcount].rrdfn = rrddbs[rrddbcount].rrdparam = NULL;
---- xymon.orig/xymond/client_config.c
-+++ xymon/xymond/client_config.c
-@@ -28,14 +28,15 @@
+--- a/xymond/client_config.c
++++ b/xymond/client_config.c
+@@ -28,14 +28,15 @@ static char rcsid[] = "$Id: client_confi
  #include <limits.h>
  #include <errno.h>
  
@@ -1119,7 +1120,7 @@ Last-Update: 2023-12-21
  	struct exprlist_t *next;
  } exprlist_t;
  
-@@ -592,7 +593,7 @@
+@@ -592,7 +593,7 @@ int load_client_config(char *configfn)
  		exprlist_t *tmp = exprhead;
  		exprhead = exprhead->next;
  		if (tmp->pattern) xfree(tmp->pattern);
@@ -1128,9 +1129,9 @@ Last-Update: 2023-12-21
  		xfree(tmp);
  	}
  	exprhead = NULL;
---- xymon.orig/xymond/do_rrd.c
-+++ xymon/xymond/do_rrd.c
-@@ -23,7 +23,8 @@
+--- a/xymond/do_rrd.c
++++ b/xymond/do_rrd.c
+@@ -23,7 +23,8 @@ static char rcsid[] = "$Id: do_rrd.c 760
  #include <utime.h>
  
  #include <rrd.h>
@@ -1140,9 +1141,9 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
---- xymon.orig/xymond/rrd/do_netstat.c
-+++ xymon/xymond/rrd/do_netstat.c
-@@ -65,7 +65,7 @@
+--- a/xymond/rrd/do_netstat.c
++++ b/xymond/rrd/do_netstat.c
+@@ -65,7 +65,7 @@ static void prepare_update(char *outp)
  	outp += sprintf(outp, ":%s", (tcpretranspackets ? tcpretranspackets : "U")); if (tcpretranspackets) xfree(tcpretranspackets);
  }
  
@@ -1151,7 +1152,7 @@ Last-Update: 2023-12-21
  {
  	enum { AT_NONE, AT_TCP, AT_UDP } sect = AT_NONE;
  	int havedata = 0;
-@@ -432,12 +432,12 @@
+@@ -432,12 +432,12 @@ static int do_valbeforemarker(char *layo
  int do_netstat_rrd(char *hostname, char *testname, char *classname, char *pagepaths, char *msg, time_t tstamp)
  {
  	static int pcres_compiled = 0;
@@ -1170,9 +1171,9 @@ Last-Update: 2023-12-21
  
  	enum ostype_t ostype;
  	char *datapart = msg;
---- xymon.orig/xymond/xymon-mailack.c
-+++ xymon/xymond/xymon-mailack.c
-@@ -17,7 +17,8 @@
+--- a/xymond/xymon-mailack.c
++++ b/xymond/xymon-mailack.c
+@@ -17,7 +17,8 @@ static char rcsid[] = "$Id: xymon-mailac
  #include <ctype.h>
  #include <stdio.h>
  #include <string.h>
@@ -1182,7 +1183,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
-@@ -31,11 +32,12 @@
+@@ -31,11 +32,12 @@ int main(int argc, char *argv[])
  	char *firsttxtline = NULL;
  	int inheaders = 1;
  	char *p;
@@ -1199,7 +1200,7 @@ Last-Update: 2023-12-21
  	int duration = 0;
  	int argi;
  	char *envarea = NULL;
-@@ -96,51 +98,58 @@
+@@ -96,51 +98,58 @@ int main(int argc, char *argv[])
  	}
  
  	/* Get the alert cookie */
@@ -1240,7 +1241,7 @@ Last-Update: 2023-12-21
  		char delaytxt[4096];
 -		if (pcre_copy_substring(subjectline, ovector, result, 1, delaytxt, sizeof(delaytxt)) > 0) {
 +		l = sizeof(delaytxt);
-+		if (pcre2_substring_copy_bynumber(ovector, 1, delaytxt, &l) > 0) {
++		if (pcre2_substring_copy_bynumber(ovector, 1, delaytxt, &l) == 0) {
  			duration = durationvalue(delaytxt);
  		}
  	}
@@ -1261,7 +1262,7 @@ Last-Update: 2023-12-21
  		char msgtxt[4096];
 -		if (pcre_copy_substring(subjectline, ovector, result, 1, msgtxt, sizeof(msgtxt)) > 0) {
 +		l = sizeof(msgtxt);
-+		if (pcre2_substring_copy_bynumber(ovector, 1, msgtxt, &l) > 0) {
++		if (pcre2_substring_copy_bynumber(ovector, 1, msgtxt, &l) == 0) {
  			firsttxtline = strdup(msgtxt);
  		}
  	}
@@ -1270,9 +1271,9 @@ Last-Update: 2023-12-21
  
  	/* Use the "return-path:" header if we didn't see a From: line */
  	if ((fromline == NULL) && returnpathline) fromline = returnpathline;
---- xymon.orig/xymond/xymond_capture.c
-+++ xymon/xymond/xymond_capture.c
-@@ -34,13 +34,14 @@
+--- a/xymond/xymond_capture.c
++++ b/xymond/xymond_capture.c
+@@ -34,13 +34,14 @@ int main(int argc, char *argv[])
  	int running;
  	int argi, seq;
  	struct timespec *timeout = NULL;
@@ -1294,7 +1295,7 @@ Last-Update: 2023-12-21
  	FILE *logfd = stdout;
  	int batchtimeout = 30;
  	char *batchcmd = NULL;
-@@ -75,27 +76,27 @@
+@@ -75,27 +76,27 @@ int main(int argc, char *argv[])
  		}
  		else if (argnmatch(argv[argi], "--hosts=")) {
  			char *exp = strchr(argv[argi], '=') + 1;
@@ -1327,7 +1328,7 @@ Last-Update: 2023-12-21
  			if (colorexp == NULL) printf("Invalid expression '%s'\n", exp);
  		}
  		else if (argnmatch(argv[argi], "--outfile=")) {
-@@ -127,6 +128,7 @@
+@@ -127,6 +128,7 @@ int main(int argc, char *argv[])
  
  	signal(SIGCHLD, SIG_IGN);
  
@@ -1335,7 +1336,7 @@ Last-Update: 2023-12-21
  	running = 1;
  	while (running) {
  		char *eoln, *restofmsg, *p;
-@@ -245,7 +247,6 @@
+@@ -245,7 +247,6 @@ int main(int argc, char *argv[])
  		 * Process this message.
  		 */
  		else {
@@ -1343,7 +1344,7 @@ Last-Update: 2023-12-21
  			int match, i;
  			char *hostname = metadata[hostnameitem];
  			char *testname = metadata[testnameitem];
-@@ -298,23 +299,23 @@
+@@ -298,23 +299,23 @@ int main(int argc, char *argv[])
  
  
  			if (hostexp) {
@@ -1372,7 +1373,7 @@ Last-Update: 2023-12-21
  				if (!match) continue;
  			}
  
-@@ -338,6 +339,7 @@
+@@ -338,6 +339,7 @@ int main(int argc, char *argv[])
  			}
  		}
  	}
@@ -1380,8 +1381,8 @@ Last-Update: 2023-12-21
  
  	return 0;
  }
---- xymon.orig/build/test-pcre.c
-+++ xymon/build/test-pcre.c
+--- a/build/test-pcre.c
++++ b/build/test-pcre.c
 @@ -1,11 +1,12 @@
 -#include <pcre.h>
 +#define PCRE2_CODE_UNIT_WIDTH 8
@@ -1400,9 +1401,9 @@ Last-Update: 2023-12-21
  
  	return 0;
  }
---- xymon.orig/build/Makefile.test-pcre
-+++ xymon/build/Makefile.test-pcre
-@@ -4,7 +4,7 @@
+--- a/build/Makefile.test-pcre
++++ b/build/Makefile.test-pcre
+@@ -4,7 +4,7 @@ test-compile:
  	@$(CC) $(CFLAGS) $(PCREINC) -o test-pcre.o -c test-pcre.c
  
  test-link:
@@ -1411,8 +1412,8 @@ Last-Update: 2023-12-21
  
  clean:
  	@rm -f test-pcre.o test-pcre
---- xymon.orig/lib/loadalerts.h
-+++ xymon/lib/loadalerts.h
+--- a/lib/loadalerts.h
++++ b/lib/loadalerts.h
 @@ -16,7 +16,8 @@
  
  /* The clients probably don't have the pcre headers */
@@ -1423,7 +1424,7 @@ Last-Update: 2023-12-21
  
  typedef enum { A_PAGING, A_NORECIP, A_ACKED, A_RECOVERED, A_DISABLED, A_NOTIFY, A_DEAD } astate_t;
  
-@@ -50,29 +51,29 @@
+@@ -50,29 +51,29 @@ typedef struct criteria_t {
  	int cfid;
  	char *cfline;
  	char *pagespec;		/* Pages to include */
@@ -1465,9 +1466,9 @@ Last-Update: 2023-12-21
  	int colors;
  	char *timespec;
  	char *extimespec;
---- xymon.orig/lib/clientlocal.c
-+++ xymon/lib/clientlocal.c
-@@ -16,11 +16,13 @@
+--- a/lib/clientlocal.c
++++ b/lib/clientlocal.c
+@@ -16,11 +16,13 @@ static char rcsid[] = "$Id: clientlocal.
  #include <unistd.h>
  #include <stdlib.h>
  #include <string.h>
@@ -1482,7 +1483,7 @@ Last-Update: 2023-12-21
  	strbuffer_t *config;
  	struct clientconfig_t *next;
  } clientconfig_t;
-@@ -117,7 +119,7 @@
+@@ -117,7 +119,7 @@ void load_clientconfig(void)
  
  		if (!insection) {
  			if (*STRBUF(buf) == '[') {
@@ -1491,9 +1492,9 @@ Last-Update: 2023-12-21
  				clientconfig_t *newrec;
  
  				p = STRBUF(buf) + strcspn(STRBUF(buf), "\r\n");
---- xymon.orig/configure.server
-+++ xymon/configure.server
-@@ -470,10 +470,10 @@
+--- a/configure.server
++++ b/configure.server
+@@ -470,10 +470,10 @@ then
  	echo "PCREINCDIR = -I$PCREINC"   >>Makefile
      fi
      if test "$PCRELIB" != ""; then
@@ -1506,9 +1507,9 @@ Last-Update: 2023-12-21
      fi
  fi
  echo ""                                  >>Makefile
---- xymon.orig/xymonnet/httpresult.c
-+++ xymon/xymonnet/httpresult.c
-@@ -80,7 +80,7 @@
+--- a/xymonnet/httpresult.c
++++ b/xymonnet/httpresult.c
+@@ -80,7 +80,7 @@ static int statuscolor_by_set(testedhost
  {
  	int result = -1;
  	char codestr[15];
@@ -1517,9 +1518,9 @@ Last-Update: 2023-12-21
  
  	/* Use code 999 to indicate we could not fetch the URL */
  	snprintf(codestr, sizeof(codestr), "%d", (status ? status : 999));
---- xymon.orig/xymonnet/beastat.c
-+++ xymon/xymonnet/beastat.c
-@@ -22,8 +22,6 @@
+--- a/xymonnet/beastat.c
++++ b/xymonnet/beastat.c
+@@ -22,8 +22,6 @@ static char rcsid[] = "$Id: beastat.c 80
  #include <sys/types.h>
  #include <sys/stat.h>
  
@@ -1528,9 +1529,9 @@ Last-Update: 2023-12-21
  #include "libxymon.h"
  #include "version.h"
  
---- xymon.orig/xymond/xymond.c
-+++ xymon/xymond/xymond.c
-@@ -361,7 +361,7 @@
+--- a/xymond/xymond.c
++++ b/xymond/xymond.c
+@@ -361,7 +361,7 @@ enum filtertype_t { FILTER_XMH, FILTER_P
  
  typedef struct hostfilter_rec_t {
  	enum filtertype_t filtertype;
@@ -1539,7 +1540,7 @@ Last-Update: 2023-12-21
  	struct hostfilter_rec_t *next;
  	enum xmh_item_t field;	/* Only for filtertype == FILTER_XMH */
  	enum boardfield_t boardfield;	/* Only for filtertype == FILTER_FIELD(TIME) */
-@@ -2870,7 +2870,7 @@
+@@ -2870,7 +2870,7 @@ hostfilter_rec_t *setup_filter(char *buf
  {
  	char *tok;
  	hostfilter_rec_t *filterhead = NULL, *filtertail = NULL;
@@ -1548,9 +1549,9 @@ Last-Update: 2023-12-21
  
  	dbgprintf("-> setup_filter: %s\n", buf);
  
---- xymon.orig/xymond/xymond_channel.c
-+++ xymon/xymond/xymond_channel.c
-@@ -426,8 +426,8 @@
+--- a/xymond/xymond_channel.c
++++ b/xymond/xymond_channel.c
+@@ -426,8 +426,8 @@ int main(int argc, char *argv[])
  	char *pidfile = NULL;
  	char *envarea = NULL;
  	int cnid = -1;
@@ -1561,9 +1562,9 @@ Last-Update: 2023-12-21
  
  	int argi;
  	struct sigaction sa;
---- xymon.orig/xymond/do_alert.c
-+++ xymon/xymond/do_alert.c
-@@ -27,8 +27,6 @@
+--- a/xymond/do_alert.c
++++ b/xymond/do_alert.c
+@@ -27,8 +27,6 @@ static char rcsid[] = "$Id: do_alert.c 7
  #include <errno.h>
  #include <sys/wait.h>
  
@@ -1572,9 +1573,9 @@ Last-Update: 2023-12-21
  #include "libxymon.h"
  
  /*
---- xymon.orig/xymond/client/irix.c
-+++ xymon/xymond/client/irix.c
-@@ -16,7 +16,7 @@
+--- a/xymond/client/irix.c
++++ b/xymond/client/irix.c
+@@ -16,7 +16,7 @@ void handle_irix_client(char *hostname,
  			void *hinfo, char *sender, time_t timestamp,
  			char *clientdata)
  {
@@ -1583,7 +1584,7 @@ Last-Update: 2023-12-21
  	char *timestr;
  	char *uptimestr;
  	char *clockstr;
-@@ -69,8 +69,9 @@
+@@ -69,8 +69,9 @@ void handle_irix_client(char *hostname,
  	if (topstr) {
  		char *memline, *eoln = NULL;
  		int res;
@@ -1594,7 +1595,7 @@ Last-Update: 2023-12-21
  		long memphystotal = -1, memphysused = -1, memphysfree = 0,
  		     memacttotal = -1, memactused = -1, memactfree = -1,
  		     memswaptotal = -1, memswapused = -1, memswapfree = 0;
-@@ -79,40 +80,47 @@
+@@ -79,40 +80,47 @@ void handle_irix_client(char *hostname,
  			memptn = compileregex("^Memory: (\\d+)M max, (\\d+)M avail, (\\d+)M free, (\\d+)M swap, (\\d+)M free swap");
  		}
  
@@ -1648,9 +1649,9 @@ Last-Update: 2023-12-21
  
  		if (eoln) *eoln = '\n';
  
---- xymon.orig/xymond/rrd/do_ifstat.c
-+++ xymon/xymond/rrd/do_ifstat.c
-@@ -120,17 +120,17 @@
+--- a/xymond/rrd/do_ifstat.c
++++ b/xymond/rrd/do_ifstat.c
+@@ -120,17 +120,17 @@ static const char *ifstat_bbwin_exprs[]
  int do_ifstat_rrd(char *hostname, char *testname, char *classname, char *pagepaths, char *msg, time_t tstamp)
  {
  	static int pcres_compiled = 0;
@@ -1679,7 +1680,7 @@ Last-Update: 2023-12-21
  
  	enum ostype_t ostype;
  	char *datapart = msg;
-@@ -138,7 +138,7 @@
+@@ -138,7 +138,7 @@ int do_ifstat_rrd(char *hostname, char *
  	int dmatch;
  
  	void *xmh;
@@ -1688,9 +1689,9 @@ Last-Update: 2023-12-21
  
  	xmh = hostinfo(hostname);
  	if (xmh) {
---- xymon.orig/xymond/rrd/do_dbcheck.c
-+++ xymon/xymond/rrd/do_dbcheck.c
-@@ -223,28 +223,36 @@
+--- a/xymond/rrd/do_dbcheck.c
++++ b/xymond/rrd/do_dbcheck.c
+@@ -223,28 +223,36 @@ int do_dbcheck_tablespace_rrd(char *host
  
         char *eoln, *curline;
         static int ptnsetup = 0;
@@ -1735,7 +1736,7 @@ Last-Update: 2023-12-21
                 }
         }
  
-@@ -261,6 +269,7 @@
+@@ -261,6 +269,7 @@ int do_dbcheck_tablespace_rrd(char *host
                 eoln = strchr(curline, '\n');
                 curline = (eoln ? (eoln+1) : NULL);
         }
@@ -1743,7 +1744,7 @@ Last-Update: 2023-12-21
  
         while (curline)  {
                 char *fsline, *p;
-@@ -307,20 +316,18 @@
+@@ -307,20 +316,18 @@ int do_dbcheck_tablespace_rrd(char *host
                 /* Check include/exclude patterns */
                 wanteddisk = 1;
                 if (exclpattern) {
@@ -1768,7 +1769,7 @@ Last-Update: 2023-12-21
  
                         wanteddisk = (result >= 0);
                 }
-@@ -350,6 +357,7 @@
+@@ -350,6 +357,7 @@ int do_dbcheck_tablespace_rrd(char *host
  nextline:
                 curline = (eoln ? (eoln+1) : NULL);
         }
@@ -1776,9 +1777,9 @@ Last-Update: 2023-12-21
  
         return 0;
  }
---- xymon.orig/xymond/rrd/do_devmon.c
-+++ xymon/xymond/rrd/do_devmon.c
-@@ -18,8 +18,8 @@
+--- a/xymond/rrd/do_devmon.c
++++ b/xymond/rrd/do_devmon.c
+@@ -18,8 +18,8 @@ int do_devmon_rrd(char *hostname, char *
  
  	char *eoln, *curline;
  	static int ptnsetup = 0;
@@ -1789,9 +1790,9 @@ Last-Update: 2023-12-21
  	int in_devmon = 1;
  	int numds = 0;
  	char *rrdbasename;
---- xymon.orig/xymond/rrd/do_disk.c
-+++ xymon/xymond/rrd/do_disk.c
-@@ -18,8 +18,9 @@
+--- a/xymond/rrd/do_disk.c
++++ b/xymond/rrd/do_disk.c
+@@ -18,8 +18,9 @@ int do_disk_rrd(char *hostname, char *te
  	enum { DT_IRIX, DT_AS400, DT_NT, DT_UNIX, DT_NETAPP, DT_NETWARE, DT_BBWIN } dsystype;
  	char *eoln, *curline;
  	static int ptnsetup = 0;
@@ -1803,7 +1804,7 @@ Last-Update: 2023-12-21
  	int seen_root_fs = 0;
  
  	if (strstr(msg, "netapp.pl")) return do_netapp_disk_rrd(hostname, testname, classname, pagepaths, msg, tstamp);
-@@ -28,22 +29,29 @@
+@@ -28,22 +29,29 @@ int do_disk_rrd(char *hostname, char *te
  	if (disk_tpl == NULL) disk_tpl = setup_template(disk_params);
  
  	if (!ptnsetup) {
@@ -1839,7 +1840,7 @@ Last-Update: 2023-12-21
  		}
  	}
  
-@@ -72,6 +80,7 @@
+@@ -72,6 +80,7 @@ int do_disk_rrd(char *hostname, char *te
  	 * line - we never have any disk reports there anyway.
  	 */
  	curline = strchr(msg, '\n'); if (curline) curline++;
@@ -1847,7 +1848,7 @@ Last-Update: 2023-12-21
  	while (curline)  {
  		char *fsline, *p;
  		char *columns[20];
-@@ -178,20 +187,18 @@
+@@ -178,20 +187,18 @@ int do_disk_rrd(char *hostname, char *te
  				seen_root_fs = 1;
  		}
  		if (exclpattern) {
@@ -1872,7 +1873,7 @@ Last-Update: 2023-12-21
  
  			wanteddisk = (result >= 0);
  		}
-@@ -221,6 +228,7 @@
+@@ -221,6 +228,7 @@ int do_disk_rrd(char *hostname, char *te
  nextline:
  		curline = (eoln ? (eoln+1) : NULL);
  	}
@@ -1880,9 +1881,9 @@ Last-Update: 2023-12-21
  
  	return 0;
  }
---- xymon.orig/xymond/rrd/do_la.c
-+++ xymon/xymond/rrd/do_la.c
-@@ -17,8 +17,8 @@
+--- a/xymond/rrd/do_la.c
++++ b/xymond/rrd/do_la.c
+@@ -17,8 +17,8 @@ int do_la_rrd(char *hostname, char *test
  	static char *clock_params[]       = { "DS:la:GAUGE:600:U:U", NULL }; /* "la" is a misnomer, but to stay compatiable with existing RRD files */
  	static void *clock_tpl            = NULL;
  
@@ -1893,7 +1894,7 @@ Last-Update: 2023-12-21
  	static time_t starttime = 0;
  
  	char *p, *eoln = NULL;
-@@ -66,25 +66,28 @@
+@@ -66,25 +66,28 @@ int do_la_rrd(char *hostname, char *test
  		 * the operating system name is part of the message (as in the tests above).
  		 */
  
@@ -1928,7 +1929,7 @@ Last-Update: 2023-12-21
  
  		goto done_parsing;
  	}
-@@ -139,31 +142,34 @@
+@@ -139,31 +142,34 @@ int do_la_rrd(char *hostname, char *test
  		 * No "uptime" in message - could be from an AS/400. They look like this:
  		 * green March 21, 2005 12:33:24 PM EST deltacdc 108 users 45525 jobs(126 batch,0 waiting for message), load=26%
  		 */
@@ -1971,9 +1972,9 @@ Last-Update: 2023-12-21
  	}
  
  done_parsing:
---- xymon.orig/xymond/rrd/do_netapp.c
-+++ xymon/xymond/rrd/do_netapp.c
-@@ -492,8 +492,9 @@
+--- a/xymond/rrd/do_netapp.c
++++ b/xymond/rrd/do_netapp.c
+@@ -492,8 +492,9 @@ int do_netapp_disk_rrd(char *hostname, c
  
         char *eoln, *curline;
         static int ptnsetup = 0;
@@ -1985,7 +1986,7 @@ Last-Update: 2023-12-21
         int newdfreport;
  
  	newdfreport = (strstr(msg,"netappnewdf") != NULL);
-@@ -501,22 +502,29 @@
+@@ -501,22 +502,29 @@ int do_netapp_disk_rrd(char *hostname, c
         if (netapp_disk_tpl == NULL) netapp_disk_tpl = setup_template(netapp_disk_params);
  
         if (!ptnsetup) {
@@ -2021,7 +2022,7 @@ Last-Update: 2023-12-21
                 }
         }
  
-@@ -527,6 +535,7 @@
+@@ -527,6 +535,7 @@ int do_netapp_disk_rrd(char *hostname, c
          * line - we never have any disk reports there anyway.
          */
         curline = strchr(msg, '\n'); if (curline) curline++;
@@ -2029,7 +2030,7 @@ Last-Update: 2023-12-21
  
         while (curline)  {
                 char *fsline, *p;
-@@ -592,20 +601,18 @@
+@@ -592,20 +601,18 @@ int do_netapp_disk_rrd(char *hostname, c
                 /* Check include/exclude patterns */
                 wanteddisk = 1;
                 if (exclpattern) {
@@ -2054,7 +2055,7 @@ Last-Update: 2023-12-21
  
                         wanteddisk = (result >= 0);
                 }
-@@ -635,6 +642,7 @@
+@@ -635,6 +642,7 @@ int do_netapp_disk_rrd(char *hostname, c
  nextline:
                 curline = (eoln ? (eoln+1) : NULL);
         }
@@ -2062,9 +2063,9 @@ Last-Update: 2023-12-21
  
         return 0;
  }
---- xymon.orig/web/acknowledge.c
-+++ xymon/web/acknowledge.c
-@@ -264,7 +264,7 @@
+--- a/web/acknowledge.c
++++ b/web/acknowledge.c
+@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
  
  			if (obeycookies && !gotfilter && ((hostname = get_cookie("host")) != NULL)) {
  				if (*hostname) {
@@ -2073,7 +2074,7 @@ Last-Update: 2023-12-21
  					SBUF_DEFINE(re);
  
  					SBUF_MALLOC(re, 3+strlen(hostname));
-@@ -286,7 +286,7 @@
+@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
  
  			if (obeycookies && !gotfilter && ((pagename = get_cookie("pagepath")) != NULL)) {
  				if (*pagename) {
@@ -2082,9 +2083,9 @@ Last-Update: 2023-12-21
  					SBUF_DEFINE(re);
  
  					SBUF_MALLOC(re, 8 + strlen(pagename)*2);
---- xymon.orig/web/svcstatus.c
-+++ xymon/web/svcstatus.c
-@@ -359,7 +359,7 @@
+--- a/web/svcstatus.c
++++ b/web/svcstatus.c
+@@ -359,7 +359,7 @@ int do_request(void)
  
  		/* We need not check that hostname is valid, has already been done with loadhostdata() */
  		if (!complist) {
@@ -2093,7 +2094,7 @@ Last-Update: 2023-12-21
  
  			/* Check service as a pcre pattern. And no spaces in servicenames */
  			if (strchr(service, ' ') == NULL) dummy = compileregex(service);
-@@ -373,7 +373,7 @@
+@@ -373,7 +373,7 @@ int do_request(void)
  			snprintf(xymondreq, xymondreq_buflen, "xymondlog host=%s test=%s fields=hostname,testname,color,flags,lastchange,logtime,validtime,acktime,disabletime,sender,cookie,ackmsg,dismsg,client,acklist,XMH_IP,XMH_DISPLAYNAME,clntstamp,flapinfo,modifiers", hostname, service);
  		}
  		else {
@@ -2102,9 +2103,9 @@ Last-Update: 2023-12-21
  			SBUF_DEFINE(re);
  
  			SBUF_MALLOC(re, 5 + strlen(complist));
---- xymon.orig/web/confreport.c
-+++ xymon/web/confreport.c
-@@ -693,7 +693,7 @@
+--- a/web/confreport.c
++++ b/web/confreport.c
+@@ -693,7 +693,7 @@ int main(int argc, char *argv[])
  
  	/* Fetch the list of host+test statuses we currently know about */
  	if (pagepattern) {
@@ -2113,7 +2114,7 @@ Last-Update: 2023-12-21
  		SBUF_DEFINE(re);
  
  		SBUF_MALLOC(re, 8 + 2*strlen(pagepattern));
-@@ -716,7 +716,7 @@
+@@ -716,7 +716,7 @@ int main(int argc, char *argv[])
  		xfree(re);
  	}
  	else if (hostpattern) {
@@ -2122,9 +2123,9 @@ Last-Update: 2023-12-21
  		SBUF_DEFINE(re);
  
  		SBUF_MALLOC(re,3 + strlen(hostpattern));
---- xymon.orig/web/statusreport.c
-+++ xymon/web/statusreport.c
-@@ -128,7 +128,7 @@
+--- a/web/statusreport.c
++++ b/web/statusreport.c
+@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
        		/* Setup the filter we use for the report */
  		cookie = get_cookie("pagepath");
  		if (cookie && *cookie) {
@@ -2133,9 +2134,9 @@ Last-Update: 2023-12-21
  			SBUF_DEFINE(re);
  
  			SBUF_MALLOC(re, 8 + 2*strlen(cookie));
---- xymon.orig/web/hostlist.c
-+++ xymon/web/hostlist.c
-@@ -71,7 +71,7 @@
+--- a/web/hostlist.c
++++ b/web/hostlist.c
+@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
  	int argi, res;
  	sendreturn_t *sres;
  	char *cookie;
@@ -2144,9 +2145,9 @@ Last-Update: 2023-12-21
  
  	init_timestamp();
  	for (argi=1; (argi < argc); argi++) {
---- xymon.orig/web/perfdata.c
-+++ xymon/web/perfdata.c
-@@ -21,7 +21,8 @@
+--- a/web/perfdata.c
++++ b/web/perfdata.c
+@@ -21,7 +21,8 @@ static char rcsid[] = "$Id: perfdata.c 8
  #include <dirent.h>
  
  #include <rrd.h>
@@ -2156,7 +2157,7 @@ Last-Update: 2023-12-21
  
  #include "libxymon.h"
  
-@@ -314,7 +315,7 @@
+@@ -314,7 +315,7 @@ void format_rrdtime(char *t, char **tday
  
  int main(int argc, char **argv)
  {
