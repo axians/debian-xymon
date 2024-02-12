@@ -1,4 +1,4 @@
-xymon (4.3.30-2) UNRELEASED; urgency=medium
+xymon (4.3.30-2) unstable; urgency=medium
 
   [ Axel Beckert ]
   * Bump debhelper-compat to 13.
@@ -74,7 +74,7 @@ xymon (4.3.30-2) UNRELEASED; urgency=medium
   * Exchange Maintainer and Uploaders, and add myself to Uploaders.
   * Apply wrap-and-sort -a.
 
- -- Axel Beckert <abe@debian.org>  Mon, 10 Aug 2020 04:39:28 +0200
+ -- Roland Rosenfeld <roland@debian.org>  Mon, 12 Feb 2024 18:05:54 +0100
 
 xymon (4.3.30-1) unstable; urgency=medium
 
