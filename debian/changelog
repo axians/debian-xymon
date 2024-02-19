@@ -1,6 +1,8 @@
 xymon (4.3.30-3) UNRELEASED; urgency=medium
 
   * Promote rrdtool from Suggests to Recommends.
+  * Change Homepage header from http://xymon.sourceforge.net/ to
+    https://xymon.sourceforge.io/.
 
  -- Axel Beckert <abe@debian.org>  Mon, 19 Feb 2024 12:43:38 +0100
 
