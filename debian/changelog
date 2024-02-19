@@ -1,3 +1,9 @@
+xymon (4.3.30-3) UNRELEASED; urgency=medium
+
+  * Promote rrdtool from Suggests to Recommends.
+
+ -- Axel Beckert <abe@debian.org>  Mon, 19 Feb 2024 12:43:38 +0100
+
 xymon (4.3.30-2) unstable; urgency=medium
 
   [ Axel Beckert ]
