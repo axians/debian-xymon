@@ -6,6 +6,8 @@ xymon (4.3.30-3) UNRELEASED; urgency=medium
   * Drop leftover debconf initialisation in xymon.postinst. (It is no more
     needed since commit 12f853ca and caused a postinst deadlock. Closes:
     #1067110)
+  * Also drop no more needed xymon.config and xymon.template. Leave
+    debconf part in xymon.postrm for proper purging for now.
 
  -- Axel Beckert <abe@debian.org>  Mon, 19 Feb 2024 12:43:38 +0100
 
