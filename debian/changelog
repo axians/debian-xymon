@@ -1,4 +1,4 @@
-xymon (4.3.30-3) UNRELEASED; urgency=medium
+xymon (4.3.30-3) unstable; urgency=high
 
   * Promote rrdtool from Suggests to Recommends.
   * Change Homepage header from http://xymon.sourceforge.net/ to
@@ -10,7 +10,7 @@ xymon (4.3.30-3) UNRELEASED; urgency=medium
   * Also drop no more needed xymon.config and xymon.template. Leave
     debconf part in xymon.postrm for proper purging for now.
 
- -- Axel Beckert <abe@debian.org>  Mon, 19 Feb 2024 12:43:38 +0100
+ -- Axel Beckert <abe@debian.org>  Wed, 27 Mar 2024 01:46:35 +0100
 
 xymon (4.3.30-2) unstable; urgency=medium
 
