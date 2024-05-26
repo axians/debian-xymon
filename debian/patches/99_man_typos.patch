@@ -1,0 +1,191 @@
+From: Carsten Leonhardt <leo@debian.org>
+Date: Sun, 26 May 2024 19:08:00 +0200
+Forwarded: yes
+Subject: Fix typos in man pages
+
+--- a/common/hosts.cfg.5
++++ b/common/hosts.cfg.5
+@@ -75,7 +75,7 @@
+ 
+ .IP "optional include/directory"
+ Both "include" and "directory" can be prefixed with the tag
+-"optional", which will preven an error message being logged if
++"optional", which will prevent an error message being logged if
+ the file or directory is not present on a system.
+ 
+ 
+--- a/common/xymon.7
++++ b/common/xymon.7
+@@ -342,7 +342,7 @@
+ This CGI program allows a user to acknowledge an alert he received
+ from Xymon about a host that is in a critical state. Acknowledging
+ an alert serves two purposes: First, it stops more alerts from being
+-sent so the technicians are not bothered wit more alerts, and secondly
++sent so the technicians are not bothered with more alerts, and secondly
+ it provides feedback to those looking at the Xymon web pages that the
+ problem is being handled.
+ 
+--- a/common/xymonlaunch.c
++++ b/common/xymonlaunch.c
+@@ -69,7 +69,7 @@
+ 	int beingkilled;
+ 	char *cronstr; /* pointer to cron string */
+ 	void *crondate; /* pointer to cron date-time structure */
+-	int cronmin;	/* minute value of the last sucessful cron execution attempt */
++	int cronmin;	/* minute value of the last successful cron execution attempt */
+ 	struct tasklist_t *depends;
+ 	struct tasklist_t *next;
+ 	struct tasklist_t *copy;
+@@ -321,7 +321,7 @@
+ 
+ 			xfreedup(curtask->onhostptn,p);
+ 
+-			/* Match the hostname against the pattern; if it doesnt match then disable the task */
++			/* Match the hostname against the pattern; if it doesn't match then disable the task */
+ 			status = regcomp(&cpattern, curtask->onhostptn, REG_EXTENDED|REG_ICASE|REG_NOSUB);
+ 			if (status == 0) {
+ 				status = regexec(&cpattern, myhostname, 0, NULL, 0);
+@@ -343,7 +343,7 @@
+ 				/* compare the current version with the new version and decide if we have changed */
+ 				int changed=0;
+ 				int reload=0;
+-				/* first the nummeric ones */
++				/* first the numeric ones */
+ 				if (twalk->disabled!=twalk->copy->disabled) { changed++; }
+ 				if (twalk->interval!=twalk->copy->interval) { changed++; }
+ 				if (twalk->maxruntime!=twalk->copy->maxruntime) { changed++; }
+--- a/common/xymonserver.cfg.5
++++ b/common/xymonserver.cfg.5
+@@ -153,7 +153,7 @@
+ Including "C" uses the COMMENT setting for the host, including "D" uses 
+ the DESCR setting for the host, and "I" uses the IP-address of the host.
+ If more than one of these is set, then COMMENT takes precedence over
+-DESCR which again has precence over IP.
++DESCR which again has precedence over IP.
+ Note that DESCR and IP only appear in pop-up windows (if enabled),
+ whereas the COMMENT is always used - if pop-up's have been disabled, then
+ the COMMENT value is displayed next to the hostname on the webpages.
+@@ -381,7 +381,7 @@
+ .IP ALERTCOLORS
+ Comma-separated list of the colors that may trigger an alert-message.
+ The default is "red,yellow,purple". Note that alerts may further be
+-generated or suppresed based on the configuration in the
++generated or suppressed based on the configuration in the
+ .I alerts.cfg(5)
+ file.
+ 
+@@ -510,7 +510,7 @@
+ Note: All TCP tests are automatically added.
+ 
+ .IP GRAPHS_<COLUMNAME>
+-List of GRAPHs that should be displayed on the corresponding colmn page. Note
++List of GRAPHs that should be displayed on the corresponding column page. Note
+ this will override the default, so to add multiple graphs you should include
+ the original one (e.g. GRAPHS_cpu="la,vmstat1").
+ 
+--- a/docs/manpages/man5/hosts.cfg.5.html
++++ b/docs/manpages/man5/hosts.cfg.5.html
+@@ -97,7 +97,7 @@
+ <P>
+ <DT>optional include/directory<DD>
+ Both &quot;include&quot; and &quot;directory&quot; can be prefixed with the tag
+-&quot;optional&quot;, which will preven an error message being logged if
++&quot;optional&quot;, which will prevent an error message being logged if
+ the file or directory is not present on a system.
+ <P>
+ <P>
+--- a/docs/manpages/man1/hostgraphs.cgi.1.html
++++ b/docs/manpages/man1/hostgraphs.cgi.1.html
+@@ -34,7 +34,7 @@
+ <P>
+ If multiple hosts are selected, hostgraph.cgi will attempt to
+ display a multi-host graph for each type where the graphs for all
+-hosts are overlayed in a single image, allowing for easy comparison
++hosts are overlaid in a single image, allowing for easy comparison
+ of the hosts.
+ <P>
+ The hostlist uses the PAGEPATH cookie provided by Xymon webpages to
+--- a/docs/manpages/man1/xymonnet.1.html
++++ b/docs/manpages/man1/xymonnet.1.html
+@@ -126,7 +126,7 @@
+ <BR>
+ 
+ With &quot;--dns=ip&quot; xymonnet will never do a DNS lookup;
+-it will use the IP adresse specified in hosts.cfg for
++it will use the IP address specified in hosts.cfg for
+ the tests. Thus, this setting is equivalent to having
+ the &quot;testip&quot; tag on all hosts. Note that http tests
+ will ignore this setting and still perform a DNS
+--- a/docs/manpages/man5/client-local.cfg.5.html
++++ b/docs/manpages/man5/client-local.cfg.5.html
+@@ -91,7 +91,7 @@
+ where &lt;expression&gt; is a Perl-compatible regular expression. The same 
+ kind of matching can be done on operating system or host class, using
+ <P>
+-<BR>&nbsp;&nbsp;&nbsp;&nbsp;[os=&lt;expresssion&gt;]
++<BR>&nbsp;&nbsp;&nbsp;&nbsp;[os=&lt;expression&gt;]
+ <BR>
+ 
+ <BR>&nbsp;&nbsp;&nbsp;&nbsp;[class=&lt;expression&gt;]
+--- a/docs/manpages/man5/xymonserver.cfg.5.html
++++ b/docs/manpages/man5/xymonserver.cfg.5.html
+@@ -180,7 +180,7 @@
+ Including &quot;C&quot; uses the COMMENT setting for the host, including &quot;D&quot; uses 
+ the DESCR setting for the host, and &quot;I&quot; uses the IP-address of the host.
+ If more than one of these is set, then COMMENT takes precedence over
+-DESCR which again has precence over IP.
++DESCR which again has precedence over IP.
+ Note that DESCR and IP only appear in pop-up windows (if enabled),
+ whereas the COMMENT is always used - if pop-up's have been disabled, then
+ the COMMENT value is displayed next to the hostname on the webpages.
+@@ -437,7 +437,7 @@
+ <DT>ALERTCOLORS<DD>
+ Comma-separated list of the colors that may trigger an alert-message.
+ The default is &quot;red,yellow,purple&quot;. Note that alerts may further be
+-generated or suppresed based on the configuration in the
++generated or suppressed based on the configuration in the
+ <I><A HREF="../man5/alerts.cfg.5.html">alerts.cfg</A>(5)</I>
+ 
+ file.
+@@ -585,7 +585,7 @@
+ Note: All TCP tests are automatically added.
+ <P>
+ <DT>GRAPHS_&lt;COLUMNAME&gt;<DD>
+-List of GRAPHs that should be displayed on the corresponding colmn page. Note
++List of GRAPHs that should be displayed on the corresponding column page. Note
+ this will override the default, so to add multiple graphs you should include
+ the original one (e.g. GRAPHS_cpu=&quot;la,vmstat1&quot;).
+ <P>
+--- a/docs/manpages/man7/xymon.7.html
++++ b/docs/manpages/man7/xymon.7.html
+@@ -395,7 +395,7 @@
+ This CGI program allows a user to acknowledge an alert he received
+ from Xymon about a host that is in a critical state. Acknowledging
+ an alert serves two purposes: First, it stops more alerts from being
+-sent so the technicians are not bothered wit more alerts, and secondly
++sent so the technicians are not bothered with more alerts, and secondly
+ it provides feedback to those looking at the Xymon web pages that the
+ problem is being handled.
+ <P>
+--- a/docs/manpages/man8/xymond_channel.8.html
++++ b/docs/manpages/man8/xymond_channel.8.html
+@@ -23,7 +23,7 @@
+ 
+ channels that provide information about events occurring in the Xymon system.
+ It retrieves messages from the xymond daemon, and passes them on to the
+-<B>workerprogram</B> on the STDIN (file descripter 1) of the worker program. 
++<B>workerprogram</B> on the STDIN (file descriptor 1) of the worker program.
+ Worker programs can then handle messages as they like.
+ <P>
+ A number of worker programs are shipped with xymond, e.g.
+--- a/docs/manpages/man8/xymond_rrd.8.html
++++ b/docs/manpages/man8/xymond_rrd.8.html
+@@ -38,7 +38,7 @@
+ to install the LARRD bottom-feeders on the clients you monitor.
+ <P>
+ Note: For certain types of data, the RRD files used by Xymon are
+-imcompatible with those generated by the Big Brother LARRD add-on. 
++incompatible with those generated by the Big Brother LARRD add-on.
+ See the COMPATIBILITY section below.
+ <P>
+ <P>
