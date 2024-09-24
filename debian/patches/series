@@ -22,3 +22,4 @@
 97_makehtml.patch
 98_man_fb.patch
 99_man_typos.patch
+100_md5_bufferoverflow.patch
