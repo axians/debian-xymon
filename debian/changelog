@@ -1,7 +1,13 @@
 xymon (4.3.30-4) UNRELEASED; urgency=medium
 
+  [ Carsten Leonhardt ]
+  * 99_man_typos: fix typos in man pages.
+
+  [ Roland Rosenfeld ]
   * 100_md5_bufferoverflow: Fix buffer overflow, triggered by
     -D_FORTIFY_SOURCE=3 on Ubuntu 24.04 (see LP#2078638).
+  * 99_man_typos: Remove changes in HTML man pages, since they are
+    recreated at build time (and otherwise break cleanup).
 
  -- Roland Rosenfeld <roland@debian.org>  Tue, 24 Sep 2024 21:45:50 +0200
 
