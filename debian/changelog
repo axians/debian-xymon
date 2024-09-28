@@ -8,6 +8,7 @@ xymon (4.3.30-4) UNRELEASED; urgency=medium
     -D_FORTIFY_SOURCE=3 on Ubuntu 24.04 (see LP#2078638).
   * 99_man_typos: Remove changes in HTML man pages, since they are
     recreated at build time (and otherwise break cleanup).
+  * Declare compliance with Debian Policy 4.7.0 (No changes needed).
 
  -- Roland Rosenfeld <roland@debian.org>  Tue, 24 Sep 2024 21:45:50 +0200
 
