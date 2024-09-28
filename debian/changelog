@@ -9,6 +9,7 @@ xymon (4.3.30-4) UNRELEASED; urgency=medium
   * 99_man_typos: Remove changes in HTML man pages, since they are
     recreated at build time (and otherwise break cleanup).
   * Declare compliance with Debian Policy 4.7.0 (No changes needed).
+  * Remove recommending rename, which is no longer used.
 
  -- Roland Rosenfeld <roland@debian.org>  Tue, 24 Sep 2024 21:45:50 +0200
 
