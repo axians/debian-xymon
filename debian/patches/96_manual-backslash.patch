@@ -1,6 +1,6 @@
 From: Roland Rosenfeld <roland@debian.org>
 Date: Sun, 11 Feb 2024 13:54:04 +0100
-Forwarded: https://lists.xymon.com/pipermail/xymon/2024-February/048288.html
+Forwarded: https://lists.xymon.com/archive/2024-February/048288.html
 Subject: Write backslash in man pages as \e (not \\)
  According to groff(7):
   Printable backslashes must be denoted as \e.
