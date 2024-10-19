@@ -1,4 +1,4 @@
-xymon (4.3.30-4) UNRELEASED; urgency=medium
+xymon (4.3.30-4) unstable; urgency=medium
 
   [ Carsten Leonhardt ]
   * 99_man_typos: fix typos in man pages.
@@ -11,7 +11,7 @@ xymon (4.3.30-4) UNRELEASED; urgency=medium
   * Declare compliance with Debian Policy 4.7.0 (No changes needed).
   * Remove recommending rename, which is no longer used.
 
- -- Roland Rosenfeld <roland@debian.org>  Tue, 24 Sep 2024 21:45:50 +0200
+ -- Roland Rosenfeld <roland@debian.org>  Sat, 19 Oct 2024 11:09:04 +0200
 
 xymon (4.3.30-3) unstable; urgency=high
 
