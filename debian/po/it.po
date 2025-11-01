@@ -1,14 +1,14 @@
 # Italian (it) translation of debconf templates for xymon
 # Copyright (C) 2007 Software in the Public Interest
 # This file is distributed under the same license as the xymon package.
-# Luca Monducci <luca.mo@tiscali.it>, 2007.
+# Luca Monducci <luca.mo@tiscali.it>, 2007-2025
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: xymon debconf templates\n"
 "Report-Msgid-Bugs-To: xymon@packages.debian.org\n"
 "POT-Creation-Date: 2014-10-23 14:57+0200\n"
-"PO-Revision-Date: 2012-06-13 13:31+0200\n"
+"PO-Revision-Date: 2025-08-23 16:43+0200\n"
 "Last-Translator: Luca Monducci <luca.mo@tiscali.it>\n"
 "Language-Team: Italian <debian-l10n-italian@lists.debian.org>\n"
 "Language: it\n"
@@ -65,7 +65,7 @@ msgstr ""
 #. Description
 #: ../xymon-client.templates:3001
 msgid "Automatically migrate old hobbit files to xymon?"
-msgstr ""
+msgstr "Migrare automaticamente i vecchi file hobbit su xymon?"
 
 #. Type: boolean
 #. Description
@@ -77,3 +77,9 @@ msgid ""
 "usually a good idea, but might not work so well if your config differs "
 "substantially from the default."
 msgstr ""
+"L'utente del sistema operativo è stato rinominato da \"hobbit\" a \"xymon\" "
+"e anche tutte le directory e i file di configurazione, stato e log sono "
+"stati rinominati. Gli script postinst del pacchetto possono eseguire la "
+"migrazione automaticamente. Di solito è una buona idea, ma potrebbe non "
+"funzionare bene se la configurazione differisce in modo sostanziale da "
+"quella predefinita."
