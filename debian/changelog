@@ -6,7 +6,10 @@ xymon (4.3.30-5) UNRELEASED; urgency=medium
   [ Christoph Berg ]
   * Remove myself from Uploaders.
 
- -- Roland Rosenfeld <roland@debian.org>  Sun, 02 Feb 2025 13:04:12 +0100
+  [ Luca Monducci ]
+  * Italian translation updated.
+
+ -- Roland Rosenfeld <roland@debian.org>  Sat, 01 Nov 2025 17:03:07 +0100
 
 xymon (4.3.30-4) unstable; urgency=medium
 
