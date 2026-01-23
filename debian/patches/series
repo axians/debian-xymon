@@ -23,3 +23,4 @@
 98_man_fb.patch
 99_man_typos.patch
 100_md5_bufferoverflow.patch
+101_rrdtool1.9.patch

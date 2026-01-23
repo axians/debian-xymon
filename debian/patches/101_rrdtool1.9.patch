@@ -1,0 +1,66 @@
+From: Roland Rosenfeld <roland@debian.org>
+Date: Fri, 23 Jan 2026 16:49:11 +0100
+Subject: Fix errors with current rrdtool version.
+
+--- a/build/test-rrd.c
++++ b/build/test-rrd.c
+@@ -4,7 +4,7 @@
+ 
+ int main(int argc, char *argv[])
+ {
+-	char *rrdargs[] = {
++	const char *rrdargs[] = {
+ 		"rrdgraph",
+ 		"xymongen.png",
+ 		"-s", "e - 48d",
+--- a/xymond/do_rrd.c
++++ b/xymond/do_rrd.c
+@@ -217,7 +217,7 @@ static void setupinterval(int intvl)
+ static int flush_cached_updates(updcacheitem_t *cacheitem, char *newdata)
+ {
+ 	/* Flush any updates we've cached */
+-	char *updparams[5+CACHESZ+1] = { "rrdupdate", filedir, "-t", NULL, NULL, NULL, };
++	const char *updparams[5+CACHESZ+1] = { "rrdupdate", filedir, "-t", NULL, NULL, NULL, };
+ 	int i, pcount, result;
+ 
+ 	dbgprintf("Flushing '%s' with %d updates pending, template '%s'\n", 
+@@ -379,7 +379,7 @@ static int create_and_update_rrd(char *h
+ 		 * we MUST reset this before every call.
+ 		 */
+ 		optind = opterr = 0; rrd_clear_error();
+-		result = rrd_create(4+pcount, rrdcreate_params);
++		result = rrd_create(4+pcount, (const char **)rrdcreate_params);
+ 		xfree(rrdcreate_params);
+ 		if (rrakey) xfree(rrakey);
+ 
+@@ -591,7 +591,7 @@ static int rrddatasets(char *hostname, c
+ 	struct stat st;
+ 
+ 	int result;
+-	char *fetch_params[] = { "rrdfetch", filedir, "AVERAGE", "-s", "-30m", NULL };
++	const char *fetch_params[] = { "rrdfetch", filedir, "AVERAGE", "-s", "-30m", NULL };
+ 	time_t starttime, endtime;
+ 	unsigned long steptime, dscount;
+ 	rrd_value_t *rrddata;
+--- a/web/showgraph.c
++++ b/web/showgraph.c
+@@ -1222,7 +1222,7 @@ void generate_graph(char *gdeffn, char *
+ 	rrd_clear_error();
+ 
+ #ifdef RRDTOOL12
+-	result = rrd_graph(rrdargcount, rrdargs, &calcpr, &xsize, &ysize, NULL, &ymin, &ymax);
++	result = rrd_graph(rrdargcount, (const char **)rrdargs, &calcpr, &xsize, &ysize, NULL, &ymin, &ymax);
+ 
+ 	/*
+ 	 * If we have neither the upper- nor lower-limits of the graph, AND we allow vertical 
+--- a/web/perfdata.c
++++ b/web/perfdata.c
+@@ -112,7 +112,7 @@ int oneset(char *hostname, char *rrdname
+ 	rrdargs[9] = NULL;
+ 
+ 	optind = opterr = 0; rrd_clear_error();
+-	result = rrd_fetch(9, rrdargs,
++	result = rrd_fetch(9, (const char **)rrdargs,
+ 			   &start, &end, &step, &dscount, &dsnames, &data);
+ 
+ 	if (result != 0) {
