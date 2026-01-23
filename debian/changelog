@@ -2,6 +2,7 @@ xymon (4.3.30-5) UNRELEASED; urgency=medium
 
   [ Roland Rosenfeld ]
   * Add ca debconf translation.  Thanks to Carles Pina i Estany.
+  * 48_png-multiarch: Update to use libpng-config (without version).
 
   [ Christoph Berg ]
   * Remove myself from Uploaders.
