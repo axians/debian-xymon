@@ -13,6 +13,7 @@ Build-Depends: debhelper-compat (= 13),
                libssl-dev,
                libtirpc-dev,
                man2html-base,
+               pkgconf,
                po-debconf,
                procps
 Standards-Version: 4.7.3
