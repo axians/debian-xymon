@@ -69,6 +69,14 @@ override_dh_auto_install:
 			convert "$$gif[0]" xpm:- | convert xpm:- static/$$gif || exit 1 ; \
 		done && \
 		cd static && ln -s ../*.ico ../*.css .
+	# Convert pngs to gifs to fix their names:
+	# see https://github.com/xymon-monitoring/xymon/issues/56
+	cd $S/usr/share/xymon/gifs && \
+		for gif in unknown*.gif ; do \
+			mv $$gif $$gif.png ; \
+			convert $$gif.png $$gif; \
+			rm -f $$gif.png; \
+		done
 	# We depend on the -client package
 	rm -rf $S/usr/lib/xymon/client
 	# This needs setuid root
