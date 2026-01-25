@@ -16,7 +16,7 @@ Build-Depends: debhelper-compat (= 13),
                man2html-base,
                po-debconf,
                procps
-Standards-Version: 4.7.0
+Standards-Version: 4.7.3
 Vcs-Git: https://salsa.debian.org/debian/xymon.git
 Vcs-Browser: https://salsa.debian.org/debian/xymon
 Homepage: https://xymon.sourceforge.io/
