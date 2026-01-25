@@ -1,7 +1,11 @@
 %YAML 1.1
 ---
 # https://wiki.debian.org/UpstreamMetadata
+Bug-Database: https://github.com/xymon-monitoring/xymon/issues
+Changelog: https://github.com/xymon-monitoring/xymon/blob/main/Changes
 Contact: xymon@xymon.com
 Name: Xymon
 Repository: svn://svn.code.sf.net/p/xymon/code/trunk
 Repository-Browse: https://sourceforge.net/p/xymon/code/HEAD/tree/
+Repository: https://github.com/xymon-monitoring/xymon.git
+Repository-Browse: https://github.com/xymon-monitoring/xymon
