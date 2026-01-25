@@ -1,3 +1,6 @@
-version=4
-options="dversionmangle=s/\.dfsg$//,uversionmangle=s/-(pre|rc|beta|alpha)/~$1/i" \
-https://sf.net/xymon/xymon-([0-9][-.a-zA-Z0-9]{0,10}).tar.gz
+Version: 5
+
+Source: https://sf.net/xymon/
+Matching-Pattern: xymon-([0-9][-.a-zA-Z0-9]{0,10}).tar.gz
+Dversionmangle: s/\.dfsg$//
+Uversionmangle: s/-(pre|rc|beta|alpha)/~$1/i
