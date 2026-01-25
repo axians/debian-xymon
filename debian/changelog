@@ -7,6 +7,7 @@ xymon (4.3.30-5) UNRELEASED; urgency=medium
   * 101_rrdtool1.9: Fix problems with rrdtool 1.9.
   * Declare compliance with Debian Policy 4.7.3.
   * Remove «Rules-Requires-Root: no», which is the current default.
+  * Update years of packaging copyright.
 
   [ Christoph Berg ]
   * Remove myself from Uploaders.
