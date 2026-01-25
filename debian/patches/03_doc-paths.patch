@@ -1,5 +1,5 @@
 Description: Change paths in documentation to fit Debian paths
-Forwarded: not-needed
+Forwarded: https://github.com/xymon-monitoring/xymon/issues/16
 Bug-Debian: https://bugs.debian.org/440949
 Author: Christoph Berg <myon@debian.org>
 Last-Update: 2015-09-10

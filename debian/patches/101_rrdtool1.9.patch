@@ -1,6 +1,7 @@
 From: Roland Rosenfeld <roland@debian.org>
 Date: Fri, 23 Jan 2026 16:49:11 +0100
 Subject: Fix errors with current rrdtool version.
+Forwarded: https://github.com/xymon-monitoring/xymon/issues/54
 
 --- a/build/test-rrd.c
 +++ b/build/test-rrd.c

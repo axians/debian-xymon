@@ -1,6 +1,7 @@
 From: Roland Rosenfeld <roland@debian.org>
 Date: Sun, 11 Feb 2024 17:44:04 +0100
 Forwarded: https://lists.xymon.com/archive/2024-February/048292.html
+	   https://github.com/xymon-monitoring/xymon/pull/10
 Subject: Fix typo \fb (instead of \fB) in some man pages
 
 --- a/common/tasks.cfg.5

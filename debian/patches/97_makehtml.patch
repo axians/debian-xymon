@@ -1,6 +1,7 @@
 From: Roland Rosenfeld <roland@debian.org>
 Date: Sun, 11 Feb 2024 16:46:35 +0100
 Forwarded: https://lists.xymon.com/archive/2024-February/048293.html
+	   https://github.com/xymon-monitoring/xymon/pull/9
 Subject: Make the date header of html man pages reproducible
  Additionally set the hostname to localhost as upstream seems to do, too.
 

@@ -1,6 +1,7 @@
 Subject: Multiple kfreebsd patches, additional ignored file systems
-Forwarded: https://lists.xymon.com/archive/2015-September/042224.html
-           https://lists.xymon.com/archive/2017-January/044217.html
+Forwarded: https://lists.xymon.com/archive/2015-September/042223.html
+           https://lists.xymon.com/archive/2017-January/044216.html
+	   https://github.com/xymon-monitoring/xymon/issues/49
 Last-Update: 2018-10-18
 Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/xymon/+bug/1798557
 Reviewed-By: Axel Beckert <abe@debian.org>

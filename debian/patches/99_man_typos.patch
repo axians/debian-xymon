@@ -1,6 +1,6 @@
 From: Carsten Leonhardt <leo@debian.org>
 Date: Sun, 26 May 2024 19:08:00 +0200
-Forwarded: yes
+Forwarded: https://github.com/xymon-monitoring/xymon/pull/11
 Subject: Fix typos in man pages
 
 --- a/common/hosts.cfg.5

@@ -1,7 +1,7 @@
 From: Andreas Henriksson <andreas@fatal.se>
 Subject: fix reproducible build on merged-usr vs non-merged systems
 Bug-Debian: https://bugs.debian.org/915957
-Forwarded: no
+Forwarded: not-needed
 
 --- a/build/bb-commands.sh
 +++ b/build/bb-commands.sh

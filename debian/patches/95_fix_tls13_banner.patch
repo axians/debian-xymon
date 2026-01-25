@@ -4,8 +4,8 @@ Subject: Fix reading service banners from TLS-1.3-enabled hosts
 
 Bug-Debian: https://bugs.debian.org/930532
 Forwarded: https://lists.xymon.com/archive/2024-February/048290.html
+	   https://github.com/xymon-monitoring/xymon/pull/7
 Last-Update: 2021-05-11
-
 
 Related discussion:
 https://lists.xymon.com/archive/2019-July/046585.html
