@@ -1,6 +1,5 @@
 Source: xymon
 Section: net
-Priority: optional
 Maintainer: Axel Beckert <abe@debian.org>
 Uploaders: Roland Rosenfeld <roland@debian.org>,
 Build-Depends: debhelper-compat (= 13),
