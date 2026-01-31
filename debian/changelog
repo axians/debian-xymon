@@ -1,6 +1,7 @@
 xymon (4.3.30-6) UNRELEASED; urgency=medium
 
   * 102_ldap_url_parse: Fix build problems with ldap.
+  * Update build-depends from libldap2-dev to libldap-dev.
 
  -- Roland Rosenfeld <roland@debian.org>  Sat, 31 Jan 2026 13:09:45 +0100
 
