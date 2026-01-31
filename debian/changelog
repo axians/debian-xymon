@@ -1,3 +1,9 @@
+xymon (4.3.30-6) UNRELEASED; urgency=medium
+
+  * 102_ldap_url_parse: Fix build problems with ldap.
+
+ -- Roland Rosenfeld <roland@debian.org>  Sat, 31 Jan 2026 13:09:45 +0100
+
 xymon (4.3.30-5) unstable; urgency=medium
 
   [ Roland Rosenfeld ]

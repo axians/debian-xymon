@@ -1,0 +1,28 @@
+From: Brian Scott <bscott@bunyatech.com.au>
+Date: 2023-12-23 06:55:57
+Subject: Fix ldap_url_parse build problem
+Origin: https://sourceforge.net/p/xymon/mailman/message/58716057/
+Bug: https://github.com/xymon-monitoring/xymon/issues/61
+Reviewed-By: Roland Rosenfeld <roland@debian.org>
+Last-Update: 2026-01-31
+
+Fix build problems with ldap.
+--- a/build/test-ldap.c
++++ b/build/test-ldap.c
+@@ -22,14 +22,14 @@ int main(int argc, char *argv[])
+ 		}
+ 	}
+ 	else {
+-		LDAPURLDesc ludp;
++		LDAPURLDesc ludp,*pludp = &ludp;
+ 		int protocol, rc;
+ 		struct timeval nettimeout;
+ 
+ 		protocol = LDAP_VERSION3;
+ 		nettimeout.tv_sec = 1; nettimeout.tv_usec = 0;
+ 
+-		rc = ldap_url_parse("ldap://ldap.example.com/cn=xymon,ou=development,o=xymon", &ludp);
++		rc = ldap_url_parse("ldap://ldap.example.com/cn=xymon,ou=development,o=xymon", &pludp);
+ 		ld = ldap_init(ludp.lud_host, ludp.lud_port);
+ 		rc = ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &protocol);
+ 		rc = ldap_set_option(ld, LDAP_OPT_NETWORK_TIMEOUT, &nettimeout);
