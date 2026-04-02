@@ -31,9 +31,9 @@ hobbit (4.2.0.dfsg-13) unstable; urgency=low
  echo "[df]"
 -EXCLUDES=`cat /proc/filesystems | grep nodev | grep -v rootfs | awk '{print $2}' | xargs echo | sed -e 's! ! -x !g'`
 +if test -f /proc/filesystems ; then # Linux
-+	EXCLUDES=`cat /proc/filesystems | grep nodev | egrep -v 'tmpfs|rootfs|squashfs' | awk '{print $2}' | xargs echo | sed -e 's! ! -x !g'`
++	EXCLUDES=`cat /proc/filesystems | grep nodev | egrep -v 'tmpfs|rootfs|squashfs|zfs' | awk '{print $2}' | xargs echo | sed -e 's! ! -x !g'`
 +else # kfreebsd (or /proc not mounted)
-+	EXCLUDES=`mount | grep -v '^/' | egrep -v 'tmpfs|rootfs|squashfs' | awk '{print $1}' | xargs echo | sed -e 's! ! -x !g'`
++	EXCLUDES=`mount | grep -v '^/' | egrep -v 'tmpfs|rootfs|squashfs|zfs' | awk '{print $1}' | xargs echo | sed -e 's! ! -x !g'`
 +fi
  ROOTFS=`readlink -m /dev/root`
 -df -Pl -x iso9660 -x $EXCLUDES | sed -e '/^[^ 	][^ 	]*$/{
