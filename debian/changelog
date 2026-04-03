@@ -1,9 +1,13 @@
 xymon (4.3.30-6) UNRELEASED; urgency=medium
 
+  [ Roland Rosenfeld ]
   * 102_ldap_url_parse: Fix build problems with ldap.
   * Update build-depends from libldap2-dev to libldap-dev.
 
- -- Roland Rosenfeld <roland@debian.org>  Sat, 31 Jan 2026 13:09:45 +0100
+  [ Martin Zobel-Helas ]
+  * Show ZFS mounts (Closes: #909316).
+
+ -- Roland Rosenfeld <roland@debian.org>  Fri, 03 Apr 2026 11:50:28 +0200
 
 xymon (4.3.30-5) unstable; urgency=medium
 
