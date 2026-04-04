@@ -66,7 +66,7 @@ override_dh_auto_install:
 	# Create static gifs
 	cd $S/usr/share/xymon/gifs && mkdir static && \
 		for gif in *.gif ; do \
-			convert "$$gif[0]" xpm:- | convert xpm:- static/$$gif || exit 1 ; \
+			magick "$$gif[0]" xpm:- | magick xpm:- static/$$gif || exit 1 ; \
 		done && \
 		cd static && ln -s ../*.ico ../*.css .
 	# Convert pngs to gifs to fix their names:
@@ -74,7 +74,7 @@ override_dh_auto_install:
 	cd $S/usr/share/xymon/gifs && \
 		for gif in unknown*.gif ; do \
 			mv $$gif $$gif.png ; \
-			convert $$gif.png $$gif; \
+			magick $$gif.png $$gif; \
 			rm -f $$gif.png; \
 		done
 	# We depend on the -client package

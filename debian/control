@@ -4,7 +4,7 @@ Maintainer: Axel Beckert <abe@debian.org>
 Uploaders: Roland Rosenfeld <roland@debian.org>,
 Build-Depends: debhelper-compat (= 13),
                dh-apache2,
-               imagemagick,
+               imagemagick (>= 7),
                libc-ares-dev,
                libldap-dev,
                libpcre2-dev,
