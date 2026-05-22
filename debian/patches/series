@@ -12,7 +12,6 @@
 45_fix-configure-for-multiarch.patch
 48_png-multiarch.patch
 51_hardening-buildflags.patch
-69_disk-no-duplicate-root.patch
 90_reproducible-build.patch
 92_ntpdate_ntpdig.patch
 93_pcre2.patch

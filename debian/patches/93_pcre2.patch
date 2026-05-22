@@ -1802,10 +1802,10 @@ Subject: Port to PCRE2.
 +	static pcre2_code *inclpattern = NULL;
 +	static pcre2_code *exclpattern = NULL;
 +	pcre2_match_data *ovector;
- 	int seen_root_fs = 0;
  
  	if (strstr(msg, "netapp.pl")) return do_netapp_disk_rrd(hostname, testname, classname, pagepaths, msg, tstamp);
-@@ -28,22 +29,29 @@ int do_disk_rrd(char *hostname, char *te
+ 	if (strstr(msg, "dbcheck.pl")) return do_dbcheck_tablespace_rrd(hostname, testname, classname, pagepaths, msg, tstamp);
+@@ -27,22 +28,29 @@ int do_disk_rrd(char *hostname, char *te
  	if (disk_tpl == NULL) disk_tpl = setup_template(disk_params);
  
  	if (!ptnsetup) {
@@ -1841,7 +1841,7 @@ Subject: Port to PCRE2.
  		}
  	}
  
-@@ -72,6 +80,7 @@ int do_disk_rrd(char *hostname, char *te
+@@ -71,6 +79,7 @@ int do_disk_rrd(char *hostname, char *te
  	 * line - we never have any disk reports there anyway.
  	 */
  	curline = strchr(msg, '\n'); if (curline) curline++;
@@ -1849,9 +1849,9 @@ Subject: Port to PCRE2.
  	while (curline)  {
  		char *fsline, *p;
  		char *columns[20];
-@@ -178,20 +187,18 @@ int do_disk_rrd(char *hostname, char *te
- 				seen_root_fs = 1;
- 		}
+@@ -164,20 +173,18 @@ int do_disk_rrd(char *hostname, char *te
+ 		/* Check include/exclude patterns */
+ 		wanteddisk = 1;
  		if (exclpattern) {
 -			int ovector[30];
  			int result;
@@ -1874,7 +1874,7 @@ Subject: Port to PCRE2.
  
  			wanteddisk = (result >= 0);
  		}
-@@ -221,6 +228,7 @@ int do_disk_rrd(char *hostname, char *te
+@@ -207,6 +214,7 @@ int do_disk_rrd(char *hostname, char *te
  nextline:
  		curline = (eoln ? (eoln+1) : NULL);
  	}

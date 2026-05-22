@@ -5,6 +5,8 @@ xymon (4.3.30-6) UNRELEASED; urgency=medium
   * Update build-depends from libldap2-dev to libldap-dev.
   * Declare compliance with Debian Policy 4.7.4.
   * Use magick (from imagemagick 7) instead of convert.
+  * Remove 69_disk-no-duplicate-root.patch, which was only needed with
+    coreutils in wheezy.
 
   [ Martin Zobel-Helas ]
   * Show ZFS mounts (Closes: #909316).
