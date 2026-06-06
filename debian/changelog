@@ -9,6 +9,8 @@ xymon (4.3.30-6) UNRELEASED; urgency=medium
     coreutils in wheezy.
   * Revert pre 4.3.7 hobbit-client migration logic.
   * Cleanup maintainer scripts.
+  * Rename debconf variables from hobbit-client to xymon-client and fix
+    inconsistency between debconf and /etc (Closes: #939859).
 
   [ Martin Zobel-Helas ]
   * Show ZFS mounts (Closes: #909316).

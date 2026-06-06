@@ -1,4 +1,4 @@
-Template: hobbit-client/HOBBITSERVERS
+Template: xymon-client/XYMONSERVERS
 Type: string
 Default: 127.0.0.1
 _Description: Xymon server:
@@ -9,7 +9,7 @@ _Description: Xymon server:
  Using host names instead of IP addresses is discouraged in case the
  network experiences DNS failures.
 
-Template: hobbit-client/CLIENTHOSTNAME
+Template: xymon-client/CLIENTHOSTNAME
 Type: string
 Default:
 _Description: Client hostname:

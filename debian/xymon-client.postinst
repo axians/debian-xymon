@@ -22,9 +22,9 @@ set -e
 case "$1" in
     configure)
         # Do the debconf stuff
-        db_get hobbit-client/HOBBITSERVERS
-        HOBBITSERVERS="$RET"
-        db_get hobbit-client/CLIENTHOSTNAME
+        db_get xymon-client/XYMONSERVERS
+        XYMONSERVERS="$RET"
+        db_get xymon-client/CLIENTHOSTNAME
         CLIENTHOSTNAME="$RET"
         db_stop
 
@@ -50,11 +50,11 @@ case "$1" in
         # Update configuration file
         CONFIGFILE=/etc/default/xymon-client
         test -e $CONFIGFILE || cp /usr/share/xymon/xymon-client.default.template $CONFIGFILE
-        if grep -Eq "^(HOBBIT|XYMON)SERVERS=" $CONFIGFILE ; then
-            sed -i -e "s/^\(HOBBIT\|XYMON\)SERVERS=.*/XYMONSERVERS=\"$HOBBITSERVERS\"/" \
+        if grep -q "^XYMONSERVERS=" $CONFIGFILE ; then
+            sed -i -e "s/^XYMONSERVERS=.*/XYMONSERVERS=\"$XYMONSERVERS\"/" \
                 $CONFIGFILE
         else
-            echo "XYMONSERVERS=\"$HOBBITSERVERS\"" >> $CONFIGFILE
+            echo "XYMONSERVERS=\"$XYMONSERVERS\"" >> $CONFIGFILE
         fi
         if grep -q "^CLIENTHOSTNAME=" $CONFIGFILE ; then
             sed -i -e "s/^CLIENTHOSTNAME=.*/CLIENTHOSTNAME=\"$CLIENTHOSTNAME\"/" \
