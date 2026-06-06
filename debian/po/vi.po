@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xymon\n"
 "Report-Msgid-Bugs-To: xymon@packages.debian.org\n"
-"POT-Creation-Date: 2014-10-23 14:57+0200\n"
+"POT-Creation-Date: 2026-06-06 15:13+0200\n"
 "PO-Revision-Date: 2012-06-13 13:44+0200\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -60,20 +60,3 @@ msgstr ""
 "Hãy gõ tên máy được ứng dụng khách Xymon dùng khi gửi thông báo cho máy phục "
 "vụ Xymon. Tên này phải tương ứng với tên nằm trong tập tin « hosts.cfg » "
 "trên máy phục vụ Xymon."
-
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid "Automatically migrate old hobbit files to xymon?"
-msgstr ""
-
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid ""
-"The operating system user was renamed from \"hobbit\" to \"xymon\", and all "
-"configuration, state, log directories and files have been renamed as well. "
-"The package postinst scripts can do the migration automatically. This is "
-"usually a good idea, but might not work so well if your config differs "
-"substantially from the default."
-msgstr ""

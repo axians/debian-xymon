@@ -17,14 +17,3 @@ _Description: Client hostname:
  reports to the Xymon server. This name must match
  the name used in the hosts.cfg file on the Xymon
  server.
-
-Template: hobbit-client/automatic-xymon-migration
-Type: boolean
-Default: true
-_Description: Automatically migrate old hobbit files to xymon?
- The operating system user was renamed from "hobbit" to "xymon", and all
- configuration, state, log directories and files have been renamed as well.
- The package postinst scripts can do the migration automatically. This is
- usually a good idea, but might not work so well if your config differs
- substantially from the default.
-

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xymon\n"
 "Report-Msgid-Bugs-To: xymon@packages.debian.org\n"
-"POT-Creation-Date: 2014-10-23 14:57+0200\n"
+"POT-Creation-Date: 2026-06-06 15:13+0200\n"
 "PO-Revision-Date: 2014-10-23 16:54+0200\n"
 "Last-Translator: Christoph Berg <myon@debian.org>\n"
 "Language-Team: debian-l10n-german <debian-l10n-german@lists.debian.org>\n"
@@ -60,19 +60,19 @@ msgstr ""
 "Xymon-Server zu senden. Der Name muss mit dem in der Datei hosts.cfg auf dem "
 "Server übereinstimmen."
 
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid "Automatically migrate old hobbit files to xymon?"
-msgstr "Alte Dateien automatisch von hobbit auf xymon umstellen?"
+#~ msgid "Automatically migrate old hobbit files to xymon?"
+#~ msgstr "Alte Dateien automatisch von hobbit auf xymon umstellen?"
 
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid ""
-"The operating system user was renamed from \"hobbit\" to \"xymon\", and all "
-"configuration, state, log directories and files have been renamed as well. "
-"The package postinst scripts can do the migration automatically. This is "
-"usually a good idea, but might not work so well if your config differs "
-"substantially from the default."
-msgstr "Der Betriebssystem-User wurde von \"hobbit\" in \"xymon\" umbenannt, zusammen mit allen Konfigurations-, Zustands- und Log-Verzeichnissen und -Dateien. Das Postinst-Skript des Pakets kann die Migration automatisch durchführen. Das ist normalerweise eine gute Sache, kann aber ggf. nicht so gut funktionieren, wenn die Konfiguration stark von der Standardkonfiguration abweicht."
+#~ msgid ""
+#~ "The operating system user was renamed from \"hobbit\" to \"xymon\", and "
+#~ "all configuration, state, log directories and files have been renamed as "
+#~ "well. The package postinst scripts can do the migration automatically. "
+#~ "This is usually a good idea, but might not work so well if your config "
+#~ "differs substantially from the default."
+#~ msgstr ""
+#~ "Der Betriebssystem-User wurde von \"hobbit\" in \"xymon\" umbenannt, "
+#~ "zusammen mit allen Konfigurations-, Zustands- und Log-Verzeichnissen und "
+#~ "-Dateien. Das Postinst-Skript des Pakets kann die Migration automatisch "
+#~ "durchführen. Das ist normalerweise eine gute Sache, kann aber ggf. nicht "
+#~ "so gut funktionieren, wenn die Konfiguration stark von der "
+#~ "Standardkonfiguration abweicht."

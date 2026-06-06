@@ -7,6 +7,7 @@ xymon (4.3.30-6) UNRELEASED; urgency=medium
   * Use magick (from imagemagick 7) instead of convert.
   * Remove 69_disk-no-duplicate-root.patch, which was only needed with
     coreutils in wheezy.
+  * Revert pre 4.3.7 hobbit-client migration logic.
 
   [ Martin Zobel-Helas ]
   * Show ZFS mounts (Closes: #909316).

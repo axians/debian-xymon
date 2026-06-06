@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the xymon package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xymon\n"
 "Report-Msgid-Bugs-To: xymon@packages.debian.org\n"
-"POT-Creation-Date: 2014-10-23 15:32+0200\n"
+"POT-Creation-Date: 2026-06-06 15:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,21 +52,4 @@ msgid ""
 "Please enter the host name used by the Xymon client when sending reports to "
 "the Xymon server. This name must match the name used in the hosts.cfg file "
 "on the Xymon server."
-msgstr ""
-
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid "Automatically migrate old hobbit files to xymon?"
-msgstr ""
-
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid ""
-"The operating system user was renamed from \"hobbit\" to \"xymon\", and all "
-"configuration, state, log directories and files have been renamed as well. "
-"The package postinst scripts can do the migration automatically. This is "
-"usually a good idea, but might not work so well if your config differs "
-"substantially from the default."
 msgstr ""

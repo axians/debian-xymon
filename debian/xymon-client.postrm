@@ -1,5 +1,5 @@
 #! /bin/sh
-# postrm script for hobbit
+# postrm script for xymon-client
 #
 # see: dh_installdeb(1)
 
@@ -26,15 +26,12 @@ export DPKG_MAINTSCRIPT_NAME=${DPKG_MAINTSCRIPT_NAME:-postrm}
 
 case "$1" in
 	purge|disappear)
-	rm -rf /var/lib/hobbit /var/log/hobbit /var/run/hobbit /etc/hobbit \
-		/etc/default/hobbit-client /var/lib/xymon /var/log/xymon \
-		/var/run/xymon /etc/xymon /etc/default/xymon-client
+		rm -rf /var/lib/xymon /var/log/xymon /var/run/xymon /etc/xymon \
+			/etc/default/xymon-client
 	if test -x /usr/sbin/deluser ; then
-		deluser hobbit || true
 		deluser xymon || true
 	fi
 	if test -x /usr/sbin/delgroup ; then
-		delgroup --only-if-empty hobbit || true
 		delgroup --only-if-empty xymon || true
 	fi
 	;;

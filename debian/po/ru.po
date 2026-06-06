@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xymon 4.3.17-4\n"
 "Report-Msgid-Bugs-To: xymon@packages.debian.org\n"
-"POT-Creation-Date: 2014-10-23 14:57+0200\n"
+"POT-Creation-Date: 2026-06-06 15:13+0200\n"
 "PO-Revision-Date: 2015-01-24 09:26+0300\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.5\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: string
 #. Description
@@ -64,26 +64,18 @@ msgstr ""
 "отправке отчётов на сервер Xymon. Это имя должно совпадать с именем в файле "
 "hosts.cfg на сервере Xymon."
 
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid "Automatically migrate old hobbit files to xymon?"
-msgstr "Перейти с файлов hobbit на xymon автоматически?"
+#~ msgid "Automatically migrate old hobbit files to xymon?"
+#~ msgstr "Перейти с файлов hobbit на xymon автоматически?"
 
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid ""
-"The operating system user was renamed from \"hobbit\" to \"xymon\", and all "
-"configuration, state, log directories and files have been renamed as well. "
-"The package postinst scripts can do the migration automatically. This is "
-"usually a good idea, but might not work so well if your config differs "
-"substantially from the default."
-msgstr ""
-"Системный рабочий пользователь был переименован с «hobbit» в "
-"«xymon», и все настройки, состояние, журнальные каталоги и файлы "
-"также были переименованы. Послеустановочные сценарии пакета "
-"могут выполнить переход автоматически. Обычно, всё проходит хорошо, "
-"но могут возникать ошибки, если ваши настройки сильно отличаются "
-"от настроек по умолчанию."
-
+#~ msgid ""
+#~ "The operating system user was renamed from \"hobbit\" to \"xymon\", and "
+#~ "all configuration, state, log directories and files have been renamed as "
+#~ "well. The package postinst scripts can do the migration automatically. "
+#~ "This is usually a good idea, but might not work so well if your config "
+#~ "differs substantially from the default."
+#~ msgstr ""
+#~ "Системный рабочий пользователь был переименован с «hobbit» в «xymon», и "
+#~ "все настройки, состояние, журнальные каталоги и файлы также были "
+#~ "переименованы. Послеустановочные сценарии пакета могут выполнить переход "
+#~ "автоматически. Обычно, всё проходит хорошо, но могут возникать ошибки, "
+#~ "если ваши настройки сильно отличаются от настроек по умолчанию."

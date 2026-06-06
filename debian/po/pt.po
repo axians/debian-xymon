@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xymon 4.3.17-4\n"
 "Report-Msgid-Bugs-To: xymon@packages.debian.org\n"
-"POT-Creation-Date: 2014-10-23 14:57+0200\n"
+"POT-Creation-Date: 2026-06-06 15:13+0200\n"
 "PO-Revision-Date: 2014-11-02 21:42+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <traduz@debianpt.org>\n"
@@ -63,27 +63,19 @@ msgstr ""
 "relatórios para o servidor Xymon. Este nome tem que coincidir com o nome "
 "usado no ficheiro hosts.cfg no servidor Xymon."
 
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid "Automatically migrate old hobbit files to xymon?"
-msgstr "Migrar automaticamente ficheiros antigos de hobbit para xymon?"
+#~ msgid "Automatically migrate old hobbit files to xymon?"
+#~ msgstr "Migrar automaticamente ficheiros antigos de hobbit para xymon?"
 
-#. Type: boolean
-#. Description
-#: ../xymon-client.templates:3001
-msgid ""
-"The operating system user was renamed from \"hobbit\" to \"xymon\", and all "
-"configuration, state, log directories and files have been renamed as well. "
-"The package postinst scripts can do the migration automatically. This is "
-"usually a good idea, but might not work so well if your config differs "
-"substantially from the default."
-msgstr ""
-"O utilizador do sistema operativo foi renomeado de \"hobbit\" para \"xymon\", "
-"e todos os directórios de configuração, estado, relatórios e os ficheiros "
-"foram também renomeados. Os scripts de pós-instalação do pacote podem "
-"fazer a migração automaticamente. Isto é geralmente uma boa ideia, mas "
-"pode não funcionar muito bem se a sua configuração for substancialmente "
-"diferente da predefinida."
-
-
+#~ msgid ""
+#~ "The operating system user was renamed from \"hobbit\" to \"xymon\", and "
+#~ "all configuration, state, log directories and files have been renamed as "
+#~ "well. The package postinst scripts can do the migration automatically. "
+#~ "This is usually a good idea, but might not work so well if your config "
+#~ "differs substantially from the default."
+#~ msgstr ""
+#~ "O utilizador do sistema operativo foi renomeado de \"hobbit\" para "
+#~ "\"xymon\", e todos os directórios de configuração, estado, relatórios e "
+#~ "os ficheiros foram também renomeados. Os scripts de pós-instalação do "
+#~ "pacote podem fazer a migração automaticamente. Isto é geralmente uma boa "
+#~ "ideia, mas pode não funcionar muito bem se a sua configuração for "
+#~ "substancialmente diferente da predefinida."
