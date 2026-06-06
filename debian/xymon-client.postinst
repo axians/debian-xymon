@@ -21,47 +21,47 @@ set -e
 
 case "$1" in
     configure)
-	# Do the debconf stuff
-	db_get hobbit-client/HOBBITSERVERS
-	HOBBITSERVERS="$RET"
-	db_get hobbit-client/CLIENTHOSTNAME
-	CLIENTHOSTNAME="$RET"
-	db_stop
+        # Do the debconf stuff
+        db_get hobbit-client/HOBBITSERVERS
+        HOBBITSERVERS="$RET"
+        db_get hobbit-client/CLIENTHOSTNAME
+        CLIENTHOSTNAME="$RET"
+        db_stop
 
-	# Create new group
-	getent group xymon > /dev/null || addgroup --system xymon
+        # Create new group
+        getent group xymon > /dev/null || addgroup --system xymon
 
-	# Create or migrate user
-	getent passwd xymon > /dev/null || adduser --system \
-		--home /var/lib/xymon --no-create-home \
-		--ingroup xymon --disabled-password --disabled-login \
-		--gecos "Xymon System Monitor" xymon
+        # Create or migrate user
+        getent passwd xymon > /dev/null || adduser --system \
+                --home /var/lib/xymon --no-create-home \
+                --ingroup xymon --disabled-password --disabled-login \
+                --gecos "Xymon System Monitor" xymon
 
-	# Create directories
-	test -d /var/run/xymon || mkdir /var/run/xymon
-	chown xymon:xymon /var/run/xymon
+        # Create directories
+        test -d /var/run/xymon || mkdir /var/run/xymon
+        chown xymon:xymon /var/run/xymon
 
-	test -d /var/lib/xymon/tmp || mkdir -pv /var/lib/xymon/tmp
-	chown xymon:xymon -c /var/lib/xymon /var/lib/xymon/tmp
+        test -d /var/lib/xymon/tmp || mkdir -pv /var/lib/xymon/tmp
+        chown xymon:xymon -c /var/lib/xymon /var/lib/xymon/tmp
 
-	test -d /var/log/xymon || mkdir /var/log/xymon
-	chown xymon:adm /var/log/xymon ; chmod 2755 /var/log/xymon
+        test -d /var/log/xymon || mkdir /var/log/xymon
+        chown xymon:adm /var/log/xymon ; chmod 2755 /var/log/xymon
 
-	# Update configuration file
-	CONFIGFILE=/etc/default/xymon-client
-	test -e $CONFIGFILE || cp /usr/share/xymon/xymon-client.default.template $CONFIGFILE
-	if grep -Eq "^(HOBBIT|XYMON)SERVERS=" $CONFIGFILE ; then
-		sed -i -e "s/^\(HOBBIT\|XYMON\)SERVERS=.*/XYMONSERVERS=\"$HOBBITSERVERS\"/" \
-			$CONFIGFILE
-	else
-		echo "XYMONSERVERS=\"$HOBBITSERVERS\"" >> $CONFIGFILE
-	fi
-	if grep -q "^CLIENTHOSTNAME=" $CONFIGFILE ; then
-		sed -i -e "s/^CLIENTHOSTNAME=.*/CLIENTHOSTNAME=\"$CLIENTHOSTNAME\"/" \
-			$CONFIGFILE
-	else
-		echo "CLIENTHOSTNAME=\"$CLIENTHOSTNAME\"" >> $CONFIGFILE
-	fi
+        # Update configuration file
+        CONFIGFILE=/etc/default/xymon-client
+        test -e $CONFIGFILE || cp /usr/share/xymon/xymon-client.default.template $CONFIGFILE
+        if grep -Eq "^(HOBBIT|XYMON)SERVERS=" $CONFIGFILE ; then
+            sed -i -e "s/^\(HOBBIT\|XYMON\)SERVERS=.*/XYMONSERVERS=\"$HOBBITSERVERS\"/" \
+                $CONFIGFILE
+        else
+            echo "XYMONSERVERS=\"$HOBBITSERVERS\"" >> $CONFIGFILE
+        fi
+        if grep -q "^CLIENTHOSTNAME=" $CONFIGFILE ; then
+            sed -i -e "s/^CLIENTHOSTNAME=.*/CLIENTHOSTNAME=\"$CLIENTHOSTNAME\"/" \
+                $CONFIGFILE
+        else
+            echo "CLIENTHOSTNAME=\"$CLIENTHOSTNAME\"" >> $CONFIGFILE
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
@@ -69,8 +69,8 @@ case "$1" in
     ;;
 
     *)
-	echo "postinst called with unknown argument \`$1'" >&2
-	exit 1
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
     ;;
 esac
 

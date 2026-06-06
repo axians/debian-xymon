@@ -16,39 +16,35 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-# Workaround for http://bugs.debian.org/560317 in case debconf is too old like on Squeeze
-export DPKG_MAINTSCRIPT_PACKAGE=${DPKG_MAINTSCRIPT_PACKAGE:-xymon}
-export DPKG_MAINTSCRIPT_NAME=${DPKG_MAINTSCRIPT_NAME:-postinst}
-
 case "$1" in
     configure)
-	# Setup permissions for the newly created "xymon" user to write
-	# data where he needs to.
-	# And for the Apache-run CGI's to generate reports.
+        # Setup permissions for the newly created "xymon" user to write
+        # data where he needs to.
+        # And for the Apache-run CGI's to generate reports.
 
-	test -d /var/run/xymon || mkdir /var/run/xymon
-	chown xymon:xymon /var/run/xymon
+        test -d /var/run/xymon || mkdir /var/run/xymon
+        chown xymon:xymon /var/run/xymon
 
-	test -d /var/log/xymon || mkdir /var/log/xymon
-	chown xymon:adm /var/log/xymon ; chmod 2755 /var/log/xymon
+        test -d /var/log/xymon || mkdir /var/log/xymon
+        chown xymon:adm /var/log/xymon ; chmod 2755 /var/log/xymon
 
-	cd /var/lib/xymon; chown xymon:xymon . acks data disabled hist histlogs hostdata logs rrd tmp www
-	cd /var/lib/xymon/www; chown xymon:xymon html notes wml rep snap; chgrp www-data rep snap; chmod g+w rep snap
-	cd /etc/xymon;
-	if [ -e critical.cfg ]; then
-	    chgrp www-data critical.cfg
-	    chmod g+w critical.cfg
-	fi
-	if [ -e critical.cfg.bak ]; then
-	    chgrp www-data critical.cfg.bak
-	    chmod g+w critical.cfg.bak
-	fi
+        cd /var/lib/xymon; chown xymon:xymon . acks data disabled hist histlogs hostdata logs rrd tmp www
+        cd /var/lib/xymon/www; chown xymon:xymon html notes wml rep snap; chgrp www-data rep snap; chmod g+w rep snap
+        cd /etc/xymon;
+        if [ -e critical.cfg ]; then
+            chgrp www-data critical.cfg
+            chmod g+w critical.cfg
+        fi
+        if [ -e critical.cfg.bak ]; then
+            chgrp www-data critical.cfg.bak
+            chmod g+w critical.cfg.bak
+        fi
 
-	if ! test -e /etc/xymon/hosts.cfg ; then
-		if test -e /etc/default/xymon-client ; then
-			. /etc/default/xymon-client || true
-		fi
-		cat > /etc/xymon/hosts.cfg <<EOF
+        if ! test -e /etc/xymon/hosts.cfg ; then
+            if test -e /etc/default/xymon-client ; then
+                . /etc/default/xymon-client || true
+            fi
+            cat > /etc/xymon/hosts.cfg <<EOF
 #
 # Master configuration file for Xymon
 #
@@ -63,18 +59,18 @@ case "$1" in
 #
 # You need to define at least the Xymon server itself here.
 
-#0.0.0.0	.default.	# NOPROPRED:+apt,+libs
+#0.0.0.0        .default.       # NOPROPRED:+apt,+libs
 
 #group Servers
-127.0.0.1	$CLIENTHOSTNAME	# bbd http://$CLIENTHOSTNAME/
+127.0.0.1       $CLIENTHOSTNAME # bbd http://$CLIENTHOSTNAME/
 
 #group Dialup
-#0.0.0.0	notebook.bla.net # noconn dialup
+#0.0.0.0        notebook.bla.net # noconn dialup
 EOF
-	fi
+        fi
 
-	test -e /etc/xymon/xymonpasswd   || touch /etc/xymon/xymonpasswd
-	test -e /etc/xymon/xymongroups   || touch /etc/xymon/xymongroups
+        test -e /etc/xymon/xymonpasswd   || touch /etc/xymon/xymonpasswd
+        test -e /etc/xymon/xymongroups   || touch /etc/xymon/xymongroups
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
@@ -90,7 +86,7 @@ esac
 
 case "$1" in
     configure)
-	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+        if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
             . /usr/share/apache2/apache2-maintscript-helper
             # Enable CGI support
             apache2_invoke enmod cgi
@@ -99,8 +95,8 @@ case "$1" in
             # Finally enable the xymon web interface
             apache2_invoke enconf xymon
         elif test -e /etc/init.d/apache2 ; then
-	    invoke-rc.d apache2 reload || :
-	fi
+            invoke-rc.d apache2 reload || :
+        fi
     ;;
 esac
 
