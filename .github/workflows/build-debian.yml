@@ -1,0 +1,45 @@
+---
+name: Build Debian packages
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Debian 13 amd64
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out source
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Build sbuild image
+        run: docker build --tag xymon-debian13-sbuild --file Containerfile .
+
+      - name: Build packages
+        run: |
+          mkdir -p "${RUNNER_TEMP}/xymon-sbuild-artifacts"
+          docker run --rm \
+            --cap-add=SYS_ADMIN \
+            --pid=private \
+            --security-opt apparmor=unconfined \
+            --volume "${GITHUB_WORKSPACE}:/source:ro" \
+            --volume "${RUNNER_TEMP}/xymon-sbuild-artifacts:/artifacts" \
+            xymon-debian13-sbuild
+
+      - name: Upload packages and build records
+        if: always()
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: xymon-debian13-amd64-${{ github.sha }}
+          path: ${{ runner.temp }}/xymon-sbuild-artifacts/
+          if-no-files-found: error
+          retention-days: 14

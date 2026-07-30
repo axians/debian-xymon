@@ -1,0 +1,55 @@
+#!/bin/sh
+
+set -eu
+
+test -d /source
+test -d /artifacts
+
+if [ "${1:-}" != "--build" ]; then
+	test "$(id -u)" -eq 0
+	build_root=$(mktemp -d)
+	chown builder:builder "$build_root"
+	cleanup() {
+		rm -rf "$build_root"
+	}
+	trap cleanup EXIT HUP INT TERM
+
+	build_status=0
+	runuser -u builder -- "$0" --build "$build_root" || build_status=$?
+
+	find "$build_root" -maxdepth 2 -type f \
+		\( -name '*.deb' -o -name '*.buildinfo' -o -name '*.changes' \
+			-o -name '*.build' -o -name '*.dsc' -o -name '*.tar.*' \) \
+		-exec cp -v '{}' /artifacts/ \;
+	exit "$build_status"
+fi
+
+build_root=$2
+
+package=$(dpkg-parsechangelog -l/source/debian/changelog -SSource)
+version=$(dpkg-parsechangelog -l/source/debian/changelog -SVersion)
+filename_version=${version#*:}
+upstream_version=$(printf '%s\n' "$version" | sed -e 's/^[0-9][0-9]*://' -e 's/-[^-]*$//')
+source_dir="$build_root/$package-$upstream_version"
+build_dir="$build_root/build"
+
+mkdir "$source_dir" "$build_dir"
+cp -a /source/. "$source_dir/"
+rm -rf "$source_dir/.git" \
+	"$source_dir/Containerfile" \
+	"$source_dir/README.podman" \
+	"$source_dir/podman-testbuild"
+
+tar --create --gzip --file "$build_root/${package}_${upstream_version}.orig.tar.gz" \
+	--directory "$source_dir" --exclude=debian .
+
+cd "$source_dir"
+dpkg-source --build .
+
+sbuild \
+	--chroot-mode=schroot \
+	--chroot=trixie-amd64-sbuild \
+	--dist=trixie \
+	--arch="$(dpkg --print-architecture)" \
+	--build-dir="$build_dir" \
+	"$build_root/${package}_${filename_version}.dsc"

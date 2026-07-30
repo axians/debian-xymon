@@ -1,0 +1,43 @@
+Building the Debian package with sbuild and Podman
+==================================================
+
+Build the reusable Debian 13 sbuild image from the repository root:
+
+    podman build --tag localhost/xymon-debian13-sbuild -f Containerfile .
+
+Run an isolated binary package build:
+
+    artifacts="$(dirname "$PWD")/xymon-sbuild-artifacts"
+    mkdir -p "$artifacts"
+    podman run --rm \
+        --cap-add=SYS_ADMIN \
+        --pid=private \
+        --security-opt label=disable \
+        --volume "$PWD:/source:ro" \
+        --volume "$artifacts:/artifacts" \
+        localhost/xymon-debian13-sbuild
+
+The container creates a Debian source package and builds it with sbuild in an
+ephemeral Debian 13 (trixie) buildd chroot. Build dependencies are installed
+fresh from the Debian repository for each build. Binary and source packages,
+the .buildinfo and .changes files, and the complete sbuild log persist in the
+sibling xymon-sbuild-artifacts directory. List them after the build with:
+
+    ls -lh "$artifacts"
+
+The source checkout is mounted read-only. SYS_ADMIN is required only for
+schroot's temporary mounts; the container is not privileged and receives no
+host block devices. The chroot gets a private, restricted proc filesystem and
+only the full, null, random, tty, urandom, and zero pseudo-devices. It does not
+mount sysfs or the complete /dev tree.
+
+Rebuild the image periodically to refresh its base chroot. sbuild updates that
+chroot and resolves the package's current build dependencies before each build.
+
+GitHub Actions
+--------------
+
+The Build Debian packages workflow runs the same Containerfile and
+xymon-testbuild entry point on GitHub-hosted Ubuntu runners. It uses Docker on
+the ephemeral runner and uploads all packages, source artifacts, build records,
+and the sbuild log. Build records are uploaded even when sbuild fails.
