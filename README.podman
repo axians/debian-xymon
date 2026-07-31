@@ -38,9 +38,9 @@ GitHub Actions
 --------------
 
 The Sync master from Salsa workflow is started manually. It creates the GitHub
-`master` branch from Debian Salsa on its first run and only fast-forwards it
-afterward. The workflow fails without changing the branch if the GitHub and
-Salsa histories diverge.
+`salsa/master` branch from Debian Salsa's `master` branch on its first run and
+only fast-forwards it afterward. The workflow fails without changing the
+branch if the GitHub and Salsa histories diverge.
 
 The Build Debian packages workflow runs the same Containerfile and
 xymon-testbuild entry point on GitHub-hosted Ubuntu runners. It uses Docker on
