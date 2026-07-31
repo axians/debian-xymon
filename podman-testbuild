@@ -20,7 +20,12 @@ if [ "${1:-}" != "--build" ]; then
 	find "$build_root" -maxdepth 2 -type f \
 		\( -name '*.deb' -o -name '*.buildinfo' -o -name '*.changes' \
 			-o -name '*.build' -o -name '*.dsc' -o -name '*.tar.*' \) \
-		-exec cp -v '{}' /artifacts/ \;
+		-exec sh -c '
+			for source do
+				name=$(basename "$source" | tr : -)
+				cp -v "$source" "/artifacts/$name"
+			done
+		' sh '{}' +
 	exit "$build_status"
 fi
 
