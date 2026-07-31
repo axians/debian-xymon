@@ -30,27 +30,29 @@ jobs:
             https://salsa.debian.org/debian/xymon.git \
             master:refs/remotes/salsa/master
 
-      - name: Fast-forward GitHub master
+      - name: Fast-forward GitHub salsa/master
         run: |
-          github_master=$(git ls-remote --heads origin refs/heads/master | cut -f1)
-          if [ -n "$github_master" ]; then
+          github_salsa_master=$(
+            git ls-remote --heads origin refs/heads/salsa/master | cut -f1
+          )
+          if [ -n "$github_salsa_master" ]; then
             git fetch --no-tags origin \
-              refs/heads/master:refs/remotes/origin/master
+              refs/heads/salsa/master:refs/remotes/origin/salsa/master
 
             if ! git merge-base --is-ancestor \
-              refs/remotes/origin/master refs/remotes/salsa/master; then
+              refs/remotes/origin/salsa/master refs/remotes/salsa/master; then
               printf '%s\n' \
-                'GitHub master has diverged from Salsa master; refusing to overwrite it.' >&2
+                'GitHub salsa/master has diverged from Salsa master; refusing to overwrite it.' >&2
               exit 1
             fi
 
-            if [ "$github_master" = \
+            if [ "$github_salsa_master" = \
               "$(git rev-parse refs/remotes/salsa/master)" ]; then
-              printf '%s\n' 'GitHub master is already synchronized with Salsa master.'
+              printf '%s\n' 'GitHub salsa/master is already synchronized with Salsa master.'
               exit 0
             fi
           else
-            printf '%s\n' 'GitHub master does not exist and will be created.'
+            printf '%s\n' 'GitHub salsa/master does not exist and will be created.'
           fi
 
-          git push origin refs/remotes/salsa/master:refs/heads/master
+          git push origin refs/remotes/salsa/master:refs/heads/salsa/master
