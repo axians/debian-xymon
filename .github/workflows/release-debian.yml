@@ -37,7 +37,7 @@ jobs:
         run: |
           version=$(dpkg-parsechangelog -SVersion)
           printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
-          printf 'tag=axians/%s\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'tag=v%s\n' "$version" >> "$GITHUB_OUTPUT"
 
       - name: Build sbuild image
         run: docker build --tag xymon-debian13-sbuild --file Containerfile .
@@ -123,7 +123,7 @@ jobs:
               repo,
               tag_name: tag,
               target_commitish: context.sha,
-              name: `Xymon ${process.env.RELEASE_VERSION}`,
+              name: process.env.RELEASE_VERSION,
               body,
               draft: true,
               prerelease: false
