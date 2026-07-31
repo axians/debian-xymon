@@ -41,3 +41,8 @@ The Build Debian packages workflow runs the same Containerfile and
 xymon-testbuild entry point on GitHub-hosted Ubuntu runners. It uses Docker on
 the ephemeral runner and uploads all packages, source artifacts, build records,
 and the sbuild log. Build records are uploaded even when sbuild fails.
+
+The Release Debian packages workflow is started manually from the repository's
+default branch. It rebuilds the package, creates an `axians/<debian-version>`
+GitHub release, and attaches the packages, source artifacts, build records,
+sbuild log, and SHA256SUMS. Release assets and tags are not signed.

@@ -1,0 +1,159 @@
+---
+name: Release Debian packages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Debian 13 amd64 release
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Require default branch
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$GITHUB_REF_NAME" != "$DEFAULT_BRANCH" ]; then
+            printf 'Release must run from %s, not %s.\n' \
+              "$DEFAULT_BRANCH" "$GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+
+      - name: Check out default branch
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Read package version
+        id: package
+        run: |
+          version=$(dpkg-parsechangelog -SVersion)
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'tag=axians/%s\n' "$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build sbuild image
+        run: docker build --tag xymon-debian13-sbuild --file Containerfile .
+
+      - name: Build packages
+        run: |
+          mkdir -p "${RUNNER_TEMP}/xymon-sbuild-artifacts"
+          docker run --rm \
+            --cap-add=SYS_ADMIN \
+            --pid=private \
+            --security-opt apparmor=unconfined \
+            --volume "${GITHUB_WORKSPACE}:/source:ro" \
+            --volume "${RUNNER_TEMP}/xymon-sbuild-artifacts:/artifacts" \
+            xymon-debian13-sbuild
+
+      - name: Prepare release assets
+        env:
+          ARTIFACTS: ${{ runner.temp }}/xymon-sbuild-artifacts
+          VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          cd "$ARTIFACTS"
+          sha256sum -- * > SHA256SUMS
+          {
+            printf 'Xymon Debian packages `%s`\n\n' "$VERSION"
+            printf 'Built from `%s` with sbuild on Debian 13 (trixie).\n\n' \
+              "$GITHUB_SHA"
+            printf 'The release assets are unsigned. Verify downloads with '
+            printf '`SHA256SUMS`.\n'
+          } > RELEASE_NOTES.md
+
+      - name: Upload build records
+        if: always()
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: xymon-debian13-amd64-${{ github.sha }}
+          path: ${{ runner.temp }}/xymon-sbuild-artifacts/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create GitHub release
+        # v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          ARTIFACTS: ${{ runner.temp }}/xymon-sbuild-artifacts
+          RELEASE_TAG: ${{ steps.package.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.package.outputs.version }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { owner, repo } = context.repo;
+            const tag = process.env.RELEASE_TAG;
+            const artifacts = process.env.ARTIFACTS;
+            const releases = await github.paginate(
+              github.rest.repos.listReleases,
+              { owner, repo, per_page: 100 }
+            );
+            let release = releases.find((item) => item.tag_name === tag);
+
+            if (release && !release.draft) {
+              core.setFailed(`Release ${tag} already exists`);
+              return;
+            }
+
+            if (release) {
+              await github.rest.repos.deleteRelease({
+                owner,
+                repo,
+                release_id: release.id
+              });
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `tags/${tag}`
+              });
+            }
+
+            const body = fs.readFileSync(
+              path.join(artifacts, 'RELEASE_NOTES.md'),
+              'utf8'
+            );
+            const response = await github.rest.repos.createRelease({
+              owner,
+              repo,
+              tag_name: tag,
+              target_commitish: context.sha,
+              name: `Xymon ${process.env.RELEASE_VERSION}`,
+              body,
+              draft: true,
+              prerelease: false
+            });
+            release = response.data;
+
+            const assetNames = fs.readdirSync(artifacts)
+              .filter((name) => name !== 'RELEASE_NOTES.md')
+              .sort();
+            for (const name of assetNames) {
+              const file = path.join(artifacts, name);
+              const data = fs.readFileSync(file);
+              await github.rest.repos.uploadReleaseAsset({
+                owner,
+                repo,
+                release_id: release.id,
+                name,
+                data,
+                headers: {
+                  'content-type': 'application/octet-stream',
+                  'content-length': data.length
+                }
+              });
+            }
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              draft: false
+            });
