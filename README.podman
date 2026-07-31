@@ -39,8 +39,10 @@ GitHub Actions
 
 The Build Debian packages workflow runs the same Containerfile and
 xymon-testbuild entry point on GitHub-hosted Ubuntu runners. It uses Docker on
-the ephemeral runner and uploads all packages, source artifacts, build records,
-and the sbuild log. Build records are uploaded even when sbuild fails.
+the ephemeral runner in privileged mode for schroot compatibility and uploads
+all packages, source artifacts, build records, and the sbuild log. Build records
+are uploaded even when sbuild fails. The restricted Podman invocation above is
+still recommended for persistent development hosts.
 
 The Release Debian packages workflow is started manually from the repository's
 default branch. It rebuilds the package, creates an `axians/<debian-version>`

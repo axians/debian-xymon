@@ -27,9 +27,7 @@ jobs:
         run: |
           mkdir -p "${RUNNER_TEMP}/xymon-sbuild-artifacts"
           docker run --rm \
-            --cap-add=SYS_ADMIN \
-            --pid=private \
-            --security-opt apparmor=unconfined \
+            --privileged \
             --volume "${GITHUB_WORKSPACE}:/source:ro" \
             --volume "${RUNNER_TEMP}/xymon-sbuild-artifacts:/artifacts" \
             xymon-debian13-sbuild
