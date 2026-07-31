@@ -1,3 +1,11 @@
+xymon (4.3.30-6+axians2) trixie; urgency=medium
+
+  * Fix .netrc passwords losing their final character.
+  * Allow HTTP tests to combine a TLS client certificate with .netrc
+    authentication.
+
+ -- soundgoof <soundgoof@gmail.com>  Fri, 31 Jul 2026 14:47:58 +0200
+
 xymon (4.3.30-6+axians1) trixie; urgency=medium
 
   * Add optional command and hostname filtering to xymonproxy.

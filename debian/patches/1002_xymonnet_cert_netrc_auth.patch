@@ -1,0 +1,98 @@
+From 20ccb7b51db7078fcaaaceff4afca405eef50fc2 Mon Sep 17 00:00:00 2001
+From: soundgoof <soundgoof@gmail.com>
+Date: Mon, 6 Jul 2026 23:59:58 +0200
+Subject: [PATCH] xymonnet: allow client-cert and netrc password auth together
+ on HTTP tests
+Origin: https://github.com/axians/xymon/commit/20ccb7b51db7078fcaaaceff4afca405eef50fc2
+Last-Update: 2026-07-31
+
+Previously a "CERT:filename@host" URL only ever set up the TLS client
+certificate, since the .netrc lookup in parse_url() was skipped whenever
+inline auth was already present. Extend that lookup to also fire for a
+CERT: reference, storing the result in a new urlelem_t.netrcauth field so
+httptest.c can send both the client cert (TLS layer) and an
+Authorization: Basic header from netrc (HTTP layer) on the same request.
+All other auth combinations are unchanged.
+---
+ common/hosts.cfg.5  |  8 ++++++++
+ lib/url.c           | 14 +++++++++++---
+ lib/url.h           |  1 +
+ xymonnet/httptest.c |  5 +++++
+ 4 files changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/common/hosts.cfg.5 b/common/hosts.cfg.5
+index c4d0634fe..9bc5517ae 100644
+--- a/common/hosts.cfg.5
++++ b/common/hosts.cfg.5
+@@ -970,6 +970,14 @@ key, in the $XYMONHOME/certs/ directory. The URL is then given as
+ The "CERT:" part is literal - i.e. you write C-E-R-T-colon
+ and then the filename of the PEM-formatted certificate.
+ .br
++If a
++.I ~/.netrc
++entry also exists for the same host, its username/password will
++additionally be sent as an HTTP Basic Authentication header alongside
++the client certificate - so a test can use both the certificate (for the
++TLS handshake) and a netrc-based username/password (for the HTTP request)
++at the same time.
++.br
+ A PEM-formatted certificate file can be generated based on
+ certificates stored in Microsoft Internet Explorer and
+ OpenSSL. Do as follows:
+diff --git a/lib/url.c b/lib/url.c
+index 2518c44ce..5395c4b5d 100644
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -394,13 +394,21 @@ void parse_url(char *inputurl, urlelem_t *url)
+ 	url->relurl = malloc(strlen(startp) + 2);
+ 	snprintf(url->relurl, (strlen(startp)+2), "/%s", startp);
+ 
+-	if (url->auth == NULL) {
+-		/* See if we have it in the .netrc list */
++	if ((url->auth == NULL) || (strncmp(url->auth, "CERT:", 5) == 0)) {
++		/*
++		 * See if we have it in the .netrc list. If there's no inline auth at
++		 * all, this becomes the request's Basic Auth (unchanged behavior).
++		 * If the inline auth is a client-cert reference, stash it separately
++		 * so both the cert and the netrc credentials can be used together.
++		 */
+ 		loginlist_t *walk;
+ 
+ 		load_netrc();
+ 		for (walk = loginhead; (walk && (strcmp(walk->host, url->host) != 0)); walk = walk->next) ;
+-		if (walk) url->auth = strdup(walk->auth);
++		if (walk) {
++			if (url->auth == NULL) url->auth = strdup(walk->auth);
++			else url->netrcauth = strdup(walk->auth);
++		}
+ 	}
+ 
+ 	/* Build the canonical form of this URL, free from all config artefacts */
+diff --git a/lib/url.h b/lib/url.h
+index 0b1b6b3e4..f8d670ed4 100644
+--- a/lib/url.h
++++ b/lib/url.h
+@@ -36,6 +36,7 @@ typedef struct urlelem_t {
+ 	char *ip;
+ 	int  port;
+ 	char *auth;
++	char *netrcauth;	/* netrc-resolved "user:pass", used alongside a CERT: auth */
+ 	char *relurl;
+ 	int parseerror;
+ } urlelem_t;
+diff --git a/xymonnet/httptest.c b/xymonnet/httptest.c
+index 7c05b1d15..6492486d1 100644
+--- a/xymonnet/httptest.c
++++ b/xymonnet/httptest.c
+@@ -619,6 +619,11 @@ void add_http_test(testitem_t *t)
+ 			addtobuffer(httprequest, "\r\n");
+ 		}
+ 	}
++	if (httptest->weburl.desturl->netrcauth) {
++		addtobuffer(httprequest, "Authorization: Basic ");
++		addtobuffer(httprequest, base64encode(httptest->weburl.desturl->netrcauth));
++		addtobuffer(httprequest, "\r\n");
++	}
+ 	if (httptest->weburl.proxyurl && httptest->weburl.proxyurl->auth) {
+ 		addtobuffer(httprequest, "Proxy-Authorization: Basic ");
+ 		addtobuffer(httprequest, base64encode(httptest->weburl.proxyurl->auth));
