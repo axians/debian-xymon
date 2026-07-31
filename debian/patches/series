@@ -27,5 +27,8 @@
 
 # Axians patches
 1000_xymonproxy_filtering.patch
-1001_netrc_password_truncation.patch
+1001_xymonnet_netrc_password_truncation.patch
 1002_xymonnet_cert_netrc_auth.patch
+1003_xymonnet_alpn.patch
+1004_xymonnet_initialize_alpn_ssloptions.patch
+1005_xymonnet_http2.patch

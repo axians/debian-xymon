@@ -1,0 +1,209 @@
+Description: add ALPN support for xymonnet tests
+ Allow protocols.cfg services and HTTP tests to advertise application
+ protocols during the TLS handshake.
+Author: Mark Felder <feld@feld.me>
+Origin: https://github.com/xymon-monitoring/xymon/commit/75cfe50b6cdb19687f671ef62cad4e703792a7cd
+Bug: https://github.com/xymon-monitoring/xymon/pull/37
+Last-Update: 2026-07-31
+
+Index: debian-xymon/docs/manpages/man5/protocols.cfg.5.html
+===================================================================
+--- debian-xymon.orig/docs/manpages/man5/protocols.cfg.5.html
++++ debian-xymon/docs/manpages/man5/protocols.cfg.5.html
+@@ -56,6 +56,21 @@ to the service. It will then expect a re
+ Any data returned by the service (a so-called &quot;banner&quot;) will be recorded 
+ and included in the status message.
+ <P>
++For services that require ALPN protocol negotiation (such as IMAPS multiplexed 
++by Nginx on the same port as HTTPS), you can define:
++<BR>
++
++<P>
++<BR>&nbsp;&nbsp;&nbsp;[imaps443]
++<BR>
++
++<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options&nbsp;ssl,alpn=imap
++<BR>
++
++<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port&nbsp;443
++<BR>
++
++<P>
+ The full set of commands available for the protocols.cfg file are:
+ <P>
+ <DL COMPACT>
+@@ -100,6 +115,9 @@ Defines test options. The possible optio
+ <BR>
+ 
+ <BR>&nbsp;&nbsp;&nbsp;telnet&nbsp;-&nbsp;service&nbsp;is&nbsp;telnet,&nbsp;so&nbsp;exchange&nbsp;telnet&nbsp;options
++<BR>
++
++<BR>&nbsp;&nbsp;&nbsp;alpn=protocol1,protocol2&nbsp;-&nbsp;specify&nbsp;ALPN&nbsp;protocols&nbsp;to&nbsp;negotiate&nbsp;during&nbsp;SSL&nbsp;handshake
+ <P>
+ <P>
+ </DL>
+Index: debian-xymon/lib/netservices.c
+===================================================================
+--- debian-xymon.orig/lib/netservices.c
++++ debian-xymon/lib/netservices.c
+@@ -151,6 +151,7 @@ char *init_tcp_services(void)
+ 				if (svcinfo[i].svcname) xfree(svcinfo[i].svcname);
+ 				if (svcinfo[i].sendtxt) xfree(svcinfo[i].sendtxt);
+ 				if (svcinfo[i].exptext) xfree(svcinfo[i].exptext);
++				if (svcinfo[i].alpns) xfree(svcinfo[i].alpns);
+ 			}
+ 			xfree(svcinfo);
+ 			svcinfo = default_svcinfo;
+@@ -243,6 +244,9 @@ char *init_tcp_services(void)
+ 					if      (strcmp(opt, "ssl") == 0)    first->rec->flags |= TCP_SSL;
+ 					else if (strcmp(opt, "banner") == 0) first->rec->flags |= TCP_GET_BANNER;
+ 					else if (strcmp(opt, "telnet") == 0) first->rec->flags |= TCP_TELNET;
++					else if (strncmp(opt, "alpn=", 5) == 0) {
++						first->rec->alpns = strdup(opt+5);
++					}
+ 					else errprintf("Unknown option: %s\n", opt);
+ 
+ 					opt = strtok(NULL, ",");
+@@ -276,6 +280,7 @@ char *init_tcp_services(void)
+ 		svcinfo[i].expofs  = walk->rec->expofs;
+ 		svcinfo[i].flags   = walk->rec->flags;
+ 		svcinfo[i].port    = walk->rec->port;
++		svcinfo[i].alpns   = walk->rec->alpns;
+ 	}
+ 	memset(&svcinfo[svccount], 0, sizeof(svcinfo_t));
+ 
+Index: debian-xymon/lib/netservices.h
+===================================================================
+--- debian-xymon.orig/lib/netservices.h
++++ debian-xymon/lib/netservices.h
+@@ -18,6 +18,7 @@
+ #define TCP_TELNET     0x0002
+ #define TCP_SSL        0x0004
+ #define TCP_HTTP       0x0008
++#define TCP_ALPN       0x0010
+ 
+ typedef struct svcinfo_t {
+ 	char *svcname;
+@@ -27,6 +28,7 @@ typedef struct svcinfo_t {
+ 	int  expofs, explen;
+ 	unsigned int flags;
+ 	int port;
++	char *alpns;
+ } svcinfo_t;
+ 
+ extern char *init_tcp_services(void);
+Index: debian-xymon/xymonnet/contest.c
+===================================================================
+--- debian-xymon.orig/xymonnet/contest.c
++++ debian-xymon/xymonnet/contest.c
+@@ -70,7 +70,7 @@ int snienabled = 0;	/* SNI disabled by d
+ 
+ static svcinfo_t svcinfo_http  = { "http", NULL, 0, NULL, 0, 0, (TCP_GET_BANNER|TCP_HTTP), 80 };
+ static svcinfo_t svcinfo_https = { "https", NULL, 0, NULL, 0, 0, (TCP_GET_BANNER|TCP_HTTP|TCP_SSL), 443 };
+-static ssloptions_t default_sslopt = { NULL, SSLVERSION_DEFAULT, NULL };
++static ssloptions_t default_sslopt = { NULL, SSLVERSION_DEFAULT, NULL, NULL };
+ 
+ static time_t sslcert_expiretime(char *timestr)
+ {
+@@ -210,7 +210,8 @@ tcptest_t *add_tcp_test(char *ip, int po
+ 	newtest->certinfo = NULL;
+ 	newtest->certissuer = NULL;
+ 	newtest->certexpires = 0;
+-	newtest->sslrunning = ((newtest->svcinfo->flags & TCP_SSL) ? SSLSETUP_PENDING : 0);
++	/* If ALPN is configured, SSL is also necessarily enabled */
++	newtest->sslrunning = (((newtest->svcinfo->flags & TCP_SSL) || (newtest->svcinfo->flags & TCP_ALPN)) ? SSLSETUP_PENDING : 0);
+ 	newtest->sslagain = 0;
+ 
+ 	newtest->banner = NULL;
+@@ -555,6 +556,48 @@ static void setup_ssl(tcptest_t *item)
+ 		if (item->ssloptions->cipherlist) 
+ 			SSL_CTX_set_cipher_list(item->sslctx, item->ssloptions->cipherlist);
+ 
++		/* Set ALPN protocols if specified */
++		/* First check service definition for ALPN, then fallback to ssloptions */
++		const char *alpn_protocols = NULL;
++		if (item->svcinfo && item->svcinfo->alpns) {
++			alpn_protocols = item->svcinfo->alpns;
++		} else if (item->ssloptions && item->ssloptions->alpns) {
++			alpn_protocols = item->ssloptions->alpns;
++		}
++		
++		if (alpn_protocols) {
++			char *alpn_copy = strdup(alpn_protocols);
++			char *ptr, *token, *saveptr;
++			unsigned char alpn_buffer[256];
++			int offset = 0;
++			
++			/* Parse comma-separated protocol list */
++			ptr = alpn_copy;
++			while ((token = strtok_r(ptr, ",", &saveptr)) != NULL) {
++				ptr = NULL;
++				
++				/* Remove leading/trailing whitespace */
++				while (*token == ' ' || *token == '\t') token++;
++				int len = strlen(token);
++				while (len > 0 && (token[len-1] == ' ' || token[len-1] == '\t')) {
++					token[len-1] = '\0';
++					len--;
++				}
++				
++				if (len > 0 && (offset + len + 1) < sizeof(alpn_buffer)) {
++					alpn_buffer[offset] = len;
++					memcpy(&alpn_buffer[offset + 1], token, len);
++					offset += len + 1;
++				}
++			}
++			
++			if (offset > 0) {
++				SSL_CTX_set_alpn_protos(item->sslctx, alpn_buffer, offset);
++			}
++			
++			free(alpn_copy);
++		}
++
+ 		if (item->ssloptions->clientcert) {
+ 			int status;
+ 			char certfn[PATH_MAX];
+Index: debian-xymon/xymonnet/contest.h
+===================================================================
+--- debian-xymon.orig/xymonnet/contest.h
++++ debian-xymon/xymonnet/contest.h
+@@ -68,6 +68,7 @@ typedef struct {
+ 	char *cipherlist;
+ 	int  sslversion;
+ 	char *clientcert;
++	char *alpns;		/* ALPN protocols (comma-separated) */
+ } ssloptions_t;
+ 
+ typedef int (*f_callback_data)(unsigned char *buffer, unsigned int size, void *privdata);
+Index: debian-xymon/xymonnet/protocols.cfg.5
+===================================================================
+--- debian-xymon.orig/xymonnet/protocols.cfg.5
++++ debian-xymon/xymonnet/protocols.cfg.5
+@@ -35,6 +35,17 @@ to the service. It will then expect a re
+ Any data returned by the service (a so-called "banner") will be recorded 
+ and included in the status message.
+ .sp
++For services that require ALPN protocol negotiation (such as IMAPS multiplexed 
++by Nginx on the same port as HTTPS), you can define:
++.br
++.sp
++   [imaps443]
++.br
++      options ssl,alpn=imap
++.br
++      port 443
++.br
++.sp
+ The full set of commands available for the protocols.cfg file are:
+ 
+ .IP "[NAME]"
+@@ -73,6 +84,8 @@ Defines test options. The possible optio
+    ssl - service uses SSL so perform an SSL handshake
+ .br
+    telnet - service is telnet, so exchange telnet options
++.br
++   alpn=protocol1,protocol2 - specify ALPN protocols to negotiate during SSL handshake
+ 
+ 
+ .SH FILES
