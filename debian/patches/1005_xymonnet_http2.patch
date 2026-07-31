@@ -1,0 +1,1238 @@
+Description: add HTTP/2 support to xymonnet HTTP tests
+ Add optional nghttp2 integration, automatic h2 negotiation for HTTPS,
+ required HTTP/2 schemes, cleartext HTTP/2 prior knowledge, and hardened
+ stream and nonblocking I/O handling.
+Author: soundgoof <soundgoof@gmail.com>
+Origin: https://github.com/axians/xymon/compare/3a075231e4c69b965edc8689f1450e4028fbd6da...068f1ad2cadba3e2db003b8a889ba4c4a8588704
+Last-Update: 2026-07-31
+
+Index: debian-xymon/build/Makefile.rules
+===================================================================
+--- debian-xymon.orig/build/Makefile.rules
++++ debian-xymon/build/Makefile.rules
+@@ -100,7 +100,7 @@ xymongen-build: lib-build common-build
+ 
+ 
+ xymonnet-build: lib-build common-build
+-	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" RPATHOPT="$(RPATHOPT)" SSLFLAGS="$(SSLFLAGS)" SSLINCDIR="$(SSLINCDIR)" SSLLIBS="$(SSLLIBS)" DOLDAP="$(DOLDAP)" LDAPFLAGS="$(LDAPFLAGS)" LDAPINCDIR="$(LDAPINCDIR)" LDAPLIBS="$(LDAPLIBS)" DOSNMP="$(DOSNMP)" NETLIBS="$(NETLIBS)" XYMONHOME="$(XYMONHOME)" ARESVER="$(ARESVER)" FPINGVER="$(FPINGVER)" RUNTIMEDEFS="$(RUNTIMEDEFS)" PCREINCDIR="$(PCREINCDIR)" PCRELIBS="$(PCRELIBS)" SYSTEMCARES="$(SYSTEMCARES)" CARESINCDIR="$(CARESINCDIR)" CARESLIBS="$(CARESLIBS)" SQLITELIBS="$(SQLITELIBS)" ZLIBINCDIR="$(ZLIBINCDIR)" ZLIBLIBS="$(ZLIBLIBS)" LIBRTDEF="$(LIBRTDEF)" $(MAKE) -C xymonnet all
++	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" RPATHOPT="$(RPATHOPT)" SSLFLAGS="$(SSLFLAGS)" SSLINCDIR="$(SSLINCDIR)" SSLLIBS="$(SSLLIBS)" DOLDAP="$(DOLDAP)" LDAPFLAGS="$(LDAPFLAGS)" LDAPINCDIR="$(LDAPINCDIR)" LDAPLIBS="$(LDAPLIBS)" DOSNMP="$(DOSNMP)" NETLIBS="$(NETLIBS)" XYMONHOME="$(XYMONHOME)" ARESVER="$(ARESVER)" FPINGVER="$(FPINGVER)" RUNTIMEDEFS="$(RUNTIMEDEFS)" PCREINCDIR="$(PCREINCDIR)" PCRELIBS="$(PCRELIBS)" SYSTEMCARES="$(SYSTEMCARES)" CARESINCDIR="$(CARESINCDIR)" CARESLIBS="$(CARESLIBS)" DONGHTTP2="$(DONGHTTP2)" NGHTTP2FLAGS="$(NGHTTP2FLAGS)" NGHTTP2INCDIR="$(NGHTTP2INCDIR)" NGHTTP2LIBS="$(NGHTTP2LIBS)" SQLITELIBS="$(SQLITELIBS)" ZLIBINCDIR="$(ZLIBINCDIR)" ZLIBLIBS="$(ZLIBLIBS)" LIBRTDEF="$(LIBRTDEF)" $(MAKE) -C xymonnet all
+ 
+ xymonproxy-build: lib-build common-build
+ 	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" RPATHOPT="$(RPATHOPT)" SSLLIBS="$(SSLLIBS)" NETLIBS="$(NETLIBS)" LIBRTDEF="$(LIBRTDEF)" XYMONHOME="$(XYMONHOME)" $(MAKE) -C xymonproxy all
+Index: debian-xymon/build/Makefile.test-nghttp2
+===================================================================
+--- /dev/null
++++ debian-xymon/build/Makefile.test-nghttp2
+@@ -0,0 +1,11 @@
++include Makefile.$(OS)
++include Makefile.rules
++
++test-compile:
++	@$(CC) $(CFLAGS) $(NGHTTP2INC) -o test-nghttp2.o -c test-nghttp2.c
++
++test-link:
++	@$(CC) $(CFLAGS) $(NGHTTP2LIB) -o test-nghttp2 test-nghttp2.o -lnghttp2 && ./test-nghttp2
++
++nghttp2-clean:
++	@rm -f test-nghttp2.o test-nghttp2
+Index: debian-xymon/build/nghttp2.sh
+===================================================================
+--- /dev/null
++++ debian-xymon/build/nghttp2.sh
+@@ -0,0 +1,76 @@
++	echo "Checking for nghttp2 library ..."
++
++	NGHTTP2INCDIR=""
++	NGHTTP2LIBDIR=""
++	for DIR in /opt/nghttp2* /usr/local/nghttp2* /usr/local /usr/pkg /opt/csw /opt/sfw /opt/homebrew /opt/local
++	do
++		if test -f $DIR/include/nghttp2/nghttp2.h
++		then
++			NGHTTP2INCDIR=$DIR/include
++		fi
++
++		if test -f $DIR/lib/libnghttp2.so
++		then
++			NGHTTP2LIBDIR=$DIR/lib
++		fi
++		if test -f $DIR/lib/libnghttp2.dylib
++		then
++			NGHTTP2LIBDIR=$DIR/lib
++		fi
++		if test -f $DIR/lib/libnghttp2.a
++		then
++			NGHTTP2LIBDIR=$DIR/lib
++		fi
++		if test -f $DIR/lib64/libnghttp2.so
++		then
++			NGHTTP2LIBDIR=$DIR/lib64
++		fi
++		if test -f $DIR/lib64/libnghttp2.a
++		then
++			NGHTTP2LIBDIR=$DIR/lib64
++		fi
++	done
++
++	if test "$USERNGHTTP2INC" != ""; then
++		NGHTTP2INCDIR="$USERNGHTTP2INC"
++	fi
++	if test "$USERNGHTTP2LIB" != ""; then
++		NGHTTP2LIBDIR="$USERNGHTTP2LIB"
++	fi
++
++	# Lets see if it builds
++	NGHTTP2OK="YES"
++	cd build
++	if test "$NGHTTP2INCDIR" != ""; then INCOPT="-I$NGHTTP2INCDIR"; fi
++	if test "$NGHTTP2LIBDIR" != ""; then LIBOPT="-L$NGHTTP2LIBDIR"; fi
++	OS=`uname -s | sed -e's@/@_@g'` $MAKE -f Makefile.test-nghttp2 nghttp2-clean
++	OS=`uname -s | sed -e's@/@_@g'` NGHTTP2INC="$INCOPT" $MAKE -f Makefile.test-nghttp2 test-compile
++	if test $? -eq 0; then
++		echo "Compiling with nghttp2 library works OK"
++	else
++		echo "Cannot compile with nghttp2 library"
++		NGHTTP2OK="NO"
++	fi
++
++	if test "$NGHTTP2OK" = "YES"
++	then
++		OS=`uname -s | sed -e's@/@_@g'` NGHTTP2LIB="$LIBOPT" $MAKE -f Makefile.test-nghttp2 test-link
++		if test $? -eq 0; then
++			echo "Linking with nghttp2 library works OK"
++		else
++			echo "Cannot link with nghttp2 library"
++			NGHTTP2OK="NO"
++		fi
++		OS=`uname -s | sed -e's@/@_@g'` $MAKE -f Makefile.test-nghttp2 nghttp2-clean
++	fi
++	cd ..
++
++	if test "$NGHTTP2OK" = "NO"; then
++		echo "The nghttp2 library was not found or is not usable."
++		echo "xymonnet will be built without HTTP/2 test support."
++		echo "nghttp2 can be found at https://nghttp2.org/"
++		echo ""
++		echo "If you have nghttp2 installed, use the \"--nghttp2include DIR\" and"
++		echo "\"--nghttp2lib DIR\" options to configure to specify where it is."
++		echo ""
++	fi
+Index: debian-xymon/build/test-nghttp2.c
+===================================================================
+--- /dev/null
++++ debian-xymon/build/test-nghttp2.c
+@@ -0,0 +1,17 @@
++#include <stdio.h>
++
++#include <nghttp2/nghttp2.h>
++
++int main(int argc, char *argv[])
++{
++	nghttp2_session_callbacks *callbacks = NULL;
++
++	if (nghttp2_session_callbacks_new(&callbacks) != 0) {
++		printf("nghttp2_session_callbacks_new() failed\n");
++		return 1;
++	}
++	nghttp2_session_callbacks_del(callbacks);
++
++	printf("nghttp2 version: %s\n", nghttp2_version(0)->version_str);
++	return 0;
++}
+Index: debian-xymon/common/hosts.cfg.5
+===================================================================
+--- debian-xymon.orig/common/hosts.cfg.5
++++ debian-xymon/common/hosts.cfg.5
+@@ -1033,13 +1033,43 @@ one or more "dialect names" to the URL s
+ * "10", e.g. http10://www.sample.com/ : use HTTP 1.0
+ .br
+ * "11", e.g. http11://www.sample.com/ : use HTTP 1.1
++.br
++* "h2", e.g. httpsh2://www.sample.com/ : require HTTP/2 (see below)
++.br
++* "h2", e.g. httph2://www.sample.com/ : require cleartext HTTP/2 prior knowledge
+ 
+ These can be combined where it makes sense, e.g to force
+-TLS1.2 and HTTP 1.0 you would use "httpsc10".
++TLS1.2 and HTTP 1.0 you would use "httpsc10". The "h2" dialect is an
++exception - it is matched on its own and cannot be combined with the
++other options.
+ 
+ Note that SSLv2 support is disabled in all current OpenSSL releases.
+ TLS version-specific scheme testing requires OpenSSL 1.0.1 or higher.
+ 
++.IP "HTTP/2"
++If xymonnet was built with the nghttp2 library, HTTP/2 is negotiated
++automatically for every ordinary "https://" test: xymonnet offers both
++HTTP/2 and HTTP/1.1 during the TLS handshake (via ALPN) and uses
++whichever the server selects. Servers that do not support HTTP/2 - or
++do not support ALPN at all - continue to be tested over HTTP/1.1 exactly
++as before, so no configuration change is needed.
++
++To \fBrequire\fR HTTP/2, use the "httpsh2://" scheme. This offers only
++HTTP/2 during negotiation, and the test goes red if the server will not
++speak HTTP/2. Use this when you specifically want to monitor that a site
++is serving HTTP/2.
++
++For a cleartext HTTP/2 prior-knowledge endpoint, use "httph2://". This sends
++the HTTP/2 connection preface immediately, without TLS or an HTTP/1.1 Upgrade
++request. It is supported only for direct tests; HTTP proxies are not supported.
++
++To pin a test to HTTP/1.x regardless of HTTP/2 availability, use the
++"https11://" (or "https10://") scheme as described above.
++
++HTTP/2 is only used for direct "https://" tests; tests routed through a
++proxy always use HTTP/1.1. If xymonnet was built without nghttp2, HTTP/2
++is never offered and "httpsh2://" and "httph2://" tests report an error.
++
+ .IP "Testing sites by IP-address"
+ xymonnet ignores the "testip" tag normally used to force a 
+ test to use the IP-address from the hosts.cfg file instead of
+Index: debian-xymon/configure.server
+===================================================================
+--- debian-xymon.orig/configure.server
++++ debian-xymon/configure.server
+@@ -25,6 +25,8 @@ do
+      --ldaplib DIRECTORY      : Specify location of OpenLDAP libraries
+      --caresinclude DIRECTORY : Specify location of C-ARES include files
+      --careslib DIRECTORY     : Specify location of C-ARES libraries
++     --nghttp2include DIRECTORY : Specify location of nghttp2 include files
++     --nghttp2lib DIRECTORY   : Specify location of nghttp2 libraries
+      --fping FILENAME         : Specify location of the Fping program
+ 
+   The script will search a number of standard directories for
+@@ -62,6 +64,12 @@ EOF
+ 	  "--careslib")
+ 	  	USERCARESLIB="$1"; shift
+ 		;;
++	  "--nghttp2include")
++		USERNGHTTP2INC="$1"; shift
++		;;
++	  "--nghttp2lib")
++		USERNGHTTP2LIB="$1"; shift
++		;;
+ 	  "--fping")
+ 	  	USERFPING="$1"; shift
+ 		;;
+@@ -97,6 +105,8 @@ echo ""; echo ""
+ echo ""; echo ""
+ . build/c-ares.sh
+ echo ""; echo ""
++. build/nghttp2.sh
++echo ""; echo ""
+ 
+ . build/rrd.sh
+ if test "$RRDOK" = "NO"
+@@ -463,6 +473,27 @@ else
+ fi
+ echo ""                                  >>Makefile
+ 
++echo "# nghttp2 (HTTP/2) settings"       >>Makefile
++if test "$NGHTTP2OK" = "YES"
++then
++    echo "DONGHTTP2 = yes"               >>Makefile
++    echo "NGHTTP2FLAGS = -DHAVE_NGHTTP2" >>Makefile
++    if test "$NGHTTP2INCDIR" != ""; then
++	echo "NGHTTP2INCDIR = -I$NGHTTP2INCDIR" >>Makefile
++    fi
++    if test "$NGHTTP2LIBDIR" != ""; then
++	echo "NGHTTP2LIBS = -L$NGHTTP2LIBDIR -lnghttp2" >>Makefile
++	echo "RPATHVAL += ${NGHTTP2LIBDIR}"  >>Makefile
++    else
++	echo "NGHTTP2LIBS = -lnghttp2"       >>Makefile
++    fi
++else
++    echo "DONGHTTP2 = no"                >>Makefile
++    echo "NGHTTP2FLAGS ="                >>Makefile
++    echo "NGHTTP2LIBS ="                 >>Makefile
++fi
++echo ""                                  >>Makefile
++
+ echo "# PCRE settings"                   >>Makefile
+ if test "$PCREOK" = "YES"
+ then
+Index: debian-xymon/xymonnet/Makefile
+===================================================================
+--- debian-xymon.orig/xymonnet/Makefile
++++ debian-xymon/xymonnet/Makefile
+@@ -25,12 +25,12 @@ PROGRAMS += $(SNMPPROGRAMS)
+ endif
+ all: $(PROGRAMS) $(EXTENSIONS) $(DBGTOOLS)
+ 
+-NETTESTOBJS = xymonnet.o contest.o httptest.o httpresult.o ldaptest.o dns.o dns2.o httpcookies.o
++NETTESTOBJS = xymonnet.o contest.o httptest.o http2.o httpresult.o ldaptest.o dns.o dns2.o httpcookies.o
+ PINGTESTOBJS = xymonping.o
+ BEASTATOBJS = beastat.o
+ 
+ xymonnet: $(NETTESTOBJS) $(XYMONCOMMLIB) $(XYMONTIMELIB) $(XYMONLIBS)
+-	$(CC) $(CFLAGS) -o $@ $(RPATHOPT) $(NETTESTOBJS) $(CARESLIBS) $(LDAPLIBS) $(XYMONTIMELIBS) $(XYMONCOMMLIBS) $(XYMONLIBS) $(PCRELIBS)
++	$(CC) $(CFLAGS) -o $@ $(RPATHOPT) $(NETTESTOBJS) $(CARESLIBS) $(LDAPLIBS) $(NGHTTP2LIBS) $(XYMONTIMELIBS) $(XYMONCOMMLIBS) $(XYMONLIBS) $(PCRELIBS)
+ 
+ xymonping: $(PINGTESTOBJS) $(XYMONTIMELIB) ../lib/libxymon.a
+ 	$(CC) $(CFLAGS) -o $@ $(PINGTESTOBJS) $(XYMONTIMELIBS) $(XYMONCOMMLIBS)
+@@ -42,13 +42,16 @@ ldaptest.o: ldaptest.c
+ 	$(CC) $(CFLAGS) $(LDAPFLAGS) $(LDAPINCDIR) -c -o $@ ldaptest.c
+ 
+ httptest.o: httptest.c
+-	$(CC) $(CFLAGS) $(SSLFLAGS) $(SSLINCDIR) -c -o $@ httptest.c
++	$(CC) $(CFLAGS) $(SSLFLAGS) $(NGHTTP2FLAGS) $(SSLINCDIR) $(NGHTTP2INCDIR) -c -o $@ httptest.c
+ 
+ httpresult.o: httpresult.c
+ 	$(CC) $(CFLAGS) $(SSLFLAGS) $(SSLINCDIR) -c -o $@ httpresult.c
+ 
++http2.o: http2.c http2.h
++	$(CC) $(CFLAGS) $(SSLFLAGS) $(NGHTTP2FLAGS) $(SSLINCDIR) $(NGHTTP2INCDIR) -c -o $@ http2.c
++
+ contest.o: contest.c
+-	$(CC) $(CFLAGS) $(SSLFLAGS) $(SSLINCDIR) -c -o $@ contest.c
++	$(CC) $(CFLAGS) $(SSLFLAGS) $(NGHTTP2FLAGS) $(SSLINCDIR) $(NGHTTP2INCDIR) -c -o $@ contest.c
+ 
+ dns.o: $(LOCALCARES) dns.c
+ 	$(CC) $(CFLAGS) $(CARESINC) -c -o $@ dns.c
+@@ -79,8 +82,8 @@ beastat.o: beastat.c
+ 	$(CC) $(CFLAGS) $(PCREINCDIR) -c -o $@ beastat.c
+ 
+ 
+-contest: contest.c httptest.o dns.o dns2.o httpcookies.o $(XYMONCOMMLIB) $(XYMONTIMELIB)
+-	$(CC) $(CFLAGS) -o contest -I../include $(CARESINC) -DSTANDALONE contest.c httptest.o dns.o dns2.o httpcookies.o $(CARESLIBS) $(XYMONCOMMLIBS) $(XYMONTIMELIBS)
++contest: contest.c httptest.o http2.o dns.o dns2.o httpcookies.o $(XYMONCOMMLIB) $(XYMONTIMELIB)
++	$(CC) $(CFLAGS) $(SSLFLAGS) $(NGHTTP2FLAGS) -o contest -I../include $(CARESINC) $(NGHTTP2INCDIR) -DSTANDALONE contest.c httptest.o http2.o dns.o dns2.o httpcookies.o $(CARESLIBS) $(NGHTTP2LIBS) $(XYMONCOMMLIBS) $(XYMONTIMELIBS)
+ 
+ 
+ xymon-snmpcollect: xymon-snmpcollect.o $(XYMONCOMMLIB) $(XYMONTIMELIB)
+Index: debian-xymon/xymonnet/contest.c
+===================================================================
+--- debian-xymon.orig/xymonnet/contest.c
++++ debian-xymon/xymonnet/contest.c
+@@ -38,6 +38,7 @@ static char rcsid[] = "$Id: contest.c 80
+ #include "xymonnet.h"
+ #include "contest.h"
+ #include "httptest.h"
++#include "http2.h"
+ #include "dns.h"
+ 
+ /* BSD uses RLIMIT_OFILE */
+@@ -721,7 +722,31 @@ static void setup_ssl(tcptest_t *item)
+ 		return;
+ 	}
+ 
+-	/* If we get this far, the SSL handshake has completed. So grab the certificate */
++	/* If we get this far, the SSL handshake has completed. */
++
++	/*
++	 * Check whether ALPN negotiated HTTP/2. If h2 was required (we offered
++	 * only "h2") but the server did not select it, fail the test.
++	 */
++	if (http2_available()) {
++		const unsigned char *alpn = NULL;
++		unsigned int alpnlen = 0;
++
++		SSL_get0_alpn_selected(item->ssldata, &alpn, &alpnlen);
++		if (alpn && (alpnlen == 2) && (memcmp(alpn, "h2", 2) == 0)) {
++			item->http2 = 1;
++		}
++		else if (item->ssloptions && item->ssloptions->alpns &&
++			 (strcmp(item->ssloptions->alpns, "h2") == 0)) {
++			errprintf("HTTP/2 required but not negotiated by %s on host %s\n",
++				  portinfo, inet_ntoa(item->addr.sin_addr));
++			item->errcode = CONTEST_ESSL;
++			item->sslrunning = 0; SSL_free(item->ssldata); SSL_CTX_free(item->sslctx);
++			return;
++		}
++	}
++
++	/* Grab the certificate */
+ 	peercert = SSL_get_peer_certificate(item->ssldata);
+ 	if (!peercert) {
+ 		errprintf("Cannot get peer certificate for %s on host %s\n",
+@@ -1128,7 +1153,7 @@ restartselect:
+ 				 * So: On any given socket, we want either a 
+ 				 * write-event or a read-event - never both.
+ 				 */
+-				if (item->readpending)
++				if (item->readpending || (item->http2sendpending == 2))
+ 					FD_SET(item->fd, &readfds);
+ 				else 
+ 					FD_SET(item->fd, &writefds);
+@@ -1206,6 +1231,7 @@ restartselect:
+ 						item->errcode = CONTEST_ETIMEOUT;
+ 					}
+ 					get_totaltime(item, &timestamp);
++					http2_cleanup(item);
+ 					close(item->fd);
+ 					item->fd = -1;
+ 					activesockets--;
+@@ -1269,9 +1295,39 @@ restartselect:
+ 						 *     OR if we need it to match the expect string in the servicedef.
+ 						 */
+ 
+-						item->readpending = (do_talk && !item->silenttest && 
++						item->readpending = (do_talk && !item->silenttest &&
+ 							( (item->svcinfo->flags & TCP_GET_BANNER) || item->svcinfo->exptext ));
+-						if (do_talk) {
++						if (do_talk && item->http2) {
++							/*
++							 * HTTP/2: hand the request to the nghttp2 shim
++							 * instead of writing the HTTP/1.1 text directly.
++							 * http2_start() sets up the session and submits
++							 * the request the first time through; senddata
++							 * flushes the framed output. When all output has
++							 * been sent we switch to read-mode.
++							 */
++							int s = 0;
++
++							if (item->h2session == NULL) {
++								if (http2_start(item) < 0) {
++									item->readpending = 0;
++									item->errcode = CONTEST_EIO;
++								}
++							}
++							if (item->h2session) {
++								s = http2_senddata(item);
++								if (s < 0) {
++									item->http2sendpending = 0;
++									item->readpending = 0;
++									item->errcode = CONTEST_EIO;
++								}
++								else {
++									item->http2sendpending = s;
++									item->readpending = (s == 0);
++								}
++							}
++						}
++						else if (do_talk) {
+ 							if (item->telnetnegotiate && item->telnetbuflen) {
+ 								/*
+ 								 * Return the telnet negotiate data response
+@@ -1287,7 +1343,7 @@ restartselect:
+ 							if (outbuf && outlen) {
+ 								/*
+ 								 * It may be that we cannot write all of the
+-								 * data we want to. Tough ... 
++								 * data we want to. Tough ...
+ 								 */
+ 								res = socket_write(item, outbuf, outlen);
+ 								tcp_stats_written += res;
+@@ -1312,13 +1368,14 @@ restartselect:
+ 
+ 						/* If closed and/or no bannergrabbing, shut down socket */
+ 						if (item->sslrunning != SSLSETUP_PENDING) {
+-							if (!item->open || !item->readpending) {
++							if (!item->open || (!item->readpending && !item->http2sendpending)) {
+ 								if (item->open) {
+ 									socket_shutdown(item);
+ 								}
+ 								close(item->fd);
+ 								get_totaltime(item, &timestamp);
+ 								if (item->finalcallback) item->finalcallback(item->priv);
++							http2_cleanup(item);
+ 								item->fd = -1;
+ 								activesockets--;
+ 								pending--;
+@@ -1338,6 +1395,29 @@ restartselect:
+ 
+ 						item->lastactive = timestamp.tv_sec;
+ 
++						if (item->http2sendpending == 2) {
++							res = http2_senddata(item);
++							if (res < 0) {
++								item->http2sendpending = 0;
++								item->readpending = 0;
++								item->errcode = CONTEST_EIO;
++								if (item->open) socket_shutdown(item);
++								close(item->fd);
++								get_totaltime(item, &timestamp);
++								if (item->finalcallback) item->finalcallback(item->priv);
++								http2_cleanup(item);
++								item->fd = -1;
++								activesockets--;
++								pending--;
++								if (item == firstactive) firstactive = item->next;
++							}
++							else {
++								item->http2sendpending = res;
++								item->readpending = (res == 0);
++							}
++							continue;
++						}
++
+ 						/*
+ 						 * We may be in the process of setting up an SSL connection
+ 						 */
+@@ -1350,8 +1430,27 @@ restartselect:
+ 						res = socket_read(item, msgbuf, sizeof(msgbuf)-1);
+ 						tcp_stats_read += res;
+ 						dbgprintf("read %d bytes from socket\n", res);
++						if ((res <= 0) && item->http2 && !item->sslagain) {
++							if (!item->ssldata && (res < 0) && ((errno == EAGAIN) || (errno == EWOULDBLOCK)))
++								wantmoredata = 1;
++							else
++								item->errcode = CONTEST_EIO;
++						}
+ 
+-						if ((res > 0) && item->datacallback) {
++						if ((res > 0) && item->http2) {
++							/*
++							 * HTTP/2: feed the bytes to the nghttp2 shim,
++							 * which reassembles the response and pushes it
++							 * through the datacallback when complete.
++							 */
++							int d = http2_recvdata(item, msgbuf, res);
++							datadone = ((d == 1) || (d < 0));
++							if (d > 1) {
++								item->http2sendpending = d - 1;
++								item->readpending = 0;
++							}
++						}
++						else if ((res > 0) && item->datacallback) {
+ 							datadone = item->datacallback(msgbuf, res, item->priv);
+ 						}
+ 
+@@ -1406,6 +1505,7 @@ restartselect:
+ 							close(item->fd);
+ 							get_totaltime(item, &timestamp);
+ 							if (item->finalcallback) item->finalcallback(item->priv);
++							http2_cleanup(item);
+ 							item->fd = -1;
+ 							activesockets--;
+ 							pending--;
+Index: debian-xymon/xymonnet/contest.h
+===================================================================
+--- debian-xymon.orig/xymonnet/contest.h
++++ debian-xymon/xymonnet/contest.h
+@@ -63,6 +63,7 @@ extern int snienabled;
+ #define SSLVERSION_TLS10   3
+ #define SSLVERSION_TLS11   4
+ #define SSLVERSION_TLS12   5
++#define SSLVERSION_TLS13   6
+ 
+ typedef struct {
+ 	char *cipherlist;
+@@ -135,6 +136,11 @@ typedef struct tcptest_t {
+ 	f_callback_data datacallback;
+ 	f_callback_final finalcallback;
+ 
++	/* For HTTP/2 (when ALPN negotiated "h2") */
++	int http2;			/* Set when the connection speaks HTTP/2 */
++	void *h2session;		/* Opaque h2conn_t*, managed by http2.c */
++	int http2sendpending;		/* 1: retry on write, 2: retry SSL_write on read */
++
+ 	struct tcptest_t *next;
+ } tcptest_t;
+ 
+@@ -147,6 +153,7 @@ typedef struct tcptest_t {
+ #define HTTPVER_ANY 0
+ #define HTTPVER_10  1
+ #define HTTPVER_11  2
++#define HTTPVER_2   3
+ 
+ #define CHUNK_NOTCHUNKED 0
+ #define CHUNK_INIT       1
+Index: debian-xymon/xymonnet/http2.c
+===================================================================
+--- /dev/null
++++ debian-xymon/xymonnet/http2.c
+@@ -0,0 +1,495 @@
++/*----------------------------------------------------------------------------*/
++/* Xymon monitor network test tool.                                           */
++/*                                                                            */
++/* HTTP/2 support for xymonnet's HTTP tests, built on top of libnghttp2.      */
++/*                                                                            */
++/* xymonnet builds its HTTP request as ordinary HTTP/1.1 text and parses the  */
++/* response as HTTP/1.1 text. This module sits in between when a connection   */
++/* negotiated ALPN "h2": it re-parses the generated HTTP/1.1 request into an  */
++/* HTTP/2 request submitted through libnghttp2, and it re-assembles the       */
++/* HTTP/2 response back into HTTP/1.1-shaped text that is fed to the existing  */
++/* response callback. That way none of the surrounding HTTP test logic needs  */
++/* to know which protocol version was actually used on the wire.             */
++/*                                                                            */
++/* When built without nghttp2 or OpenSSL these functions compile to stubs     */
++/* reporting "unavailable".                                                   */
++/*                                                                            */
++/* Copyright (C) 2003-2011 Henrik Storner <henrik@hswn.dk>                    */
++/*                                                                            */
++/* This program is released under the GNU General Public License (GPL),       */
++/* version 2. See the file "COPYING" for details.                             */
++/*----------------------------------------------------------------------------*/
++
++#include "config.h"
++
++#include "http2.h"
++
++#if defined(HAVE_NGHTTP2) && defined(HAVE_OPENSSL)
++
++#include <string.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <ctype.h>
++#include <errno.h>
++#include <unistd.h>
++
++#include <nghttp2/nghttp2.h>
++
++#include "contest.h"
++
++/*
++ * Per-connection HTTP/2 state, hung off tcptest_t->h2session as a void*.
++ */
++typedef struct h2conn_t {
++	nghttp2_session *session;
++	tcptest_t *item;
++	int32_t stream_id;
++
++	/* Request body (for POST/SOAP), owned by the caller's sendtxt buffer */
++	const unsigned char *reqbody;
++	size_t reqbodylen;
++	size_t reqbodyofs;
++
++	/* Outbound bytes produced by nghttp2 but not yet written to the socket */
++	unsigned char *pend;
++	size_t pendlen;
++	size_t pendofs;
++
++	/* Response being assembled */
++	int status;			/* :status from the response */
++	strbuffer_t *resphdrs;		/* collected "name: value\r\n" lines */
++	strbuffer_t *respbody;		/* response body bytes */
++	int stream_closed;		/* set when the response stream ends */
++	uint32_t stream_error;		/* error code reported when the stream closes */
++	int stream_reset;		/* peer sent RST_STREAM, including NO_ERROR */
++	int response_emitted;		/* guard against emitting twice */
++} h2conn_t;
++
++
++#define H2_WRITE_WANT_WRITE -2
++#define H2_WRITE_WANT_READ  -3
++
++
++static int h2_write(h2conn_t *h2, const unsigned char *buf, size_t len)
++{
++	tcptest_t *item = h2->item;
++	int res;
++
++	if (item->ssldata) res = SSL_write(item->ssldata, buf, len);
++	else res = write(item->fd, buf, len);
++	if (res <= 0) {
++		if (!item->ssldata && ((errno == EAGAIN) || (errno == EWOULDBLOCK))) return H2_WRITE_WANT_WRITE;
++		if (!item->ssldata) return -1;
++		switch (SSL_get_error(item->ssldata, res)) {
++		  case SSL_ERROR_WANT_READ:
++			return H2_WRITE_WANT_READ;
++		  case SSL_ERROR_WANT_WRITE:
++			return H2_WRITE_WANT_WRITE;
++		  default:
++			return -1;	/* Hard error */
++		}
++	}
++
++	item->byteswritten += res;
++	tcp_stats_written += res;
++	return res;
++}
++
++
++/* nghttp2 data-provider callback: hand the request body to the library. */
++static ssize_t h2_body_read_cb(nghttp2_session *session, int32_t stream_id,
++			       uint8_t *buf, size_t length, uint32_t *data_flags,
++			       nghttp2_data_source *source, void *user_data)
++{
++	h2conn_t *h2 = (h2conn_t *)source->ptr;
++	size_t remaining = h2->reqbodylen - h2->reqbodyofs;
++	size_t n = (remaining < length) ? remaining : length;
++
++	if (n > 0) {
++		memcpy(buf, h2->reqbody + h2->reqbodyofs, n);
++		h2->reqbodyofs += n;
++	}
++	if (h2->reqbodyofs >= h2->reqbodylen) *data_flags |= NGHTTP2_DATA_FLAG_EOF;
++
++	return (ssize_t)n;
++}
++
++
++static int h2_on_header_cb(nghttp2_session *session, const nghttp2_frame *frame,
++			   const uint8_t *name, size_t namelen,
++			   const uint8_t *value, size_t valuelen,
++			   uint8_t flags, void *user_data)
++{
++	h2conn_t *h2 = (h2conn_t *)user_data;
++
++	if (frame->hd.type != NGHTTP2_HEADERS) return 0;
++	if (frame->headers.cat != NGHTTP2_HCAT_RESPONSE) return 0;
++	if (frame->hd.stream_id != h2->stream_id) return 0;
++
++	if ((namelen == 7) && (memcmp(name, ":status", 7) == 0)) {
++		if ((valuelen != 3) || !isdigit(value[0]) || !isdigit(value[1]) || !isdigit(value[2])) return NGHTTP2_ERR_CALLBACK_FAILURE;
++		h2->status = ((value[0] - '0') * 100) + ((value[1] - '0') * 10) + (value[2] - '0');
++		return 0;
++	}
++
++	/* Skip HTTP/2 pseudo-headers and length/framing headers we regenerate. */
++	if ((namelen > 0) && (name[0] == ':')) return 0;
++	if ((namelen == 14) && (strncasecmp((const char *)name, "content-length", 14) == 0)) return 0;
++	if ((namelen == 17) && (strncasecmp((const char *)name, "transfer-encoding", 17) == 0)) return 0;
++
++	addtobufferraw(h2->resphdrs, (char *)name, namelen);
++	addtobuffer(h2->resphdrs, ": ");
++	addtobufferraw(h2->resphdrs, (char *)value, valuelen);
++	addtobuffer(h2->resphdrs, "\r\n");
++
++	return 0;
++}
++
++
++static int h2_on_data_chunk_cb(nghttp2_session *session, uint8_t flags,
++			       int32_t stream_id, const uint8_t *data,
++			       size_t len, void *user_data)
++{
++	h2conn_t *h2 = (h2conn_t *)user_data;
++
++	if (stream_id != h2->stream_id) return 0;
++	addtobufferraw(h2->respbody, (char *)data, len);
++	return 0;
++}
++
++
++static int h2_on_stream_close_cb(nghttp2_session *session, int32_t stream_id,
++				 uint32_t error_code, void *user_data)
++{
++	h2conn_t *h2 = (h2conn_t *)user_data;
++
++	if (stream_id == h2->stream_id) {
++		h2->stream_error = error_code;
++		h2->stream_closed = 1;
++	}
++	return 0;
++}
++
++
++static int h2_on_frame_recv_cb(nghttp2_session *session,
++			       const nghttp2_frame *frame, void *user_data)
++{
++	h2conn_t *h2 = (h2conn_t *)user_data;
++
++	if ((frame->hd.type == NGHTTP2_RST_STREAM) && (frame->hd.stream_id == h2->stream_id))
++		h2->stream_reset = 1;
++	return 0;
++}
++
++
++/*
++ * Re-parse the HTTP/1.1 request text in item->sendtxt into HTTP/2 header
++ * name/value pairs and submit the request. request text format is
++ * deterministic (we generated it in httptest.c):
++ *   METHOD SP PATH SP HTTP/1.1 CRLF
++ *   Name: Value CRLF   (repeated)
++ *   CRLF
++ *   [body]
++ */
++static int h2_submit_request(h2conn_t *h2)
++{
++	char *reqcopy, *line, *saveptr, *body = NULL;
++	char *method = NULL, *path = NULL, *authority = NULL;
++	char *scheme = (h2->item->ssldata ? "https" : "http");
++	nghttp2_nv *nva = NULL;
++	int nvcount = 0, nvmax = 8;
++	int32_t sid;
++	nghttp2_data_provider data_prd, *data_prd_ptr = NULL;
++
++	reqcopy = strdup((char *)h2->item->sendtxt);
++
++	/* Split headers from body at the blank line. */
++	body = strstr(reqcopy, "\r\n\r\n");
++	if (body) { *body = '\0'; body += 4; }
++
++	/*
++	 * If there is a request body, keep a private heap copy alive for the
++	 * data-provider callback (which runs later, during http2_senddata,
++	 * after reqcopy is freed).
++	 */
++	if (body && *body) {
++		h2->reqbody = (const unsigned char *)strdup(body);
++		h2->reqbodylen = strlen(body);
++		h2->reqbodyofs = 0;
++		data_prd.source.ptr = h2;
++		data_prd.read_callback = h2_body_read_cb;
++		data_prd_ptr = &data_prd;
++	}
++
++	nva = (nghttp2_nv *)calloc(nvmax, sizeof(nghttp2_nv));
++
++	/* First line: METHOD PATH HTTP/x */
++	line = strtok_r(reqcopy, "\r\n", &saveptr);
++	if (line) {
++		method = strtok(line, " ");
++		if (method) path = strtok(NULL, " ");
++	}
++	if (!method || !path) { xfree(reqcopy); free(nva); return -1; }
++
++	/* Remaining lines: headers */
++	while ((line = strtok_r(NULL, "\r\n", &saveptr)) != NULL) {
++		char *colon = strchr(line, ':');
++		char *hname, *hval;
++		size_t hnlen;
++
++		if (!colon) continue;
++		*colon = '\0';
++		hname = line;
++		hval = colon + 1;
++		while (*hval == ' ' || *hval == '\t') hval++;
++		hnlen = strlen(hname);
++
++		/* Host becomes the :authority pseudo-header. */
++		if (strcasecmp(hname, "Host") == 0) { authority = hval; continue; }
++
++		/* Connection-specific headers are forbidden in HTTP/2. */
++		if (strcasecmp(hname, "Connection") == 0) continue;
++		if (strcasecmp(hname, "Keep-Alive") == 0) continue;
++		if (strcasecmp(hname, "Proxy-Connection") == 0) continue;
++		if (strcasecmp(hname, "Transfer-Encoding") == 0) continue;
++		if (strcasecmp(hname, "Upgrade") == 0) continue;
++		/* Length is implied by the DATA framing; drop it to avoid conflicts. */
++		if (strcasecmp(hname, "Content-Length") == 0) continue;
++
++		/* HTTP/2 requires lowercase header field names. */
++		{ char *lc; for (lc = hname; *lc; lc++) *lc = tolower((int)*lc); }
++
++		if (nvcount >= nvmax) {
++			nvmax *= 2;
++			nva = (nghttp2_nv *)realloc(nva, nvmax * sizeof(nghttp2_nv));
++		}
++		nva[nvcount].name = (uint8_t *)hname;
++		nva[nvcount].namelen = hnlen;
++		nva[nvcount].value = (uint8_t *)hval;
++		nva[nvcount].valuelen = strlen(hval);
++		nva[nvcount].flags = NGHTTP2_NV_FLAG_NONE;
++		nvcount++;
++	}
++
++	/*
++	 * Prepend the required pseudo-headers. We build a second array so the
++	 * pseudo-headers come first (HTTP/2 requires that ordering).
++	 */
++	{
++		nghttp2_nv *full = (nghttp2_nv *)calloc(nvcount + 4, sizeof(nghttp2_nv));
++		int i, n = 0;
++
++#define ADD_PSEUDO(nm, vl) do { \
++		full[n].name = (uint8_t *)(nm); full[n].namelen = strlen(nm); \
++		full[n].value = (uint8_t *)(vl); full[n].valuelen = strlen(vl); \
++		full[n].flags = NGHTTP2_NV_FLAG_NONE; n++; } while (0)
++
++		ADD_PSEUDO(":method", method);
++		ADD_PSEUDO(":path", path);
++		ADD_PSEUDO(":scheme", scheme);
++		if (authority) ADD_PSEUDO(":authority", authority);
++#undef ADD_PSEUDO
++
++		for (i = 0; i < nvcount; i++) full[n++] = nva[i];
++
++		sid = nghttp2_submit_request(h2->session, NULL, full, n, data_prd_ptr, h2);
++		free(full);
++	}
++
++	free(nva);
++	xfree(reqcopy);
++
++	if (sid < 0) return -1;
++	h2->stream_id = sid;
++	return 0;
++}
++
++
++int http2_available(void)
++{
++	return 1;
++}
++
++
++int http2_start(void *itemv)
++{
++	tcptest_t *item = (tcptest_t *)itemv;
++	h2conn_t *h2;
++	nghttp2_session_callbacks *cbs;
++	nghttp2_settings_entry iv[1];
++
++	h2 = (h2conn_t *)calloc(1, sizeof(h2conn_t));
++	h2->item = item;
++	h2->stream_id = -1;
++	h2->status = 0;
++	h2->resphdrs = newstrbuffer(0);
++	h2->respbody = newstrbuffer(0);
++
++	if (nghttp2_session_callbacks_new(&cbs) != 0) goto initerror;
++	nghttp2_session_callbacks_set_on_header_callback(cbs, h2_on_header_cb);
++	nghttp2_session_callbacks_set_on_data_chunk_recv_callback(cbs, h2_on_data_chunk_cb);
++	nghttp2_session_callbacks_set_on_stream_close_callback(cbs, h2_on_stream_close_cb);
++	nghttp2_session_callbacks_set_on_frame_recv_callback(cbs, h2_on_frame_recv_cb);
++
++	if (nghttp2_session_client_new(&h2->session, cbs, h2) != 0) {
++		nghttp2_session_callbacks_del(cbs);
++		goto initerror;
++	}
++	nghttp2_session_callbacks_del(cbs);
++
++	/* HTTP/2 connections must open with a SETTINGS frame. */
++	iv[0].settings_id = NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS;
++	iv[0].value = 100;
++	if (nghttp2_submit_settings(h2->session, NGHTTP2_FLAG_NONE, iv, 1) != 0) goto initerror;
++
++	if (h2_submit_request(h2) != 0) goto initerror;
++
++	item->h2session = h2;
++	return 0;
++
++initerror:
++	if (h2->session) nghttp2_session_del(h2->session);
++	if (h2->resphdrs) freestrbuffer(h2->resphdrs);
++	if (h2->respbody) freestrbuffer(h2->respbody);
++	if (h2->reqbody) free((void *)h2->reqbody);
++	xfree(h2);
++	item->errcode = CONTEST_ESSL;
++	return -1;
++}
++
++
++int http2_senddata(void *itemv)
++{
++	tcptest_t *item = (tcptest_t *)itemv;
++	h2conn_t *h2 = (h2conn_t *)item->h2session;
++	const uint8_t *data;
++	ssize_t n;
++
++	if (!h2) return -1;
++
++	/* Flush any previously-buffered partial write first. */
++	if (h2->pendlen > h2->pendofs) {
++		int w = h2_write(h2, h2->pend + h2->pendofs, h2->pendlen - h2->pendofs);
++		if (w == H2_WRITE_WANT_READ) return 2;
++		if (w == H2_WRITE_WANT_WRITE) return 1;
++		if (w < 0) return -1;
++		h2->pendofs += w;
++		if (h2->pendofs < h2->pendlen) return 1;	/* Still more to send */
++		xfree(h2->pend); h2->pend = NULL; h2->pendlen = h2->pendofs = 0;
++	}
++
++	while ((n = nghttp2_session_mem_send(h2->session, &data)) > 0) {
++		int w;
++
++		/* OpenSSL requires WANT_* retries to use the same buffer address. */
++		h2->pendlen = n;
++		h2->pendofs = 0;
++		h2->pend = (unsigned char *)malloc(h2->pendlen);
++		memcpy(h2->pend, data, h2->pendlen);
++		w = h2_write(h2, h2->pend, h2->pendlen);
++		if (w == H2_WRITE_WANT_READ) return 2;
++		if (w == H2_WRITE_WANT_WRITE) return 1;
++		if (w < 0) return -1;
++		if (w < n) {
++			h2->pendofs = w;
++			return 1;
++		}
++		xfree(h2->pend); h2->pend = NULL; h2->pendlen = h2->pendofs = 0;
++	}
++	if (n < 0) return -1;
++
++	/* All queued output written; is there more the session wants to send? */
++	return (nghttp2_session_want_write(h2->session) ? 1 : 0);
++}
++
++
++/*
++ * Assemble the collected response into HTTP/1.1-shaped text and push it
++ * through the item's data callback, exactly as if it had arrived from an
++ * HTTP/1.1 server. A synthetic Content-Length lets the existing parser know
++ * when the body is complete.
++ */
++static void h2_emit_response(h2conn_t *h2)
++{
++	tcptest_t *item = h2->item;
++	strbuffer_t *hdr;
++	char statusline[64];
++	char clen[64];
++
++	if (h2->response_emitted) return;
++	h2->response_emitted = 1;
++
++	hdr = newstrbuffer(0);
++	snprintf(statusline, sizeof(statusline), "HTTP/2 %d \r\n", h2->status);
++	addtobuffer(hdr, statusline);
++	if (STRBUFLEN(h2->resphdrs) > 0) addtostrbuffer(hdr, h2->resphdrs);
++	snprintf(clen, sizeof(clen), "Content-Length: %d\r\n", (int)STRBUFLEN(h2->respbody));
++	addtobuffer(hdr, clen);
++	addtobuffer(hdr, "\r\n");
++
++	if (item->datacallback) {
++		item->datacallback((unsigned char *)STRBUF(hdr), STRBUFLEN(hdr), item->priv);
++		if (STRBUFLEN(h2->respbody) > 0)
++			item->datacallback((unsigned char *)STRBUF(h2->respbody), STRBUFLEN(h2->respbody), item->priv);
++	}
++
++	freestrbuffer(hdr);
++}
++
++
++int http2_recvdata(void *itemv, char *buf, int len)
++{
++	tcptest_t *item = (tcptest_t *)itemv;
++	h2conn_t *h2 = (h2conn_t *)item->h2session;
++	ssize_t r, consumed = 0;
++	int sendresult;
++
++	if (!h2) return -1;
++
++	while (consumed < len) {
++		r = nghttp2_session_mem_recv(h2->session, (const uint8_t *)buf + consumed, len - consumed);
++		if (r <= 0) { item->errcode = CONTEST_EIO; return -1; }
++		consumed += r;
++	}
++
++	/* Receiving may have queued SETTINGS-ack / WINDOW_UPDATE / PING output. */
++	sendresult = http2_senddata(item);
++	if (sendresult < 0) return -1;
++
++	if (h2->stream_closed) {
++		if (h2->stream_reset || (h2->stream_error != NGHTTP2_NO_ERROR)) {
++			item->errcode = CONTEST_EIO;
++			return -1;
++		}
++		h2_emit_response(h2);
++		return 1;
++	}
++	return (sendresult > 0 ? sendresult + 1 : 0);
++}
++
++
++void http2_cleanup(void *itemv)
++{
++	tcptest_t *item = (tcptest_t *)itemv;
++	h2conn_t *h2 = (h2conn_t *)item->h2session;
++
++	if (!h2) return;
++
++	if (h2->session) nghttp2_session_del(h2->session);
++	if (h2->resphdrs) freestrbuffer(h2->resphdrs);
++	if (h2->respbody) freestrbuffer(h2->respbody);
++	if (h2->pend) xfree(h2->pend);
++	if (h2->reqbody) free((void *)h2->reqbody);
++	xfree(h2);
++	item->h2session = NULL;
++}
++
++#else	/* !(HAVE_NGHTTP2 && HAVE_OPENSSL) */
++
++int http2_available(void)                          { return 0; }
++int http2_start(void *item)                        { return -1; }
++int http2_senddata(void *item)                     { return -1; }
++int http2_recvdata(void *item, char *buf, int len) { return -1; }
++void http2_cleanup(void *item)                     { }
++
++#endif
+Index: debian-xymon/xymonnet/http2.h
+===================================================================
+--- /dev/null
++++ debian-xymon/xymonnet/http2.h
+@@ -0,0 +1,48 @@
++/*----------------------------------------------------------------------------*/
++/* Xymon monitor network test tool.                                           */
++/*                                                                            */
++/* HTTP/2 support for xymonnet's HTTP tests, built on top of libnghttp2.      */
++/* The functions here translate between xymonnet's existing HTTP/1.1 request  */
++/* text and response-parsing code and the binary HTTP/2 framing spoken on the */
++/* wire, so the rest of the HTTP test logic is unaware of the protocol used.  */
++/*                                                                            */
++/* Copyright (C) 2003-2011 Henrik Storner <henrik@hswn.dk>                    */
++/*                                                                            */
++/* This program is released under the GNU General Public License (GPL),       */
++/* version 2. See the file "COPYING" for details.                             */
++/*----------------------------------------------------------------------------*/
++
++#ifndef __HTTP2_H_
++#define __HTTP2_H_
++
++/* Returns 1 if this build has HTTP/2 support compiled in, 0 otherwise. */
++extern int http2_available(void);
++
++/*
++ * Start an HTTP/2 exchange after ALPN negotiated "h2", or on a cleartext
++ * prior-knowledge connection. Sets up the nghttp2 session and submits the
++ * request that was built (as HTTP/1.1 text) in item->sendtxt. Returns 0 on
++ * success, -1 on error (item->errcode is set).
++ */
++extern int http2_start(void *item);
++
++/*
++ * Flush any pending HTTP/2 output frames to the socket. Returns 0 when all
++ * currently-queued output has been written, 1 if more remains for write
++ * readiness, 2 if SSL_write must be retried on read readiness, or -1 on error.
++ */
++extern int http2_senddata(void *item);
++
++/*
++ * Feed inbound bytes to the nghttp2 session. Response headers/body are
++ * synthesized back into HTTP/1.1-shaped text and pushed through the item's
++ * datacallback. Returns 2 or 3 when pending control frames require write or
++ * read readiness respectively, 1 when the response stream is complete, 0 if
++ * more data is expected, or -1 on error.
++ */
++extern int http2_recvdata(void *item, char *buf, int len);
++
++/* Free the nghttp2 session and any buffers attached to the item. */
++extern void http2_cleanup(void *item);
++
++#endif
+Index: debian-xymon/xymonnet/httptest.c
+===================================================================
+--- debian-xymon.orig/xymonnet/httptest.c
++++ debian-xymon/xymonnet/httptest.c
+@@ -29,6 +29,7 @@ static char rcsid[] = "$Id: httptest.c 8
+ #include "contest.h"
+ #include "httpcookies.h"
+ #include "httptest.h"
++#include "http2.h"
+ #include "dns.h"
+ 
+ 
+@@ -209,7 +210,10 @@ check_for_endofheaders:
+ 			int contlen;
+ 
+ 			/* We have an end-of-header delimiter, but it could be just a "100 Continue" response */
+-			sscanf(item->headers, "HTTP/1.%d %d", &http1subver, &httpstatus);
++			if (strncmp((char *)item->headers, "HTTP/2", 6) == 0)
++				sscanf(item->headers, "HTTP/2 %d", &httpstatus);
++			else
++				sscanf(item->headers, "HTTP/1.%d %d", &http1subver, &httpstatus);
+ 			if (httpstatus == 100) {
+ 				/* 
+ 				 * It's a "100"  continue-status.
+@@ -300,8 +304,10 @@ void tcp_http_final_callback(void *priv)
+ 		int http1subver;
+ 		char *p;
+ 
+-		/* TODO: HTTP2 ? */
+-		sscanf(item->headers, "HTTP/1.%d %d", &http1subver, &item->httpstatus);
++		if (strncmp((char *)item->headers, "HTTP/2", 6) == 0)
++			sscanf(item->headers, "HTTP/2 %d", &item->httpstatus);
++		else
++			sscanf(item->headers, "HTTP/1.%d %d", &http1subver, &item->httpstatus);
+ 
+ 		item->contenttype = NULL;
+ 		p = item->headers;
+@@ -337,6 +343,8 @@ void add_http_test(testitem_t *t)
+ 	char *sslopt_ciphers = NULL;
+ 	int sslopt_version = SSLVERSION_DEFAULT;
+ 	char *sslopt_clientcert = NULL;
++	char *sslopt_alpns = NULL;
++	int h2_prior_knowledge = 0;
+ 	int  httpversion = HTTPVER_11;
+ 	cookielist_t *ck = NULL;
+ 	int firstcookie = 1;
+@@ -485,19 +493,42 @@ void add_http_test(testitem_t *t)
+ 		break;
+ 	}
+ 
+-	if (httptest->weburl.desturl->schemeopts) {
+-		if      (strstr(httptest->weburl.desturl->schemeopts, "3"))      sslopt_version = SSLVERSION_V3;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "2"))      sslopt_version = SSLVERSION_V2;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "t"))      sslopt_version = SSLVERSION_TLS10;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "a"))      sslopt_version = SSLVERSION_TLS10;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "b"))      sslopt_version = SSLVERSION_TLS11;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "c"))      sslopt_version = SSLVERSION_TLS12;
++	{
++		int httpver_pinned = 0;
+ 
+-		if      (strstr(httptest->weburl.desturl->schemeopts, "h"))      sslopt_ciphers = ciphershigh;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "m"))      sslopt_ciphers = ciphersmedium;
++		if (httptest->weburl.desturl->schemeopts) {
++			/* Match h2 exactly before testing its single-character substrings. */
++			if (strcmp(httptest->weburl.desturl->schemeopts, "h2") == 0) {
++				if (strcmp(httptest->weburl.desturl->scheme, "https") == 0) {
++					sslopt_alpns = "h2";
++				}
++				else {
++					h2_prior_knowledge = 1;
++				}
++			}
++			else {
++				if      (strstr(httptest->weburl.desturl->schemeopts, "3"))      sslopt_version = SSLVERSION_V3;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "2"))      sslopt_version = SSLVERSION_V2;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "t"))      sslopt_version = SSLVERSION_TLS10;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "a"))      sslopt_version = SSLVERSION_TLS10;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "b"))      sslopt_version = SSLVERSION_TLS11;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "c"))      sslopt_version = SSLVERSION_TLS12;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "d"))      sslopt_version = SSLVERSION_TLS13;
++
++				if      (strstr(httptest->weburl.desturl->schemeopts, "h"))      sslopt_ciphers = ciphershigh;
++				else if (strstr(httptest->weburl.desturl->schemeopts, "m"))      sslopt_ciphers = ciphersmedium;
++
++				if      (strstr(httptest->weburl.desturl->schemeopts, "10"))     { httpversion = HTTPVER_10; httpver_pinned = 1; }
++				else if (strstr(httptest->weburl.desturl->schemeopts, "11"))     { httpversion = HTTPVER_11; httpver_pinned = 1; }
++			}
++		}
+ 
+-		if      (strstr(httptest->weburl.desturl->schemeopts, "10"))     httpversion    = HTTPVER_10;
+-		else if (strstr(httptest->weburl.desturl->schemeopts, "11"))     httpversion    = HTTPVER_11;
++		if (!sslopt_alpns && http2_available() && !httpver_pinned &&
++		    (httptest->weburl.proxyurl == NULL) &&
++		    httptest->weburl.desturl->scheme &&
++		    (strcmp(httptest->weburl.desturl->scheme, "https") == 0)) {
++			sslopt_alpns = "h2,http/1.1";
++		}
+ 	}
+ 
+ 	/* Get any cookies */
+@@ -678,12 +709,12 @@ void add_http_test(testitem_t *t)
+ 	if (httptest->weburl.postdata) addtobuffer(httprequest, httptest->weburl.postdata);
+ 
+ 	/* Pickup any SSL options the user wants */
+-	if (sslopt_ciphers || (sslopt_version != SSLVERSION_DEFAULT) || sslopt_clientcert){
++	if (sslopt_ciphers || (sslopt_version != SSLVERSION_DEFAULT) || sslopt_clientcert || sslopt_alpns){
+ 		sslopt = (ssloptions_t *) malloc(sizeof(ssloptions_t));
+ 		sslopt->cipherlist = sslopt_ciphers;
+ 		sslopt->sslversion = sslopt_version;
+ 		sslopt->clientcert = sslopt_clientcert;
+-		sslopt->alpns = NULL;
++		sslopt->alpns = sslopt_alpns;
+ 	}
+ 
+ 	/* Add to TCP test queue */
+@@ -704,6 +735,8 @@ void add_http_test(testitem_t *t)
+ 						 httptest, tcp_http_data_callback, tcp_http_final_callback);
+ 	}
+ 
++	if (h2_prior_knowledge) httptest->tcptest->http2 = 1;
++
+ 	if (hinfo && xmh_item(hinfo, XMH_FLAG_SNI))
+ 		httptest->tcptest->sni = httptest->weburl.desturl->host;
+ 	else if (hinfo && xmh_item(hinfo, XMH_FLAG_NOSNI))
+Index: debian-xymon/xymonnet/xymonnet.1
+===================================================================
+--- debian-xymon.orig/xymonnet/xymonnet.1
++++ debian-xymon/xymonnet/xymonnet.1
+@@ -273,13 +273,25 @@ The default is "content".  If you have u
+ scripts earlier, you may want to use "\-\-content=cont" to report content
+ checks using the same test name as these scripts do.
+ .IP \-\-bb\-proxy\-syntax
+-Adhere to the Big Brother syntax for a URL, which allows specifying 
++Adhere to the Big Brother syntax for a URL, which allows specifying
+ a HTTP proxy as part of a URL. See \fB"HTTP Testing via proxy"\fR in the
+-.I hosts.cfg(5) 
++.I hosts.cfg(5)
+ file for details. Beginning with Xymon 4.3.0, this behaviour is disabled
+ by default since URL's that include other URL's are now much more
+ common. This option restores the old Big Brother-compatible behaviour.
+ 
++.SH HTTP/2
++If xymonnet was built with the nghttp2 library, HTTP/2 is negotiated
++automatically for "https://" web tests using ALPN during the TLS
++handshake; servers that do not support HTTP/2 are tested over HTTP/1.1
++as before. HTTP/2 can be required with the "httpsh2://" scheme, or
++disabled per-test by pinning HTTP/1.x with "https11://". See
++.I hosts.cfg(5)
++for details. Cleartext HTTP/2 prior knowledge is available for direct tests
++with "httph2://"; HTTP/1.1 Upgrade and proxying are not supported. If xymonnet
++was built without nghttp2, HTTP/2 is not offered and required HTTP/2 tests
++report an error.
++
+ .SH OPTIONS FOR SSL CERTIFICATE TESTS
+ .IP \-\-ssl=SSLCERTTESTNAME
+ Determines the name of the column Xymon displays for the SSL certificate checks.

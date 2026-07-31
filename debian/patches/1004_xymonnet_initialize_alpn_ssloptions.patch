@@ -1,0 +1,29 @@
+From: soundgoof <soundgoof@gmail.com>
+Date: Sun, 26 Jul 2026 00:51:06 +0200
+Subject: fix: initialize alpns in httptest.c SSL options to avoid uninitialized read
+
+add_http_test() allocates a per-request ssloptions_t with malloc() when a
+URL specifies a custom cipher list, SSL version, or client certificate, but
+never sets the alpns field added by 75cfe50b (ALPN support). setup_ssl() in
+contest.c later checks item->ssloptions->alpns as a fallback and calls
+strdup() on it, so uninitialized heap memory can be read as a string pointer.
+
+Origin: upstream, commit:f090908334384d6e1851f8f32af652e2e466494a
+---
+ xymonnet/httptest.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/xymonnet/httptest.c b/xymonnet/httptest.c
+index 7c05b1d1..f8346450 100644
+--- a/xymonnet/httptest.c
++++ b/xymonnet/httptest.c
+@@ -683,6 +683,7 @@ void add_http_test(testitem_t *t)
+ 		sslopt->cipherlist = sslopt_ciphers;
+ 		sslopt->sslversion = sslopt_version;
+ 		sslopt->clientcert = sslopt_clientcert;
++		sslopt->alpns = NULL;
+ 	}
+ 
+ 	/* Add to TCP test queue */
+-- 
+2.47.2
