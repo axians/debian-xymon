@@ -1,0 +1,56 @@
+---
+name: Sync master from Salsa
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-salsa-master
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Synchronize master
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Fetch Salsa master
+        run: |
+          git fetch --no-tags \
+            https://salsa.debian.org/debian/xymon.git \
+            master:refs/remotes/salsa/master
+
+      - name: Fast-forward GitHub master
+        run: |
+          github_master=$(git ls-remote --heads origin refs/heads/master | cut -f1)
+          if [ -n "$github_master" ]; then
+            git fetch --no-tags origin \
+              refs/heads/master:refs/remotes/origin/master
+
+            if ! git merge-base --is-ancestor \
+              refs/remotes/origin/master refs/remotes/salsa/master; then
+              printf '%s\n' \
+                'GitHub master has diverged from Salsa master; refusing to overwrite it.' >&2
+              exit 1
+            fi
+
+            if [ "$github_master" = \
+              "$(git rev-parse refs/remotes/salsa/master)" ]; then
+              printf '%s\n' 'GitHub master is already synchronized with Salsa master.'
+              exit 0
+            fi
+          else
+            printf '%s\n' 'GitHub master does not exist and will be created.'
+          fi
+
+          git push origin refs/remotes/salsa/master:refs/heads/master

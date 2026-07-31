@@ -37,6 +37,11 @@ chroot and resolves the package's current build dependencies before each build.
 GitHub Actions
 --------------
 
+The Sync master from Salsa workflow is started manually. It creates the GitHub
+`master` branch from Debian Salsa on its first run and only fast-forwards it
+afterward. The workflow fails without changing the branch if the GitHub and
+Salsa histories diverge.
+
 The Build Debian packages workflow runs the same Containerfile and
 xymon-testbuild entry point on GitHub-hosted Ubuntu runners. It uses Docker on
 the ephemeral runner in privileged mode for schroot compatibility and uploads
